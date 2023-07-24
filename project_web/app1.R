@@ -20,14 +20,20 @@ ui <-  shinyUI(navbarPage(title="State Data Use and Needs",
                         br(),
                         sidebarLayout(sidebarPanel(
                           selectInput("dropdown2", "Which state are you interested in?",
-                                        list("All states" = "all","Alaska"="AK", "Virginia"="VA", "California"= "CA"))),
-                          mainPanel(textOutput("text2")
+                                        list("All states" = "all","Alaska"="AK", "Virginia"="VA", "California"= "CA")),
+                          strong("What categories are you interested in?"),
+                          checkboxInput("demo", "Demographics", TRUE),
+                          checkboxInput("econ", "Economy", TRUE),
+                          checkboxInput("house", "Housing", TRUE),
+                          checkboxInput("diver", "Diversity", TRUE)),
+                          mainPanel(textOutput("text2"),
+                                    plotOutput("plot2")
                           ))),
                tabPanel("Word Cloud",
                         br(),
                         sidebarLayout(sidebarPanel(
                           selectInput("dropdown3", "Which state's mission statement are you interested in?",
-                                      list("Alaska"="AK", "Virginia"="VA", "California"= "CA"))),
+                                      list("All states" = "all", "Alaska"="AK", "Virginia"="VA", "California"= "CA"))),
                           mainPanel(textOutput("text3"),
                                     plotOutput("plot3")
                           ))),
@@ -64,7 +70,10 @@ server <- function(input, output) {
   })
   
   output$text3 <- renderText({
-    if (input$dropdown3 == "VA"){
+    if (input$dropdown3 == "all"){
+      "Word Cloud on all states' SDC Mission Statement"
+    }
+    else if (input$dropdown3 == "VA"){
       "Word Cloud on Virginia's SDC Mission Statement"
     }
     else if (input$dropdown3 == "AK"){
