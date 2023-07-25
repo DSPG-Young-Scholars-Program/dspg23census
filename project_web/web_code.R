@@ -19,10 +19,64 @@ all_states <- c("All states", "Alabama", "Alaska","Arizona", "Arkansas", "Califo
                 "Iowa", "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", 
                 "Massachusetts", "Michigan", "Minnesoda", "Mississippi", "Missouri",
                 "Puerto Rico", "Guam")
+
 econ_data <- read.csv("/Users/jianingcai/Downloads/Economy_compilation.csv")
 econ_data$Sub.categories = tolower(econ_data$Sub.categories)
 
+econ_category_plot <- function(selected_state) {
+  # Initialize variables to store the counts
+  if (selected_state == "All states"){
+    data_to_use = econ_data$Sub.categories
+  }
+  else{
+    data_to_use = econ_data$Sub.categories[econ_data$State..Country == selected_state]
+  }
+  employment <- 0
+  lf <- 0
+  wage <- 0
+  income <- 0
+  tax <- 0
+  job <- 0
+  economy <- 0
+  for (i in data_to_use) {
+    if (any(grepl("employment", i))) {
+      employment <- employment + 1
+    }
+    if (any(grepl("labor force", i))) {
+      lf <- lf + 1
+    }
+    if (any(grepl("wage", i))) {
+      wage <- wage + 1
+    }
+    if (any(grepl("job", i))) {
+      job <- job + 1
+    }
+    if (any(grepl("tax", i))) {
+      tax <- tax + 1
+    }
+    if (any(grepl("income", i))) {
+      income <- income + 1
+    }
+    if (any(grepl("economy", i))) {
+      economy <- economy + 1
+    }
+  }
+  # Create data frame for plotting
+  category <- c("employment", "income", "tax", "labor force", "wage", "job", "economy")
+  counts <- c(employment, income, tax, lf, wage, job, economy)
+  total_df <- data.frame(category, counts)
+  # Barplot
+  barplot(counts, names.arg = category, col = "steelblue",
+          main = paste("Distribution of Data Tools' Category in", selected_state),
+          xlab = "Category", ylab = "counts", cex.names = 0.9, ylim = c(0, 60))
+  # Add counts as text above the bars
+  text(x = c(0.7, 1.9, 3.1, 4.3, 5.5, 6.7, 7.9), y = counts,
+       labels = counts, pos = 3, cex = 0.8, col = "black")
+}
 
+
+
+#------------------------------------------------------------------------------------
 # Define UI for app that draws a histogram ----
 ui <-  fluidPage(
   theme = "themes.css",
@@ -88,80 +142,9 @@ server <- function(input, output) {
   #})
   
   output$plot3 <- renderPlot({
-    if (input$dropdown3 == "All states"){
-      employment = 0
-      lf = 0
-      wage = 0
-      income = 0
-      tax = 0
-      job = 0
-      economy = 0
-      for (i in econ_data$Sub.categories){
-        if (any(grepl("employment", i))){
-          employment = employment + 1
-        }
-        if (any(grepl("labor force", i))){
-          lf = lf + 1
-        }
-        if (any(grepl("wage", i))){
-          wage = wage + 1
-        }
-        if (any(grepl("job", i))){
-          job = job + 1
-        }
-        if (any(grepl("tax", i))){
-          tax = tax + 1
-        }
-        if (any(grepl("income", i))){
-          income = income + 1
-        }
-        if (any(grepl("economy", i))){
-          economy = economy + 1
-        }
-      }
-      category <- c("employment", "income", "tax", "labor force", "wage", "job","economy")
-      counts <- c(employment, income, tax, lf, wage, job,economy)
-      total_df = data.frame(category, counts)
-      barplot(counts, names.arg = category, col = "steelblue", main = {paste("Distribution of Data Tools' Category in", input$dropdown3)}, xlab = "Category", ylab = "counts", cex.names = 0.9, ylim = c(0,60))
-      text(x = c(0.7, 1.9, 3.1, 4.3, 5.5, 6.7, 7.9), y = counts, labels = counts, pos = 3, cex = 0.8, col = "black")
-    }
-    else{
-      employment = 0
-      lf = 0
-      wage = 0
-      income = 0
-      tax = 0
-      job = 0
-      economy = 0
-      for (i in econ_data$Sub.categories[econ_data$State..Country == input$dropdown3]){
-        if (any(grepl("employment", i))){
-          employment = employment + 1
-        }
-        if (any(grepl("labor force", i))){
-          lf = lf + 1
-        }
-        if (any(grepl("wage", i))){
-          wage = wage + 1
-        }
-        if (any(grepl("job", i))){
-          job = job + 1
-        }
-        if (any(grepl("tax", i))){
-          tax = tax + 1
-        }
-        if (any(grepl("income", i))){
-          income = income + 1
-        }
-        if (any(grepl("economy", i))){
-          economy = economy + 1
-        }
-      }
-      category <- c("employment", "income", "tax", "labor force", "wage", "job","economy")
-      counts <- c(employment, income, tax, lf, wage, job,economy)
-      total_df = data.frame(category, counts)
-      barplot(counts, names.arg = category, col = "steelblue", main = {paste("Distribution of Data Tools' Category in", input$dropdown3)}, xlab = "Category", ylab = "counts", cex.names = 0.9, ylim = c(0,60))
-      text(x = c(0.7, 1.9, 3.1, 4.3, 5.5, 6.7, 7.9), y = counts, labels = counts, pos = 3, cex = 0.8, col = "black")
-  }})
+    econ_category_plot(selected_state = input$dropdown3)
+    
+    })
   
   output$text2 <- renderText({
     {paste("Word cloud on", input$dropdown2)}
