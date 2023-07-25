@@ -13,8 +13,14 @@ library(forcats)
 library(plotly)
 library(DT)
 
+all_states <- c("All states", "Alabama", "Alaska","Arizona", "Arkansas", "California",
+                "Colorado", "Connecticut", "Delaware", "District of Colombia", 
+                "Florida", "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana",
+                "Iowa", "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", 
+                "Massachusetts", "Michigan", "Minnesoda", "Mississippi", "Missouri",
+                "Puerto Rico", "Guam")
 econ_data <- read.csv("/Users/jianingcai/Downloads/Economy_compilation.csv")
-econ_data$Sub.categories = tolower(data$Sub.categories)
+econ_data$Sub.categories = tolower(econ_data$Sub.categories)
 
 
 # Define UI for app that draws a histogram ----
@@ -36,25 +42,25 @@ ui <-  fluidPage(
              tabPanel("Word Cloud",
                         br(),
                         sidebarLayout(sidebarPanel(
-                          selectInput("dropdown3", "Which state's mission statement are you interested in?",
-                                      list("All states" = "all", "Alaska"="AK", "Virginia"="VA", "California"= "CA"))),
-                          mainPanel(textOutput("text3"),
-                                    plotOutput("plot3")
+                          selectInput("dropdown2", "Which state's mission statement are you interested in?",
+                                     all_states)),
+                          mainPanel(textOutput("text2"),
+                                    plotOutput("plot2")
                           ))),
              navbarMenu("Findings",
                         tabPanel("Demographics"),
                         tabPanel("Economy",
                                  br(),
                                  sidebarLayout(sidebarPanel(
-                                   selectInput("dropdown2", "Which state are you interested in?",
-                                               list("All states","Alaska", "Alabama", "California", "Colorado", "Connecticut")),
+                                   selectInput("dropdown3", "Which state are you interested in?",
+                                               all_states),
                                    strong("What categories are you interested in?"),
                                    checkboxInput("demo", "Demographics", TRUE),
                                    checkboxInput("econ", "Economy", TRUE),
                                    checkboxInput("house", "Housing", TRUE),
                                    checkboxInput("diver", "Diversity", TRUE)),
-                                   mainPanel(#textOutput("text2"),
-                                             plotOutput("plot2")
+                                   mainPanel(#textOutput("text3"),
+                                             plotOutput("plot3")
                                    ))),
                         tabPanel("Housing"),
                         tabPanel("Diversity"),
@@ -81,8 +87,8 @@ server <- function(input, output) {
   #    {paste("Distribution of Data Tools' Category in ", input$dropdown2)}
   #})
   
-  output$plot2 <- renderPlot({
-    if (input$dropdown2 == "All states"){
+  output$plot3 <- renderPlot({
+    if (input$dropdown3 == "All states"){
       employment = 0
       lf = 0
       wage = 0
@@ -116,7 +122,7 @@ server <- function(input, output) {
       category <- c("employment", "income", "tax", "labor force", "wage", "job","economy")
       counts <- c(employment, income, tax, lf, wage, job,economy)
       total_df = data.frame(category, counts)
-      barplot(counts, names.arg = category, col = "steelblue", main = {paste("Distribution of Data Tools' Category in", input$dropdown2)}, xlab = "Category", ylab = "counts", cex.names = 0.9, ylim = c(0,60))
+      barplot(counts, names.arg = category, col = "steelblue", main = {paste("Distribution of Data Tools' Category in", input$dropdown3)}, xlab = "Category", ylab = "counts", cex.names = 0.9, ylim = c(0,60))
       text(x = c(0.7, 1.9, 3.1, 4.3, 5.5, 6.7, 7.9), y = counts, labels = counts, pos = 3, cex = 0.8, col = "black")
     }
     else{
@@ -127,7 +133,7 @@ server <- function(input, output) {
       tax = 0
       job = 0
       economy = 0
-      for (i in econ_data$Sub.categories[econ_data$State..Country == input$dropdown2 ]){
+      for (i in econ_data$Sub.categories[econ_data$State..Country == input$dropdown3]){
         if (any(grepl("employment", i))){
           employment = employment + 1
         }
@@ -153,23 +159,12 @@ server <- function(input, output) {
       category <- c("employment", "income", "tax", "labor force", "wage", "job","economy")
       counts <- c(employment, income, tax, lf, wage, job,economy)
       total_df = data.frame(category, counts)
-      barplot(counts, names.arg = category, col = "steelblue", main = {paste("Distribution of Data Tools' Category in", input$dropdown2)}, xlab = "Category", ylab = "counts", cex.names = 0.9, ylim = c(0,60))
+      barplot(counts, names.arg = category, col = "steelblue", main = {paste("Distribution of Data Tools' Category in", input$dropdown3)}, xlab = "Category", ylab = "counts", cex.names = 0.9, ylim = c(0,60))
       text(x = c(0.7, 1.9, 3.1, 4.3, 5.5, 6.7, 7.9), y = counts, labels = counts, pos = 3, cex = 0.8, col = "black")
   }})
   
-  output$text3 <- renderText({
-    if (input$dropdown3 == "all"){
-      "Word Cloud on all states' SDC Mission Statement"
-    }
-    else if (input$dropdown3 == "VA"){
-      "Word Cloud on Virginia's SDC Mission Statement"
-    }
-    else if (input$dropdown3 == "AK"){
-      "Word Cloud on Alaska's SDC Mission Statement"
-    }
-    else if (input$dropdown3 == "CA"){
-      "Word Cloud on California's SDC Mission Statement"
-    }
+  output$text2 <- renderText({
+    {paste("Word cloud on", input$dropdown2)}
   })
   
 }
