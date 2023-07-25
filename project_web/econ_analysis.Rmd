@@ -19,6 +19,10 @@ data <- read.csv("/Users/jianingcai/Downloads/Economy_compilation.csv")
 ```
 
 ```{r}
+data$Sub.categories = tolower(data$Sub.categories)
+```
+
+```{r}
 employment = 0
 lf = 0
 wage = 0
@@ -27,45 +31,45 @@ tax = 0
 job = 0
 economy = 0
 for (i in data$Sub.categories){
-  if (any(grepl("Employment", i))){
-    employment = employment + 1
-  }
+  #if (any(grepl("Employment", i))){
+  # employment = employment + 1
+  #}
   if (any(grepl("employment", i))){
     employment = employment + 1
   }
   if (any(grepl("labor force", i))){
     lf = lf + 1
   }
-  if (any(grepl("Labor force", i))){
-    lf = lf + 1
-  }
+  #if (any(grepl("Labor force", i))){
+   # lf = lf + 1
+  #}
   if (any(grepl("wage", i))){
     wage = wage + 1
   }
-  if (any(grepl("Wage", i))){
-    wage = wage + 1
-  }
+  #if (any(grepl("Wage", i))){
+  #  wage = wage + 1
+  #}
   if (any(grepl("job", i))){
     job = job + 1
   }
-  if (any(grepl("Job", i))){
-    job = job + 1
-  }
+  #if (any(grepl("Job", i))){
+  #  job = job + 1
+  #}
   if (any(grepl("tax", i))){
     tax = tax + 1
   }
-  if (any(grepl("Tax", i))){
-    tax = tax + 1
-  }
+ # if (any(grepl("Tax", i))){
+  #  tax = tax + 1
+  #}
   if (any(grepl("income", i))){
     income = income + 1
   }
-  if (any(grepl("Income", i))){
-    income = income + 1
-  }
-  if (any(grepl("Economy", i))){
-    economy = economy + 1
-  }
+  #if (any(grepl("Income", i))){
+  #  income = income + 1
+  #}
+  #if (any(grepl("Economy", i))){
+  #  economy = economy + 1
+  #}
   if (any(grepl("economy", i))){
     economy = economy + 1
   }
