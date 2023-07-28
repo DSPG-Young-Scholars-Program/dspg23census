@@ -279,6 +279,13 @@ for (i in 1:nrow(data_to_use)) {
   }
 }
 colnames(df_stack2) <- col_name
+
+ggplot(df_stack2, aes(x = sub, y = 1, fill = tool)) +
+  geom_col() +
+  scale_fill_manual(values = cbPalette) +
+  xlab("sub-category")+
+  ylab("count")+
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
 }
 ```
 
@@ -291,6 +298,11 @@ ggplot(df_stack2, aes(x = sub, y = 1, fill = tool)) +
   xlab("sub-category")+
   ylab("count")+
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+```{r}
+sub_cat_and_tool("All states")
+
 ```
 
 
