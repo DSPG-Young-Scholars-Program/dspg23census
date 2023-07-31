@@ -1,0 +1,215 @@
+---
+title: "housing_analysis"
+output: html_document
+date: "2023-07-28"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+#Import libraries
+library(ggplot2)
+library(wordcloud)
+library(RColorBrewer)
+library(wordcloud2)
+library(reshape)
+library(tm)
+library(stringr)
+library(plotly)
+```
+
+```{r}
+#Reads in housing data
+housing <- read.csv('housing_cleaned.csv')
+```
+
+```{r}
+#Creates list of columns in df
+housing_columns = colnames(housing)
+
+#Drops 'X' column from df
+housing_columns = housing_columns[-1]
+housing_columns = housing_columns[-11]
+housing = subset(housing, select = housing_columns)
+```
+
+```{r}
+#Sub-Categories
+#Number/types of sub-categories-bar chart
+
+#Creates a bar graph of sub-category types
+sub_cat_counts <- function(state) {
+  if(state=="all states") {
+    sub_cats <- ggplot(housing, aes(x=Sub.categories)) + geom_bar(fill="blue") + labs(x="Sub-Categories", y="Count", title="Types of Sub-Categories") + theme(axis.text.x = element_text(angle = 25))
+    ggplotly(sub_cats)
+  }
+  else { #fix
+    State <- str_to_title(state)
+    state_input <- housing[housing[, "State"]==state, ]
+    state_df <- data.frame()
+    state_df <- rbind(state_df, state_input)
+    sub_cats <- ggplot(state_df, aes(x=Sub.categories)) + geom_bar(fill="blue") + labs(x="Sub-Categories", y="Count", title="Types of Sub-Categories") + theme(axis.text.x = element_text(angle = 25))
+    ggplotly(sub_cats)
+  }
+}
+
+```
+
+
+```{r}
+sub_cat_counts("all states")
+```
+
+
+```{r}
+#Tool
+#Number/types of tools-pie chart
+
+#fix
+tools <- ggplot(housing, aes(x=Tool)) + geom_bar(fill="blue") + labs(x="Tool", y="Count", title="Types of Tools") + theme(axis.text.x = element_text(angle = 45))
+ggplotly(tools)
+```
+
+```{r}
+#Tool Name
+
+
+#Word cloud for tool names
+#Input is designated state
+tool_cloud <- function(state) {
+  if(state=="all states"){
+    combo <- ""
+    for (i in 1:nrow(housing)) {
+      combo <- paste(combo, housing$Tool.Name[i], sep="")
+    }
+  }
+  else{
+  #Combines all variables into one string
+    combo <- ""
+    for (i in 1:nrow(housing)) {
+      if(housing$State[i]==state) {
+        combo <- paste(combo, housing$Tool.Name[i], sep="")
+      }
+    }
+  }
+
+  #Turns string into corpus of words
+  docs <- Corpus(VectorSource(combo))
+
+  #Cleaning of corpus
+  docs <- docs %>% tm_map(removeNumbers) %>% tm_map(removePunctuation) %>% tm_map(stripWhitespace)
+  docs <- tm_map(docs, content_transformer(tolower))
+  docs <- tm_map(docs, removeWords, stopwords("english"))
+
+  #Turns corpus into term-document-matrix
+  dtm <- TermDocumentMatrix(docs)
+  mtx <- as.matrix(dtm)
+  words <- sort(rowSums(mtx), decreasing = TRUE)
+  df <- data.frame(word = names(words), freq=words)
+
+  #Creates wordcloud
+  set.seed(33)
+
+  cloud <- wordcloud(words = df$word, freq = df$freq, min.freq = 1, max.words = 100, random.order = FALSE, rot.per = 0, colors = brewer.pal(4, "Set1"))
+  
+  return(cloud)
+}
+```
+
+
+```{r}
+#Variables
+
+#Word cloud for variable names
+#Input is designated state
+variable_cloud <- function(state) {
+  if(state=="all states"){
+    combo <- ""
+    for (i in 1:nrow(housing)) {
+      combo <- paste(combo, housing$Variables[i], sep="")
+    }
+  }
+  else{
+  #Combines all variables into one string
+    combo <- ""
+    for (i in 1:nrow(housing)) {
+      if(housing$State[i]==state) {
+        combo <- paste(combo, housing$Variables[i], sep="")
+      }
+    }
+  }
+
+  #Turns string into corpus of words
+  docs <- Corpus(VectorSource(combo))
+
+  #Cleaning of corpus
+  docs <- docs %>% tm_map(removeNumbers) %>% tm_map(removePunctuation) %>% tm_map(stripWhitespace)
+  docs <- tm_map(docs, content_transformer(tolower))
+  docs <- tm_map(docs, removeWords, stopwords("english"))
+
+  #Turns corpus into term-document-matrix
+  dtm <- TermDocumentMatrix(docs)
+  mtx <- as.matrix(dtm)
+  words <- sort(rowSums(mtx), decreasing = TRUE)
+  df <- data.frame(word = names(words), freq=words)
+
+  #Creates wordcloud
+  set.seed(33)
+
+  cloud <- wordcloud(words = df$word, freq = df$freq, min.freq = 1, max.words = 100, random.order = FALSE, rot.per = 0, colors = brewer.pal(4, "Set1"))
+  
+  return(cloud)
+}
+```
+
+
+```{r}
+#Geographic Levels
+#Number/types of geographic levels-pie chart
+
+#fix
+geo <- ggplot(housing, aes(x=Geographic.Levels)) + geom_bar(fill="blue") + labs(x="Geographic Levels", y="Count", title="Types of Geoographic Levels") + theme(axis.text.x = element_text(angle = 45))
+ggplotly(geo)
+```
+
+```{r}
+#Data Sources-Census
+#Number/types of census sources-bar chart, pie chart, count
+
+#fix: exclude if value is NA
+#fix: by state
+census <- ggplot(housing, aes(x=Data.Sources.Census)) + geom_bar(fill="blue") + labs(x="Census Source", y="Count", title="Types of Census Sources") + theme(axis.text.x = element_text(angle = 45))
+ggplotly(census)
+```
+
+```{r}
+#Data Sources-Non Census
+#Number/types of non-census sources-bar chart, pie chart, count
+
+#fix: exclude if value is NA
+#fix: by state
+non_census <- ggplot(housing, aes(x=Data.Sources.Non.Census)) + geom_bar(fill="blue") + labs(x="Data Sources", y="Count", title="Data Sources") + theme(axis.text.x = element_text(angle = 45))
+ggplotly(non_census)
+```
+
+```{r}
+#Direct Links to Census
+#Count
+
+sum(!housing$Direct.links.to.Census=='n')
+```
+
+```{r}
+#Age of Data
+#Number/types of age of data-pie chart
+#Oldest data, most recent
+```
+
+```{r}
+#Historical Data
+#Count
+sum(housing$Historical.data=='y')
+```
+

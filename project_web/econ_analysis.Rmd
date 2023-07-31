@@ -1,0 +1,294 @@
+---
+title: "economy"
+output: html_document
+date: "2023-07-24"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+```
+
+```{r}
+data <- read.csv("/Users/jianingcai/Documents/GitHub/dspg23census/project_web/economy_compilation.csv")
+
+cbPalette <- c("#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
+```
+
+```{r}
+econ_category_plot <- function(selected_state) {
+  # Initialize variables to store the counts
+  if (selected_state == "All states"){
+    data_to_use = data$Sub.categories
+  }
+  else{
+    data_to_use = data$Sub.categories[data$State..Country == selected_state]
+  }
+  employment <- 0
+  lf <- 0
+  wage <- 0
+  income <- 0
+  tax <- 0
+  job <- 0
+  economy <- 0
+  for (i in data_to_use) {
+    if (any(grepl("employment", i))) {
+      employment <- employment + 1
+    }
+    if (any(grepl("labor force", i))) {
+      lf <- lf + 1
+    }
+    if (any(grepl("wage", i))) {
+      wage <- wage + 1
+    }
+    if (any(grepl("job", i))) {
+      job <- job + 1
+    }
+    if (any(grepl("tax", i))) {
+      tax <- tax + 1
+    }
+    if (any(grepl("income", i))) {
+      income <- income + 1
+    }
+    if (any(grepl("economy", i))) {
+      economy <- economy + 1
+    }
+  }
+  # Create data frame for plotting
+  category <- c("employment", "income", "tax", "labor force", "wage", "job", "economy")
+  counts <- c(employment, income, tax, lf, wage, job, economy)
+  total_df <- data.frame(category, counts)
+  # Barplot
+  barplot(counts, names.arg = category, col = "steelblue",
+          main = paste("Distribution of Data Tools' Category in", selected_state),
+          xlab = "Category", ylab = "counts", cex.names = 0.9, ylim = c(0, 60))
+  # Add counts as text above the bars
+  text(x = c(0.7, 1.9, 3.1, 4.3, 5.5, 6.7, 7.9), y = counts,
+       labels = counts, pos = 3, cex = 0.8, col = "black")
+}
+```
+
+```{r}
+data$Sub.categories = tolower(data$Sub.categories)
+```
+
+```{r}
+econ_category_plot("All states")
+```
+
+
+
+------------category with tools----------------
+
+```{r}
+tool_category <-sample(c("table download","table","report","map","data visualization", "infographics"),size = 500, replace = TRUE)
+sub_category <- sample(c("employment", "income","tax","labor force","wage","job","economy"),size= 500, replace = TRUE)
+
+#stack_table <- xtabs(~ tool_category + sub_category, data = NULL)
+#stack_table <- addmargins(stack_table)
+# Set all cells to 0
+#stack_table[ , ] <- 0
+#stack_table["data visualization", "economy"]
+```
+
+
+```{r}
+df_stack2 <- data.frame(
+  tool = character(),
+  sub = character(),
+  count = numeric()
+ )
+col_name = c("tool","sub","count")
+colnames(df_stack2) <- col_name
+
+for (i in 1:nrow(data)) {
+  #--------------------------income----------------------------
+  if (any(grepl("income", data[i,3]))) {
+    if(any(grepl("table download", data[i,4]))){
+        new_row <- c("table download", "income",46)
+        df_stack2 <- rbind(df_stack2, new_row)
+        }
+    if(any(grepl("table", data[i,4]))){
+        new_row <- c("table", "income",46)
+        df_stack2 <- rbind(df_stack2, new_row)
+        }
+    if(any(grepl("report", data[i,4]))){
+        new_row <- c("report", "income",46)
+        df_stack2 <- rbind(df_stack2, new_row)
+        }
+    if(any(grepl("map", data[i,4]))){
+        new_row <- c("map", "income",46)
+        df_stack2 <- rbind(df_stack2, new_row)
+        }
+    if(any(grepl("visualization", data[i,4]))){
+        new_row <- c("data visualization", "income",46)
+        df_stack2 <- rbind(df_stack2, new_row)
+        }
+  }
+  #---------------------------employment----------------------------
+  if (any(grepl("employment", data[i,3]))) {
+    if(any(grepl("table download", data[i,4]))){
+        new_row <- c("table download", "employment",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+        }
+    if(any(grepl("table", data[i,4]))){
+        new_row <- c("table", "employment",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+        }
+    if(any(grepl("report", data[i,4]))){
+        new_row <- c("report", "employment",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+        }
+    if(any(grepl("map", data[i,4]))){
+        new_row <- c("map", "employment",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+        }
+    if(any(grepl("visualization", data[i,4]))){
+        new_row <- c("data visualization", "employment",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+        }
+  }
+  #---------------------------tax----------------------------
+  if (any(grepl("tax", data[i,3]))) {
+    if(any(grepl("table download", data[i,4]))){
+        new_row <- c("table download", "tax",9)
+        df_stack2 <- rbind(df_stack2, new_row)
+        }
+    if(any(grepl("table", data[i,4]))){
+        new_row <- c("table", "tax",9)
+        df_stack2 <- rbind(df_stack2, new_row)
+        }
+    if(any(grepl("report", data[i,4]))){
+        new_row <- c("report", "tax",9)
+        df_stack2 <- rbind(df_stack2, new_row)
+        }
+    if(any(grepl("map", data[i,4]))){
+        new_row <- c("map", "tax",9)
+        df_stack2 <- rbind(df_stack2, new_row)
+        }
+    if(any(grepl("visualization", data[i,4]))){
+        new_row <- c("data visualization", "tax",9)
+        df_stack2 <- rbind(df_stack2, new_row)
+        }
+  }
+  #---------------------------labor force----------------------------
+  if (any(grepl("labor force", data[i,3]))) {
+    if(any(grepl("table download", data[i,4]))){
+        new_row <- c("table download", "labor force",18)
+        df_stack2 <- rbind(df_stack2, new_row)
+        }
+    if(any(grepl("table", data[i,4]))){
+        new_row <- c("table", "labor force",18)
+        df_stack2 <- rbind(df_stack2, new_row)
+        }
+    if(any(grepl("report", data[i,4]))){
+        new_row <- c("report", "labor force",18)
+        df_stack2 <- rbind(df_stack2, new_row)
+        }
+    if(any(grepl("map", data[i,4]))){
+        new_row <- c("map", "labor force",18)
+        df_stack2 <- rbind(df_stack2, new_row)
+        }
+    if(any(grepl("visualization", data[i,4]))){
+        new_row <- c("data visualization", "labor force",18)
+        df_stack2 <- rbind(df_stack2, new_row)
+        }
+  }
+  #---------------------------wage----------------------------
+  if (any(grepl("wage", data[i,3]))) {
+    if(any(grepl("table download", data[i,4]))){
+        new_row <- c("table download", "wage",22)
+        df_stack2 <- rbind(df_stack2, new_row)
+        }
+    if(any(grepl("table", data[i,4]))){
+        new_row <- c("table", "wage",22)
+        df_stack2 <- rbind(df_stack2, new_row)
+        }
+    if(any(grepl("report", data[i,4]))){
+        new_row <- c("report", "wage",22)
+        df_stack2 <- rbind(df_stack2, new_row)
+        }
+    if(any(grepl("map", data[i,4]))){
+        new_row <- c("map", "wage",22)
+        df_stack2 <- rbind(df_stack2, new_row)
+        }
+    if(any(grepl("visualization", data[i,4]))){
+        new_row <- c("data visualization", "wage",22)
+        df_stack2 <- rbind(df_stack2, new_row)
+        }
+  }
+  #---------------------------job----------------------------
+  if (any(grepl("job", data[i,3]))) {
+    if(any(grepl("table download", data[i,4]))){
+        new_row <- c("table download", "job",9)
+        df_stack2 <- rbind(df_stack2, new_row)
+        }
+    if(any(grepl("table", data[i,4]))){
+        new_row <- c("table", "job",9)
+        df_stack2 <- rbind(df_stack2, new_row)
+        }
+    if(any(grepl("report", data[i,4]))){
+        new_row <- c("report", "job",9)
+        df_stack2 <- rbind(df_stack2, new_row)
+        }
+    if(any(grepl("map", data[i,4]))){
+        new_row <- c("map", "job",9)
+        df_stack2 <- rbind(df_stack2, new_row)
+        }
+    if(any(grepl("visualization", data[i,4]))){
+        new_row <- c("data visualization", "job",9)
+        df_stack2 <- rbind(df_stack2, new_row)
+        }
+  }
+  #---------------------------economy----------------------------
+  if (any(grepl("economy", data[i,3]))) {
+    if(any(grepl("table download", data[i,4]))){
+        new_row <- c("table download", "economy",38)
+        df_stack2 <- rbind(df_stack2, new_row)
+        }
+    if(any(grepl("table", data[i,4]))){
+        new_row <- c("table", "economy",38)
+        df_stack2 <- rbind(df_stack2, new_row)
+        }
+    if(any(grepl("report", data[i,4]))){
+        new_row <- c("report", "economy",38)
+        df_stack2 <- rbind(df_stack2, new_row)
+        }
+    if(any(grepl("map", data[i,4]))){
+        new_row <- c("map", "economy",38)
+        df_stack2 <- rbind(df_stack2, new_row)
+        }
+    if(any(grepl("visualization", data[i,4]))){
+        new_row <- c("data visualization", "economy",38)
+        df_stack2 <- rbind(df_stack2, new_row)
+        }
+  }
+}
+colnames(df_stack2) <- col_name
+```
+
+```{r}
+library(gcookbook) # Load gcookbook for the cabbage_exp data set
+
+ggplot(df_stack2, aes(x = sub, y = 1, fill = tool)) +
+  geom_col() +
+  scale_fill_manual(values = cbPalette) +
+  xlab("sub-category")+
+  ylab("count")+
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+
+```{r}
+#barplot(stack_table,
+#        main = "Stacked bar chart",
+#        sub = "Subtitle",
+#        xlab = "X-lab",
+#        ylab = "Y-lab",
+#        axes = TRUE)
+
+```
+
+
+
+

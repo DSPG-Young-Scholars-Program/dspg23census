@@ -1,0 +1,178 @@
+---
+title: "health_education_analysis"
+output: html_document
+date: "2023-07-30"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+health_edu <- read.csv('HE_cleaned.csv')
+```
+
+```{r}
+#Creates list of columns in df
+HE_columns = colnames(health_edu)
+
+#Drops 'X' column from df
+HE_columns = HE_columns[-1]
+health_edu = subset(health_edu, select = HE_columns)
+```
+
+```{r}
+#Sub-Categories
+#Number/types of sub-categories-bar chart
+
+#Creates a bar graph of sub-category types
+sub_cat_counts <- function(state) {
+  if(state=="all states") {
+    sub_cats <- ggplot(health_edu, aes(x=Sub.categories)) + geom_bar(fill="blue") + labs(x="Sub-Categories", y="Count", title="Types of Sub-Categories") + theme(axis.text.x = element_text(angle = 25))
+    ggplotly(sub_cats)
+  }
+  else {
+    State <- str_to_title(state)
+    state_input <- health_edu[health_edu[, "State"]==state, ]
+    state_df <- data.frame()
+    state_df <- rbind(state_df, state_input)
+    sub_cats <- ggplot(state_df, aes(x=Sub.categories)) + geom_bar(fill="blue") + labs(x="Sub-Categories", y="Count", title="Types of Sub-Categories") + theme(axis.text.x = element_text(angle = 25))
+    ggplotly(sub_cats)
+  }
+}
+```
+
+```{r}
+sub_cat_counts("all states")
+```
+
+
+```{r}
+#Tool
+#Number/types of tools-pie chart
+```
+
+```{r}
+#Tool Name
+
+
+#Word cloud for tool names
+#Input is designated state
+tool_cloud <- function(state) {
+  if(state=="all states"){
+    combo <- ""
+    for (i in 1:nrow(health_edu)) {
+      combo <- paste(combo, health_edu$Tool.Name[i], sep="")
+    }
+  }
+  else{
+  #Combines all variables into one string
+    combo <- ""
+    for (i in 1:nrow(health_edu)) {
+      if(health_edu$State[i]==state) {
+        combo <- paste(combo, health_edu$Tool.Name[i], sep="")
+      }
+    }
+  }
+
+  #Turns string into corpus of words
+  docs <- Corpus(VectorSource(combo))
+
+  #Cleaning of corpus
+  docs <- docs %>% tm_map(removeNumbers) %>% tm_map(removePunctuation) %>% tm_map(stripWhitespace)
+  docs <- tm_map(docs, content_transformer(tolower))
+  docs <- tm_map(docs, removeWords, stopwords("english"))
+
+  #Turns corpus into term-document-matrix
+  dtm <- TermDocumentMatrix(docs)
+  mtx <- as.matrix(dtm)
+  words <- sort(rowSums(mtx), decreasing = TRUE)
+  df <- data.frame(word = names(words), freq=words)
+
+  #Creates wordcloud
+  set.seed(33)
+
+  cloud <- wordcloud(words = df$word, freq = df$freq, min.freq = 1, max.words = 100, random.order = FALSE, rot.per = 0, colors = brewer.pal(4, "Set1"))
+  
+  return(cloud)
+}
+```
+
+
+```{r}
+#Variables
+
+
+#Word cloud for variable names
+#Input is designated state
+variable_cloud <- function(state) {
+  if(state=="all states"){
+    combo <- ""
+    for (i in 1:nrow(health_edu)) {
+      combo <- paste(combo, health_edu$Variables[i], sep="")
+    }
+  }
+  else{
+  #Combines all variables into one string
+    combo <- ""
+    for (i in 1:nrow(health_edu)) {
+      if(health_edu$State[i]==state) {
+        combo <- paste(combo, health_edu$Variables[i], sep="")
+      }
+    }
+  }
+
+  #Turns string into corpus of words
+  docs <- Corpus(VectorSource(combo))
+
+  #Cleaning of corpus
+  docs <- docs %>% tm_map(removeNumbers) %>% tm_map(removePunctuation) %>% tm_map(stripWhitespace)
+  docs <- tm_map(docs, content_transformer(tolower))
+  docs <- tm_map(docs, removeWords, stopwords("english"))
+
+  #Turns corpus into term-document-matrix
+  dtm <- TermDocumentMatrix(docs)
+  mtx <- as.matrix(dtm)
+  words <- sort(rowSums(mtx), decreasing = TRUE)
+  df <- data.frame(word = names(words), freq=words)
+
+  #Creates wordcloud
+  set.seed(33)
+
+  cloud <- wordcloud(words = df$word, freq = df$freq, min.freq = 1, max.words = 100, random.order = FALSE, rot.per = 0, colors = brewer.pal(4, "Set1"))
+  
+  return(cloud)
+}
+```
+
+```{r}
+#Geographic Levels
+#Number/types of geographic levels-pie chart
+```
+
+```{r}
+#Data Sources-Census
+#Number/types of census sources-pie chart
+```
+
+```{r}
+#Data Sources-Non Census
+#Number/types of non-census sources-pie chart
+```
+
+```{r}
+#Direct Links to Census
+#Count of census links
+```
+
+```{r}
+#Age of Data
+#Number/types of age of data-pie chart
+```
+
+```{r}
+#Historical Data
+#Count
+sum(health_edu$Historical.data=='y')
+```
+
