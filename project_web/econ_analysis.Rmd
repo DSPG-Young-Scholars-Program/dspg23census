@@ -290,31 +290,64 @@ ggplot(df_stack2, aes(x = sub, y = 1, fill = tool)) +
 ```
 
 ```{r}
-library(gcookbook) # Load gcookbook for the cabbage_exp data set
-
-ggplot(df_stack2, aes(x = sub, y = 1, fill = tool)) +
-  geom_col() +
-  scale_fill_manual(values = cbPalette) +
-  xlab("sub-category")+
-  ylab("count")+
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
-```
-
-```{r}
 sub_cat_and_tool("All states")
+```
 
+-------------------pie chart-------------------
+```{r}
+table_result <- table(data$Data.Source.Non.Census..Standardized.)
+print(table_result)
+```
+
+```{r}
+library(dplyr)
+
+# Assuming 'df' is your data frame and 'column_name' is the column for which you want to count values
+count_result <- data %>% group_by(Data.Source.Census..Standardized.) %>% summarize(count = n())
+
+count_result <- count_result[-1, ]
+print(count_result)
 ```
 
 
 ```{r}
-#barplot(stack_table,
-#        main = "Stacked bar chart",
-#        sub = "Subtitle",
-#        xlab = "X-lab",
-#        ylab = "Y-lab",
-#        axes = TRUE)
+countinue <- data %>% group_by(Data.Source.Non.Census..Standardized.) %>% summarize(count = n())
+countinue <- countinue[-1, ]
+print(countinue)
 
 ```
+
+```{r}
+is.data.frame(count_result)
+```
+
+```{r}
+colnames(count_result) <- c("data source", "count")
+colnames(countinue) <- c("data source", "count")
+
+combined_df <- rbind(count_result, countinue)
+
+combined_df
+```
+
+```{r}
+sorted_df <- combined_df[order(- combined_df$count), ]
+sorted_df
+```
+
+```{r}
+pie(sorted_df$count, col = cbPalette)
+legend("topright", legend = combined_df$`data source`, fill = cbPalette, cex = 0.5)
+```
+```{r}
+pie(sorted_df$count , labels = sorted_df$`data source`, border="white", col=cbPalette, cex=0.5)
+```
+
+
+```{r}
+
+```
+
 
 
 

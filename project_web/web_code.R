@@ -12,6 +12,9 @@ library(rsconnect)
 library(forcats)
 library(plotly)
 library(DT)
+library(gcookbook)
+
+cbPalette <- c("#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
 
 all_states <- c("All states", "Alabama", "Alaska","Arizona", "Arkansas", "California",
                 "Colorado", "Connecticut", "Delaware", "District of Colombia", 
@@ -20,7 +23,7 @@ all_states <- c("All states", "Alabama", "Alaska","Arizona", "Arkansas", "Califo
                 "Massachusetts", "Michigan", "Minnesoda", "Mississippi", "Missouri",
                 "Puerto Rico", "Guam")
 
-econ_data <- read.csv("/Users/jianingcai/Downloads/Economy_compilation.csv")
+econ_data <- read.csv("/Users/jianingcai/Documents/GitHub/dspg23census/project_web/economy_compilation.csv")
 econ_data$Sub.categories = tolower(econ_data$Sub.categories)
 
 econ_category_plot <- function(selected_state) {
@@ -84,10 +87,10 @@ sub_cat_and_tool <- function(selected_state){
   colnames(df_stack2) <- col_name
   
   if (selected_state == "All states" ){
-    data_to_use = data
+    data_to_use = econ_data
   }
   else{
-    data_to_use = data[data$State..Country== selected_state,]
+    data_to_use = econ_data[econ_data$State..Country== selected_state,]
   }
   
   for (i in 1:nrow(data_to_use)) {
@@ -265,6 +268,23 @@ sub_cat_and_tool <- function(selected_state){
     ggtitle("Different type of tools inside each sub-category")
 }
 
+pie_graph <-function(selected_state, data_table){
+  if (selected_state == "All states" ){
+    data_to_use = data_table
+  }
+  else{
+    data_to_use = data_table[data_table$State..Country== selected_state,]
+  }
+  count_result <- data_to_use %>% group_by(Data.Source.Census..Standardized.) %>% summarize(count = n())
+  count_result <- count_result[-1, ]
+  countinue <- data_to_use %>% group_by(Data.Source.Non.Census..Standardized.) %>% summarize(count = n())
+  countinue <- countinue[-1, ]
+  colnames(count_result) <- c("data source", "count")
+  colnames(countinue) <- c("data source", "count")
+  combined_df <- rbind(count_result, countinue)
+  sorted_df <- combined_df[order(- combined_df$count), ]
+  pie(sorted_df$count , labels = sorted_df$`data source`, border="white", col=cbPalette, cex=0.5)
+}
 
 
 #------------------------------------------------------------------------------------
@@ -324,15 +344,12 @@ ui <-  fluidPage(
                                  br(),
                                  sidebarLayout(sidebarPanel(
                                    selectInput("dropdown3", "Which state are you interested in?",
-                                               all_states),
-                                   strong("What categories are you interested in?"),
-                                   checkboxInput("demo", "Demographics", TRUE),
-                                   checkboxInput("econ", "Economy", TRUE),
-                                   checkboxInput("house", "Housing", TRUE),
-                                   checkboxInput("diver", "Diversity", TRUE)),
+                                               all_states)
+                                   ),
                                    mainPanel(#textOutput("text3"),
                                              plotOutput("plot3_1"),
-                                             plotOutput("plot3_2")
+                                             plotOutput("plot3_2"),
+                                             plotOutput("plot3_3")
                                    ))),
                         tabPanel("Housing"),
                         tabPanel("Diversity"),
@@ -366,6 +383,10 @@ server <- function(input, output) {
   
   output$plot3_2 <- renderPlot({
     sub_cat_and_tool(selected_state = input$dropdown3)
+  })
+  
+  output$plot3_3 <- renderPlot({
+    pie_graph(selected_state = input$dropdown3, data_table = econ_data)
   })
   
   output$text2 <- renderText({
