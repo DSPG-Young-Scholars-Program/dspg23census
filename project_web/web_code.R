@@ -19,16 +19,26 @@ library(tm)
 library(stringr)
 library(usmap)
 library(readxl)
+library(gcookbook)
 
 
-all_states <- c("All states", "Alabama", "Alaska","Arizona", "Arkansas", "California",
+
+cbPalette <- c("#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
+
+all_states <- c("All Sample States", "Alabama", "Alaska","Arizona", "Arkansas", "California",
                 "Colorado", "Connecticut", "Delaware", "District of Colombia", 
                 "Florida", "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana",
                 "Iowa", "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", 
                 "Massachusetts", "Michigan", "Minnesota", "Mississippi", "Missouri",
                 "Puerto Rico", "Guam")
 
-states <- tolower(all_states)
+mission_states <- c("All Sample States", "Alabama", "Arizona", "Arkansas", "California",
+                    "Connecticut", "Delaware", "District of Colombia", "Florida", "Hawaii", "Indiana",
+                    "Iowa", "Kansas", "Kentucky", "Maine", "Maryland", "Massachusetts", "Minnesota", 
+                    "Mississippi", "Missouri", "Montana", "Nevada", "New Hampshire", "New Jersey", "New York", 
+                    "North Carolina", "North Dakota", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", 
+                    "Rhode Island", "South Carolina", "South Dakota", "Tennessee", "Texas",
+                    "Utah", "Vermont", "Wisconsin")
 
 #Data Imports
 #Econ data
@@ -44,7 +54,24 @@ HE_data <- read.csv('/Users/marijkevandergeer/Documents/GitHub/dspg23census/Heal
 #Mission statement data
 mission_statements <- read.csv('/Users/marijkevandergeer/Documents/GitHub/dspg23census/Mission_Statements/mission_statements.csv')
 
-#Makes wordclouds
+
+#Map of host types for lead agencies
+lead_types_map <- function() {
+  hosts <- data.frame(state = mission_statements$State, type = mission_statements$Host_Type)
+  host_map <- plot_usmap(data = hosts, values = "type") + labs(title="Type of Lead Agency by State")
+  host_map
+}
+
+
+#Map of number of coordinating agencies
+coord_num_map <- function() {
+  coord <- data.frame(state = mission_statements$State, number = mission_statements$Coordinating)
+  coord_map <- plot_usmap(data=coord, values="number") + labs(title="Number of Coordinating Agencies by State")
+  coord_map
+}
+
+
+#Makes wordclouds using input of 'combo'
 cloud <- function(combo) {
   #Turns string into corpus of words
   docs <- Corpus(VectorSource(combo))
@@ -64,6 +91,50 @@ cloud <- function(combo) {
   set.seed(33)
   wordcloud(words = df$word, freq = df$freq, min.freq = 1, max.words = 100, random.order = FALSE, rot.per = 0, colors = brewer.pal(4, "Set1"))
 }
+
+
+#Wordcloud of mission statements
+mission_cloud <- function(state) {
+  if(state=="All Sample States") {
+    combo <- ""
+    for (i in 1:nrow(mission_statements)) {
+      if(mission_statements$Statement_Type[i]=='SDC') {
+        print(mission_statements$Mission_Statment_Text[i])
+        combo <- paste(combo, mission_statements$Mission_Statment_Text[i], sep="")
+      }
+    }
+  }
+  else {
+    combo <- ""
+    for (i in 1:nrow(mission_statements)) {
+      if(mission_statements$State[i]==state){
+        if(mission_statements$Statement_Type[i]=='SDC') {
+          print(mission_statements$Mission_Statment_Text[i])
+          combo <- paste(combo, mission_statements$Mission_Statment_Text[i], sep="")
+        }
+      }
+    }
+  }
+  cloud(combo)
+}
+
+
+#Bar graph of sub-category types
+sub_cat_counts <- function(state, data_source) {
+  if(state=="All Sample States") {
+    sub_cats <- ggplot(data_source, aes(x=Sub.categories)) + geom_bar(fill="steelblue") + labs(x="Sub-Category", y="Counts") + theme(axis.text.x = element_text(angle = 25))
+    sub_cats
+  }
+  else {
+    State <- str_to_title(state)
+    state_input <- data_source[data_source[, "State"]==state, ]
+    state_df <- data.frame()
+    state_df <- rbind(state_df, state_input)
+    sub_cats <- ggplot(state_df, aes(x=Sub.categories)) + geom_bar(fill="steelblue") + labs(x="Sub-Category", y="Counts") + theme(axis.text.x = element_text(angle = 25))
+    sub_cats
+  }
+}
+
 
 #Plot for economic data
 econ_category_plot <- function(selected_state) {
@@ -118,17 +189,16 @@ econ_category_plot <- function(selected_state) {
 }
 
 
+
 #Word cloud for variable names
-#Input is designated state
 variable_cloud <- function(state, data_source) {
-  if(state=="all states"){
+  if(state=="All Sample States"){
     combo <- ""
     for (i in 1:nrow(data_source)) {
       combo <- paste(combo, data_source$Variables[i], sep="")
     }
   }
   else{
-    #Combines all variables into one string
     combo <- ""
     for (i in 1:nrow(data_source)) {
       if(data_source$State[i]==state) {
@@ -142,14 +212,13 @@ variable_cloud <- function(state, data_source) {
 
 #Wordcloud for tool names
 tool_cloud <- function(state, data_source) {
-  if(state=="all states"){
+  if(state=="All Sample States"){
     combo <- ""
     for (i in 1:nrow(data_source)) {
       combo <- paste(combo, data_source$Tool.Name[i], sep="")
     }
   }
   else{
-    #Combines all variables into one string
     combo <- ""
     for (i in 1:nrow(data_source)) {
       if(data_source$State[i]==state) {
@@ -161,188 +230,154 @@ tool_cloud <- function(state, data_source) {
 }
 
 
-#Creates a bar graph of sub-category types
-sub_cat_counts <- function(state, data_source) {
-  if(state=="all states") {
-    sub_cats <- ggplot(data_source, aes(x=Sub.categories)) + geom_bar(fill="steelblue") + labs(x="Sub-Categories", y="Count", title="Types of Sub-Categories") + theme(axis.text.x = element_text(angle = 25))
-    sub_cats
-  }
-  else {
-    State <- str_to_title(state)
-    state_input <- data_source[data_source[, "State"]==state, ]
-    state_df <- data.frame()
-    state_df <- rbind(state_df, state_input)
-    sub_cats <- ggplot(state_df, aes(x=Sub.categories)) + geom_bar(fill="steelblue") + labs(x="Sub-Categories", y="Count", title="Types of Sub-Categories") + theme(axis.text.x = element_text(angle = 25))
-    sub_cats
-  }
-}
-
-#map of host types for lead agencies
-lead_types_map <- function() {
-  hosts <- data.frame(state = mission_statements$State, type = mission_statements$Host_Type)
-  host_map <- plot_usmap(data = hosts, values = "type") + labs(title="Type of Lead Agency")
-  host_map
-}
-
-#Map of number of coordinating agencies
-coord_num_map <- function() {
-  coord <- data.frame(state = mission_statements$State, number = mission_statements$Coordinating)
-  coord_map <- plot_usmap(data=coord, values="number") + labs(title="Number of Coordinating Agencies")
-  coord_map
-}
-
-mission_cloud <- function(state) {
-  if(state=="All states") {
-    combo <- ""
-    for (i in 1:nrow(mission_statements)) {
-      if(mission_statements$Statement_Type[i]=='SDC') {
-        print(mission_statements$Mission_Statment_Text[i])
-        combo <- paste(combo, mission_statements$Mission_Statment_Text[i], sep="")
-      }
-    }
-  }
-  else {
-    combo <- ""
-    for (i in 1:nrow(mission_statements)) {
-      if(mission_statements$State[i]==state){
-        if(mission_statements$Statement_Type[i]=='SDC') {
-          print(mission_statements$Mission_Statment_Text[i])
-          combo <- paste(combo, mission_statements$Mission_Statment_Text[i], sep="")
-        }
-      }
-    }
-  }
-  cloud(combo)
-}
 
 #------------------------------------------------------------------------------------
-# Define UI for app that draws a histogram ----
+# Define UI
 ui <-  fluidPage(
   theme = "themes.css",
+  tags$style(HTML("
+    /* Custom CSS to center content */
+    .center-content {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100%;
+    }
+  ")),
+  tags$style(HTML("
+    /* Custom CSS to align content evenly */
+    .even-content {
+      display: flex;
+      justify-content: space-evenly;
+      align-items: center;
+      height: 100%;
+    }
+  ")),
   
   navbarPage(title= tags$a(href = "https://datascienceforthepublicgood.org", target = "_blank", # "_blank" opens the link in a new tab
                            tags$img(src = "DSPG_black-01.png", width = "120px", style="margin-top:-10px")
-                           ),
-             tabPanel("Overview",
+  ),
+  tabPanel("Overview",
+           div(class = "even-content",
+               tags$a(href = "https://biocomplexity.virginia.edu/",
+                      img(src = "biilogo.png", width = "120px")),
+               p(style = "font-size: 25px; font-weight: bold;","Survey on State Data Use"),
+               tags$a(href = "https://www.census.gov/",
+                      img(src = "census.png", width = "65px"))),
+           box(title="Project Overview",
+               p("The goal of this project is to provide the Census Bureau with information on the following:"),
+               p("1. What data sources do state, U.S. territories, and District of Columbia, data centers use?"),
+               p("2. How do they use these data sources?"),
+               p("3. What are their future data needs?")), 
+           box(title="State Data Centers",
+               p("State Data Centers are... Every state has a lead agency and various coordinating agenices. Agencies are hosted by different types of organizations. "),
+               plotOutput("overview_plot1"),
+               p("*Other includes 501(c) nonprofits and public-private partnerships"),
+               plotOutput("overview_plot2"))), 
+  navbarMenu("Topic Modeling",
+             tabPanel("Gensim"),
+             tabPanel("BERT",
+                      box(title="BERT",
+                          p("We applied BERT to the top 5 State Constitutions with the most amendments."),
+                          p("1.California"),
+                          p("2.Hawaii"),
+                          p("3.Maryland"),
+                          p("4.Oregon"),
+                          p("5.Texas")),
+                      box(title="BERT Example: California Data"))),
+  tabPanel("Mission Statements",
+           br(),
+           p("Out of all 56 SDCs, 39 had mission statements that related to the work of the SDC."),
+           sidebarLayout(sidebarPanel(
+             selectInput("dropdownM", "Which state's mission statement are you interested in?",
+                         mission_states)),
+             mainPanel(textOutput("mission_text1"),
+                       plotOutput("mission_plot1")
+             ))),
+  navbarMenu("Findings",
+             tabPanel("Demographics"),
+             tabPanel("Economy",
                       br(),
-                        box(title="Project Overview",
-                        p("The goal of this project is to provide the Census Bureau with information on the following:"),
-                        p("1. What data sources do state, U.S. territories, and District of Columbia, data centers use?"),
-                        p("2. How do they use these data sources?"),
-                        p("3. What are their future data needs?")), 
-                        box(title="State Data Centers",
-                        p("State Data Centers are... Every state has a lead agency and various coordinating agenices. Agencies are hosted by different types of organizations. "),
-                        plotOutput("plot1"),
-                        p("*Other includes 501(c) nonprofits and public-private partnerships"),
-                        plotOutput("plot2")),
-                        ), 
-             navbarMenu("Topic Modeling",
-                      tabPanel("Gensim"),
-                      tabPanel("BERT",
-                               box(title="BERT",
-                               p("We applied BERT to the top 5 State Constitutions with the most amendments."),
-                               p("1.California"),
-                               p("2.Hawaii"),
-                               p("3.Maryland"),
-                               p("4.Oregon"),
-                               p("5.Texas")),
-                               box(title="BERT Example: California Data"))),
-             
-             tabPanel("Mission Statements",
-                        br(),
-                        p("Out of all 56 SDCs, 50 had mission statements that related to the work of the SDC."),
-                        sidebarLayout(sidebarPanel(
-                          selectInput("dropdown1", "Which state's mission statement are you interested in?",
-                                     all_states)),
-                          mainPanel(textOutput("text1"),
-                                    plotOutput("plot10")
-                          ))),
-             navbarMenu("Findings",
-                        tabPanel("Demographics"),
-                        tabPanel("Economy",
-                                 br(),
-                                 sidebarLayout(sidebarPanel(
-                                   selectInput("dropdown2", "Which state are you interested in?",
-                                               all_states),
-                                   strong("What categories are you interested in?"),
-                                   checkboxInput("demo", "Demographics", TRUE),
-                                   checkboxInput("econ", "Economy", TRUE),
-                                   checkboxInput("house", "Housing", TRUE),
-                                   checkboxInput("diver", "Diversity", TRUE)),
-                                   mainPanel(plotOutput("plot3")
-                                   ))),
-                        tabPanel("Housing",
-                                 br(),
-                                 sidebarLayout(sidebarPanel(
-                                   selectInput("dropdown4", "Which state are you interested in?",
-                                              states)),
-                                   mainPanel(textOutput("text4"),
-                                             plotOutput("plot4"),
-                                             textOutput("text5"),
-                                             plotOutput("plot5"),
-                                             textOutput("text6"),
-                                             plotOutput("plot6")
-                                   ))),
-                        tabPanel("Diversity"),
-                        tabPanel("Health & Education",
-                                 br(),
-                                 sidebarLayout(sidebarPanel(
-                                   selectInput("dropdown5", "Which state are you interested in?",
-                                               states)),
-                                   mainPanel(textOutput("text7"),
-                                             plotOutput("plot7"),
-                                             textOutput("text8"),
-                                             plotOutput("plot8"),
-                                             textOutput("text9"),
-                                             plotOutput("plot9")
-                                   ))),
-             ),
-             tabPanel("Team",
-                        box(title="Meet Our Team", width = 6,
-                          br(),
-                          h5("DSPG, University of Virginia, Biocomplexity Institute, Social and Decision Analytics"),
-                          p("- Marijke van der Geer, Fourth Year @ SDSU (Stats & DS)"),
-                          p("- Jianing Cai, Fourth Year @ UVA (CS & Math)"),
-                          br(),
-                          h5("University of Virginia, Biocomplexity Institute, Social and Decision Analytics"),
-                          p("- Vicki Lancaster, Principal Scientist"),
-                          p("- Neil Kattampallil, Research Scientist"),
-                          p("- Treena Goswami, Postdoc Researcher")))))
-  
- 
+                      sidebarLayout(sidebarPanel(
+                        selectInput("dropdown1", "Which state are you interested in?",
+                                    all_states),
+                        strong("What categories are you interested in?"),
+                        checkboxInput("demo", "Demographics", TRUE),
+                        checkboxInput("econ", "Economy", TRUE),
+                        checkboxInput("house", "Housing", TRUE),
+                        checkboxInput("diver", "Diversity", TRUE)),
+                        mainPanel(plotOutput("fin_econ_plot1")
+                        ))),
+             tabPanel("Housing",
+                      br(),
+                      sidebarLayout(sidebarPanel(
+                        selectInput("dropdownH", "Which state are you interested in?",
+                                    all_states)),
+                        mainPanel(textOutput("fin_hous_text1"),
+                                  plotOutput("fin_hous_plot1"),
+                                  textOutput("fin_hous_text2"),
+                                  plotOutput("fin_hous_plot2"),
+                                  textOutput("fin_hous_text3"),
+                                  plotOutput("fin_hous_plot3")
+                        ))),
+             tabPanel("Diversity"),
+             tabPanel("Health & Education",
+                      br(),
+                      sidebarLayout(sidebarPanel(
+                        selectInput("dropdownHE", "Which state are you interested in?",
+                                    all_states)),
+                        mainPanel(textOutput("fin_HE_text1"),
+                                  plotOutput("fin_HE_plot1"),
+                                  textOutput("fin_HE_text2"),
+                                  plotOutput("fin_HE_plot2"),
+                                  textOutput("fin_HE_text3"),
+                                  plotOutput("fin_HE_plot3")
+                        )))),
+  tabPanel("Team",
+           box(title="Meet Our Team", width = 6,
+               br(),
+               h5("DSPG, University of Virginia, Biocomplexity Institute, Social and Decision Analytics"),
+               p("- Marijke van der Geer, Fourth Year @ SDSU (Stats & DS)"),
+               p("- Jianing Cai, Fourth Year @ UVA (CS & Math)"),
+               br(),
+               h5("University of Virginia, Biocomplexity Institute, Social and Decision Analytics"),
+               p("- Vicki Lancaster, Principal Scientist"),
+               p("- Neil Kattampallil, Research Scientist"),
+               p("- Treena Goswami, Postdoc Researcher")))))
+
+
 
 # Define server logic required to draw a histogram ----
 server <- function(input, output) {
-
+  
   #Overview
-  output$plot1 <- renderPlot({lead_types_map()})
-  output$plot2 <- renderPlot({coord_num_map()})
+  output$overview_plot1 <- renderPlot({lead_types_map()})
+  output$overview_plot2 <- renderPlot({coord_num_map()})
   
   #Topic Modeling-BERT
   
-  
-  #Word Cloud
-  output$text1 <- renderText({{paste("Word cloud on", input$dropdown1, "mission statement.")}})
-  output$plot10 <- renderPlot({mission_cloud(state=input$dropdown1)})
+  #Mission Statements
+  output$mission_text1 <- renderText({{paste("Word cloud on", input$dropdownM, "mission statement.")}})
+  output$mission_plot1 <- renderPlot({mission_cloud(state=input$dropdownM)})
   
   #Economy Findings
-  output$plot3 <- renderPlot({econ_category_plot(selected_state = input$dropdown2)})
+  output$fin_econ_plot1 <- renderPlot({econ_category_plot(selected_state = input$dropdown1)})
   
   #Housing Findings
-  output$text4 <- renderText({{paste("Data Sub-Categories for ", input$dropdown4)}})
-  output$plot4 <- renderPlot({sub_cat_counts(state=input$dropdown4, data_source = housing_data)})
-  output$text5 <- renderText({{paste("Word cloud on tool names for ", input$dropdown4)}})
-  output$plot5 <- renderPlot({tool_cloud(state=input$dropdown4, data_source = housing_data)})
-  output$text6 <- renderText({{paste("Word cloud on variables for ", input$dropdown4)}})
-  output$plot6 <- renderPlot({variable_cloud(state=input$dropdown4, data_source = housing_data)})
+  output$fin_hous_text1 <- renderText({{paste("Type of Sub-Category for: ", input$dropdownH)}})
+  output$fin_hous_plot1 <- renderPlot({sub_cat_counts(state=input$dropdownH, data_source = housing_data)})
+  output$fin_hous_text2 <- renderText({{paste("Word cloud on tool names for: ", input$dropdownH)}})
+  output$fin_hous_plot2 <- renderPlot({tool_cloud(state=input$dropdownH, data_source = housing_data)})
+  output$fin_hous_text3 <- renderText({{paste("Word cloud on variables for: ", input$dropdownH)}})
+  output$fin_hous_plot3 <- renderPlot({variable_cloud(state=input$dropdownH, data_source = housing_data)})
   
   #Health/Education Findings
-  output$text7 <- renderText({{paste("Data Sub-Categories for ", input$dropdown4)}})
-  output$plot7 <- renderPlot({sub_cat_counts(state=input$dropdown4, data_source = HE_data)})
-  output$text8 <- renderText({{paste("Word cloud on tool names for ", input$dropdown4)}})
-  output$plot8 <- renderPlot({tool_cloud(state=input$dropdown4, data_source = HE_data)})
-  output$text9 <- renderText({{paste("Word cloud on variables for ", input$dropdown5)}})
-  output$plot9 <- renderPlot({variable_cloud(state=input$dropdown5, data_source = HE_data)})
+  output$fin_HE_text1 <- renderText({{paste("Type of Sub-Category for: ", input$dropdownHE)}})
+  output$fin_HE_plot1 <- renderPlot({sub_cat_counts(state=input$dropdownHE, data_source = HE_data)})
+  output$fin_HE_text2 <- renderText({{paste("Word cloud on tool names for: ", input$dropdownHE)}})
+  output$fin_HE_plot2 <- renderPlot({tool_cloud(state=input$dropdownHE, data_source = HE_data)})
+  output$fin_HE_text3 <- renderText({{paste("Word cloud on variables for: ", input$dropdownHE)}})
+  output$fin_HE_plot3 <- renderPlot({variable_cloud(state=input$dropdownHE, data_source = HE_data)})
   
 }
 

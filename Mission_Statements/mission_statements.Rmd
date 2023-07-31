@@ -80,6 +80,7 @@ ggplotly(host_map)
 ```{r}
 #Do SDCs have Mission Statements?
 
+#fix: this shows both SDC and Host Orgs, want only SDCss
 #Bar graph of Y/N statement counts
 statement_counts <- ggplot(data, aes(x=Mission_Statement_Status)) + geom_bar(fill="blue") + labs(x = "", y="Count", title="Do SDCs Have Mission Statements")
 ggplotly(statement_counts)

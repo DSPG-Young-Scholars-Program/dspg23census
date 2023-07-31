@@ -41,8 +41,8 @@ housing = subset(housing, select = housing_columns)
 
 #Creates a bar graph of sub-category types
 sub_cat_counts <- function(state) {
-  if(state=="all states") {
-    sub_cats <- ggplot(housing, aes(x=Sub.categories)) + geom_bar(fill="blue") + labs(x="Sub-Categories", y="Count", title="Types of Sub-Categories") + theme(axis.text.x = element_text(angle = 25))
+  if(state=="All Sample States") {
+    sub_cats <- ggplot(housing, aes(x=Sub.categories)) + geom_bar(fill="blue") + labs(x="Sub-Category", y="Counts", title="Types of Sub-Categories") + theme(axis.text.x = element_text(angle = 25))
     ggplotly(sub_cats)
   }
   else { #fix
@@ -50,7 +50,7 @@ sub_cat_counts <- function(state) {
     state_input <- housing[housing[, "State"]==state, ]
     state_df <- data.frame()
     state_df <- rbind(state_df, state_input)
-    sub_cats <- ggplot(state_df, aes(x=Sub.categories)) + geom_bar(fill="blue") + labs(x="Sub-Categories", y="Count", title="Types of Sub-Categories") + theme(axis.text.x = element_text(angle = 25))
+    sub_cats <- ggplot(state_df, aes(x=Sub.categories)) + geom_bar(fill="blue") + labs(x="Sub-Category", y="Counts", title="Types of Sub-Categories") + theme(axis.text.x = element_text(angle = 25))
     ggplotly(sub_cats)
   }
 }
@@ -59,7 +59,7 @@ sub_cat_counts <- function(state) {
 
 
 ```{r}
-sub_cat_counts("all states")
+sub_cat_counts("All Sample States")
 ```
 
 
@@ -68,9 +68,26 @@ sub_cat_counts("all states")
 #Number/types of tools-pie chart
 
 #fix
-tools <- ggplot(housing, aes(x=Tool)) + geom_bar(fill="blue") + labs(x="Tool", y="Count", title="Types of Tools") + theme(axis.text.x = element_text(angle = 45))
-ggplotly(tools)
+tool_barchart <- function(state) {
+  if(state=="All Sample States") {
+    tools <- ggplot(housing, aes(x=Tool)) + geom_bar(fill="blue") + labs(x="Tool", y="Count", title="Types of Tools") + theme(axis.text.x = element_text(angle = 45))
+  ggplotly(tools)
+  }
+  else {
+    State <- str_to_title(state)
+    state_input <- housing[housing[, "State"]==state, ]
+    state_df <- data.frame()
+    state_df <- rbind(state_df, state_input)
+    tools <- ggplot(state_df, aes(x=Tool)) + geom_bar(fill="blue") + labs(x="Tool", y="Count", title="Types of Tools") + theme(axis.text.x = element_text(angle = 45))
+  ggplotly(tools)
+  }
+}
 ```
+
+```{r}
+tool_barchart("California")
+```
+
 
 ```{r}
 #Tool Name
