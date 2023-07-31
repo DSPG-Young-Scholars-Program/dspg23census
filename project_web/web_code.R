@@ -11,21 +11,137 @@ library(data.table)
 library(rsconnect)
 library(forcats)
 library(plotly)
-library(DT)
+
+library(wordcloud)
+library(RColorBrewer)
+library(reshape)
+library(tm)
+library(stringr)
+library(usmap)
+library(readxl)
 library(gcookbook)
+
+
+
 
 cbPalette <- c("#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
 
-all_states <- c("All sample states", "Alabama", "Alaska","Arizona", "Arkansas", "California",
+
+all_states <- c("All Sample States", "Alabama", "Alaska","Arizona", "Arkansas", "California",
                 "Colorado", "Connecticut", "Delaware", "District of Colombia", 
                 "Florida", "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana",
                 "Iowa", "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", 
-                "Massachusetts", "Michigan", "Minnesoda", "Mississippi", "Missouri",
+                "Massachusetts", "Michigan", "Minnesota", "Mississippi", "Missouri",
                 "Puerto Rico", "Guam")
 
-econ_data <- read.csv("/Users/jianingcai/Documents/GitHub/dspg23census/project_web/economy_compilation.csv")
+
+mission_states <- c("All Sample States", "Alabama", "Arizona", "Arkansas", "California",
+                    "Connecticut", "Delaware", "District of Colombia", "Florida", "Hawaii", "Indiana",
+                    "Iowa", "Kansas", "Kentucky", "Maine", "Maryland", "Massachusetts", "Minnesota", 
+                    "Mississippi", "Missouri", "Montana", "Nevada", "New Hampshire", "New Jersey", "New York", 
+                    "North Carolina", "North Dakota", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", 
+                    "Rhode Island", "South Carolina", "South Dakota", "Tennessee", "Texas",
+                    "Utah", "Vermont", "Wisconsin")
+
+#Data Imports
+#Econ data
+
+econ_data <- read.csv("economy_compilation.csv")
+
 econ_data$Sub.categories = tolower(econ_data$Sub.categories)
 
+#Housing data
+housing_data <- read.csv('/Users/marijkevandergeer/Documents/GitHub/dspg23census/Housing/housing_cleaned.csv')
+
+#Health and education data
+HE_data <- read.csv('/Users/marijkevandergeer/Documents/GitHub/dspg23census/Health_and_Education/HE_cleaned.csv')
+
+#Mission statement data
+mission_statements <- read.csv('/Users/marijkevandergeer/Documents/GitHub/dspg23census/Mission_Statements/mission_statements.csv')
+
+
+#Map of host types for lead agencies
+lead_types_map <- function() {
+  hosts <- data.frame(state = mission_statements$State, type = mission_statements$Host_Type)
+  host_map <- plot_usmap(data = hosts, values = "type") + labs(title="Type of Lead Agency by State")
+  host_map
+}
+
+
+#Map of number of coordinating agencies
+coord_num_map <- function() {
+  coord <- data.frame(state = mission_statements$State, number = mission_statements$Coordinating)
+  coord_map <- plot_usmap(data=coord, values="number") + labs(title="Number of Coordinating Agencies by State")
+  coord_map
+}
+
+
+#Makes wordclouds using input of 'combo'
+cloud <- function(combo) {
+  #Turns string into corpus of words
+  docs <- Corpus(VectorSource(combo))
+  
+  #Cleaning of corpus
+  docs <- docs %>% tm_map(removeNumbers) %>% tm_map(removePunctuation) %>% tm_map(stripWhitespace)
+  docs <- tm_map(docs, content_transformer(tolower))
+  docs <- tm_map(docs, removeWords, stopwords("english"))
+  
+  #Turns corpus into term-document-matrix
+  dtm <- TermDocumentMatrix(docs)
+  mtx <- as.matrix(dtm)
+  words <- sort(rowSums(mtx), decreasing = TRUE)
+  df <- data.frame(word = names(words), freq=words)
+  
+  #Creates wordcloud
+  set.seed(33)
+  wordcloud(words = df$word, freq = df$freq, min.freq = 1, max.words = 100, random.order = FALSE, rot.per = 0, colors = brewer.pal(4, "Set1"))
+}
+
+
+#Wordcloud of mission statements
+mission_cloud <- function(state) {
+  if(state=="All Sample States") {
+    combo <- ""
+    for (i in 1:nrow(mission_statements)) {
+      if(mission_statements$Statement_Type[i]=='SDC') {
+        print(mission_statements$Mission_Statment_Text[i])
+        combo <- paste(combo, mission_statements$Mission_Statment_Text[i], sep="")
+      }
+    }
+  }
+  else {
+    combo <- ""
+    for (i in 1:nrow(mission_statements)) {
+      if(mission_statements$State[i]==state){
+        if(mission_statements$Statement_Type[i]=='SDC') {
+          print(mission_statements$Mission_Statment_Text[i])
+          combo <- paste(combo, mission_statements$Mission_Statment_Text[i], sep="")
+        }
+      }
+    }
+  }
+  cloud(combo)
+}
+
+
+#Bar graph of sub-category types
+sub_cat_counts <- function(state, data_source) {
+  if(state=="All Sample States") {
+    sub_cats <- ggplot(data_source, aes(x=Sub.categories)) + geom_bar(fill="steelblue") + labs(x="Sub-Category", y="Counts") + theme(axis.text.x = element_text(angle = 25))
+    sub_cats
+  }
+  else {
+    State <- str_to_title(state)
+    state_input <- data_source[data_source[, "State"]==state, ]
+    state_df <- data.frame()
+    state_df <- rbind(state_df, state_input)
+    sub_cats <- ggplot(state_df, aes(x=Sub.categories)) + geom_bar(fill="steelblue") + labs(x="Sub-Category", y="Counts") + theme(axis.text.x = element_text(angle = 25))
+    sub_cats
+  }
+}
+
+
+#Plot for economic data
 econ_category_plot <- function(selected_state) {
   # Initialize variables to store the counts
   if (selected_state == "All sample states"){
@@ -295,6 +411,48 @@ econ_pie_graph <- function(selected_state, data_table) {
 
 
 
+#Word cloud for variable names
+variable_cloud <- function(state, data_source) {
+  if(state=="All Sample States"){
+    combo <- ""
+    for (i in 1:nrow(data_source)) {
+      combo <- paste(combo, data_source$Variables[i], sep="")
+    }
+  }
+  else{
+    combo <- ""
+    for (i in 1:nrow(data_source)) {
+      if(data_source$State[i]==state) {
+        combo <- paste(combo, data_source$Variables[i], sep="")
+      }
+    }
+  }
+  cloud(combo)
+}
+
+
+#Wordcloud for tool names
+tool_cloud <- function(state, data_source) {
+  if(state=="All Sample States"){
+    combo <- ""
+    for (i in 1:nrow(data_source)) {
+      combo <- paste(combo, data_source$Tool.Name[i], sep="")
+    }
+  }
+  else{
+    combo <- ""
+    for (i in 1:nrow(data_source)) {
+      if(data_source$State[i]==state) {
+        combo <- paste(combo, data_source$Tool.Name[i], sep="")
+      }
+    }
+  }
+  cloud(combo)
+}
+
+
+
+
 #------------------------------------------------------------------------------------
 # Define UI
 ui <-  fluidPage(
@@ -316,12 +474,14 @@ ui <-  fluidPage(
       align-items: center;
       height: 100%;
     }
+
 ")),
   tags$style(HTML("
     .panel-default {
       border: none;
       box-shadow: none;
     }
+
   ")),
   
   navbarPage(title= tags$a(href = "https://biocomplexity.virginia.edu/data-science-public-good-young-scholars-program", target = "_blank", # "_blank" opens the link in a new tab
@@ -365,16 +525,26 @@ ui <-  fluidPage(
                             p("- Neil Kattampallil, Research Scientist"),
                             p("- Treena Goswami*, Postdoc Researcher Associates"),
                         )),
-             tabPanel("Topic Modeling"),
-             
-             tabPanel("Word Cloud",
-                        br(),
-                        sidebarLayout(sidebarPanel(
-                          selectInput("dropdown2", "Which state's mission statement are you interested in?",
-                                     all_states)),
-                          mainPanel(textOutput("text2"),
-                                    plotOutput("plot2")
-                          ))),
+             navbarMenu("Topic Modeling",
+             tabPanel("Gensim"),
+             tabPanel("BERT",
+                      box(title="BERT",
+                          p("We applied BERT to the top 5 State Constitutions with the most amendments."),
+                          p("1.California"),
+                          p("2.Hawaii"),
+                          p("3.Maryland"),
+                          p("4.Oregon"),
+                          p("5.Texas")),
+                      box(title="BERT Example: California Data"))),
+  tabPanel("Mission Statements",
+           br(),
+           p("Out of all 56 SDCs, 39 had mission statements that related to the work of the SDC."),
+           sidebarLayout(sidebarPanel(
+             selectInput("dropdownM", "Which state's mission statement are you interested in?",
+                         mission_states)),
+             mainPanel(textOutput("mission_text1"),
+                       plotOutput("mission_plot1")
+             ))),
              navbarMenu("Findings",
                         tabPanel("Demographics"),
                         tabPanel("Economy",
@@ -387,10 +557,31 @@ ui <-  fluidPage(
                                              plotOutput("fin_econ_plot2"),
                                              plotOutput("fin_econ_plot3")
                                    ))),
-                        tabPanel("Housing"),
+                        tabPanel("Housing",
+                      br(),
+                      sidebarLayout(sidebarPanel(
+                        selectInput("dropdownH", "Which state are you interested in?",
+                                    all_states)),
+                        mainPanel(textOutput("fin_hous_text1"),
+                                  plotOutput("fin_hous_plot1"),
+                                  textOutput("fin_hous_text2"),
+                                  plotOutput("fin_hous_plot2"),
+                                  textOutput("fin_hous_text3"),
+                                  plotOutput("fin_hous_plot3")
+                        ))),
                         tabPanel("Diversity"),
-                        tabPanel("Health & Education")
-             ),
+                        tabPanel("Health & Education",
+                      br(),
+                      sidebarLayout(sidebarPanel(
+                        selectInput("dropdownHE", "Which state are you interested in?",
+                                    all_states)),
+                        mainPanel(textOutput("fin_HE_text1"),
+                                  plotOutput("fin_HE_plot1"),
+                                  textOutput("fin_HE_text2"),
+                                  plotOutput("fin_HE_plot2"),
+                                  textOutput("fin_HE_text3"),
+                                  plotOutput("fin_HE_plot3")
+                        )))),
              tabPanel("Team",
                         box(title="Meet Our Team", width = 6,
                           br(),
@@ -408,14 +599,38 @@ ui <-  fluidPage(
 # Define server logic required to draw a histogram ----
 server <- function(input, output) {
   
-  #output$text2 <- renderText({
-  #    {paste("Distribution of Data Tools' Category in ", input$dropdown2)}
-  #})
+  #Overview
+  output$overview_plot1 <- renderPlot({lead_types_map()})
+  output$overview_plot2 <- renderPlot({coord_num_map()})
   
-  output$fin_econ_plot1 <- renderPlot({
-    econ_category_plot(selected_state = input$dropdown3)
-    
-    })
+  #Topic Modeling-BERT
+  
+  #Mission Statements
+  output$mission_text1 <- renderText({{paste("Word cloud on", input$dropdownM, "mission statement.")}})
+  output$mission_plot1 <- renderPlot({mission_cloud(state=input$dropdownM)})
+  
+  
+
+
+  #Housing Findings
+  output$fin_hous_text1 <- renderText({{paste("Type of Sub-Category for: ", input$dropdownH)}})
+  output$fin_hous_plot1 <- renderPlot({sub_cat_counts(state=input$dropdownH, data_source = housing_data)})
+  output$fin_hous_text2 <- renderText({{paste("Word cloud on tool names for: ", input$dropdownH)}})
+  output$fin_hous_plot2 <- renderPlot({tool_cloud(state=input$dropdownH, data_source = housing_data)})
+  output$fin_hous_text3 <- renderText({{paste("Word cloud on variables for: ", input$dropdownH)}})
+  output$fin_hous_plot3 <- renderPlot({variable_cloud(state=input$dropdownH, data_source = housing_data)})
+  
+  #Health/Education Findings
+  output$fin_HE_text1 <- renderText({{paste("Type of Sub-Category for: ", input$dropdownHE)}})
+  output$fin_HE_plot1 <- renderPlot({sub_cat_counts(state=input$dropdownHE, data_source = HE_data)})
+  output$fin_HE_text2 <- renderText({{paste("Word cloud on tool names for: ", input$dropdownHE)}})
+  output$fin_HE_plot2 <- renderPlot({tool_cloud(state=input$dropdownHE, data_source = HE_data)})
+  output$fin_HE_text3 <- renderText({{paste("Word cloud on variables for: ", input$dropdownHE)}})
+  output$fin_HE_plot3 <- renderPlot({variable_cloud(state=input$dropdownHE, data_source = HE_data)})
+
+  
+  #Economy Findings
+  output$fin_econ_plot1 <- renderPlot({econ_category_plot(selected_state = input$dropdown1)})
   
   output$fin_econ_plot2 <- renderPlot({
     econ_sub_cat_and_tool(selected_state = input$dropdown3)
@@ -424,10 +639,7 @@ server <- function(input, output) {
   output$fin_econ_plot3 <- renderPlot({
     econ_pie_graph(selected_state = input$dropdown3, data_table = econ_data)
   })
-  
-  output$text2 <- renderText({
-    {paste("Word cloud on", input$dropdown2)}
-  })
+
   
 }
 
