@@ -1,0 +1,512 @@
+library(plotly)
+Sara <- c(21, 17, 21, 21, 19, 21, 21, 23, 23, 21, 21, 21, 21, 22, 17, 21, 21, 21, 21, 21, 21, 21, 21, 18, 21, 12, 26, 21, 21, 21, 21, 21, 21, 21, 20, 21, 11, 21, 21, 21, 15, 21, 21, 21, 15, 24)
+Cesar <- c(12, 21, 12, 8, 21, 17, 19, 25, 21, 11, 19, 17, 17, 20, 21, 17, 11, 12, 18, 13, 14, 14, 17, 21, 11, 21, 24, 16, 11, 14, 15, 7, 8, 11, 22, 12, 21, 17, 15, 16, 21, 17, 17, 16, 21, 22)
+scores <- data.frame(Sara, Cesar)
+ping_pong <- ggplot(scores, aes(x=c(0, 3, 6, 9, 12, 15, 18, 21, 24, 27))) + geom_line(aes(y=Sara), color = "red") + geom_line(aes(y=Cesar), color = "blue")
+ping_pong
+library(ggplot2)
+library(plotly)
+Sara <- c(21, 17, 21, 21, 19, 21, 21, 23, 23, 21, 21, 21, 21, 22, 17, 21, 21, 21, 21, 21, 21, 21, 21, 18, 21, 12, 26, 21, 21, 21, 21, 21, 21, 21, 20, 21, 11, 21, 21, 21, 15, 21, 21, 21, 15, 24)
+Cesar <- c(12, 21, 12, 8, 21, 17, 19, 25, 21, 11, 19, 17, 17, 20, 21, 17, 11, 12, 18, 13, 14, 14, 17, 21, 11, 21, 24, 16, 11, 14, 15, 7, 8, 11, 22, 12, 21, 17, 15, 16, 21, 17, 17, 16, 21, 22)
+scores <- data.frame(Sara, Cesar)
+ping_pong <- ggplot(scores, aes(x=c(0, 3, 6, 9, 12, 15, 18, 21, 24, 27))) + geom_line(aes(y=Sara), color = "red") + geom_line(aes(y=Cesar), color = "blue")
+ping_pong
+library(ggplot2)
+library(plotly)
+Sara <- c(21, 17, 21, 21, 19, 21, 21, 23, 23, 21, 21, 21, 21, 22, 17, 21, 21, 21, 21, 21, 21, 21, 21, 18, 21, 12, 26, 21, 21, 21, 21, 21, 21, 21, 20, 21, 11, 21, 21, 21, 15, 21, 21, 21, 15, 24)
+Cesar <- c(12, 21, 12, 8, 21, 17, 19, 25, 21, 11, 19, 17, 17, 20, 21, 17, 11, 12, 18, 13, 14, 14, 17, 21, 11, 21, 24, 16, 11, 14, 15, 7, 8, 11, 22, 12, 21, 17, 15, 16, 21, 17, 17, 16, 21, 22)
+scores <- data.frame(Sara, Cesar)
+ping_pong <- ggplot(scores, aes(x=27) + geom_line(aes(y=Sara), color = "red") + geom_line(aes(y=Cesar), color = "blue")
+ping_pong
+library(ggplot2)
+library(plotly)
+Sara <- c(21, 17, 21, 21, 19, 21, 21, 23, 23, 21, 21, 21, 21, 22, 17, 21, 21, 21, 21, 21, 21, 21, 21, 18, 21, 12, 26, 21, 21, 21, 21, 21, 21, 21, 20, 21, 11, 21, 21, 21, 15, 21, 21, 21, 15, 24)
+Cesar <- c(12, 21, 12, 8, 21, 17, 19, 25, 21, 11, 19, 17, 17, 20, 21, 17, 11, 12, 18, 13, 14, 14, 17, 21, 11, 21, 24, 16, 11, 14, 15, 7, 8, 11, 22, 12, 21, 17, 15, 16, 21, 17, 17, 16, 21, 22)
+scores <- data.frame(Sara, Cesar)
+ping_pong <- ggplot(scores, aes(x=27)) + geom_line(aes(y=Sara), color = "red") + geom_line(aes(y=Cesar), color = "blue")
+ping_pong
+length(Sara)
+library(ggplot2)
+library(plotly)
+Sara <- c(21, 17, 21, 21, 19, 21, 21, 23, 23, 21, 21, 21, 21, 22, 17, 21, 21, 21, 21, 21, 21, 21, 21, 18, 21, 12, 26, 21, 21, 21, 21, 21, 21, 21, 20, 21, 11, 21, 21, 21, 15, 21, 21, 21, 15, 24)
+Cesar <- c(12, 21, 12, 8, 21, 17, 19, 25, 21, 11, 19, 17, 17, 20, 21, 17, 11, 12, 18, 13, 14, 14, 17, 21, 11, 21, 24, 16, 11, 14, 15, 7, 8, 11, 22, 12, 21, 17, 15, 16, 21, 17, 17, 16, 21, 22)
+scores <- data.frame(Sara, Cesar)
+x <- 1:46
+ping_pong <- ggplot(scores, aes(x) + geom_line(aes(y=Sara), color = "red") + geom_line(aes(y=Cesar), color = "blue")
+ping_pong
+library(ggplot2)
+library(plotly)
+Sara <- c(21, 17, 21, 21, 19, 21, 21, 23, 23, 21, 21, 21, 21, 22, 17, 21, 21, 21, 21, 21, 21, 21, 21, 18, 21, 12, 26, 21, 21, 21, 21, 21, 21, 21, 20, 21, 11, 21, 21, 21, 15, 21, 21, 21, 15, 24)
+Cesar <- c(12, 21, 12, 8, 21, 17, 19, 25, 21, 11, 19, 17, 17, 20, 21, 17, 11, 12, 18, 13, 14, 14, 17, 21, 11, 21, 24, 16, 11, 14, 15, 7, 8, 11, 22, 12, 21, 17, 15, 16, 21, 17, 17, 16, 21, 22)
+scores <- data.frame(Sara, Cesar)
+x <- 1:46
+ping_pong <- ggplot(scores, aes(x)) + geom_line(aes(y=Sara), color = "red") + geom_line(aes(y=Cesar), color = "blue")
+ping_pong
+library(ggplot2)
+library(plotly)
+Sara <- c(21, 17, 21, 21, 19, 21, 21, 23, 23, 21, 21, 21, 21, 22, 17, 21, 21, 21, 21, 21, 21, 21, 21, 18, 21, 12, 26, 21, 21, 21, 21, 21, 21, 21, 20, 21, 11, 21, 21, 21, 15, 21, 21, 21, 15, 24)
+Cesar <- c(12, 21, 12, 8, 21, 17, 19, 25, 21, 11, 19, 17, 17, 20, 21, 17, 11, 12, 18, 13, 14, 14, 17, 21, 11, 21, 24, 16, 11, 14, 15, 7, 8, 11, 22, 12, 21, 17, 15, 16, 21, 17, 17, 16, 21, 22)
+Game <- 1:46
+scores <- data.frame(Game, Sara, Cesar)
+ping_pong <- ggplot(scores, aes(x)) + geom_line(aes(y=Sara), color = "red") + geom_line(aes(y=Cesar), color = "blue")
+ping_pong
+library(ggplot2)
+library(plotly)
+Sara <- c(21, 17, 21, 21, 19, 21, 21, 23, 23, 21, 21, 21, 21, 22, 17, 21, 21, 21, 21, 21, 21, 21, 21, 18, 21, 12, 26, 21, 21, 21, 21, 21, 21, 21, 20, 21, 11, 21, 21, 21, 15, 21, 21, 21, 15, 24)
+Cesar <- c(12, 21, 12, 8, 21, 17, 19, 25, 21, 11, 19, 17, 17, 20, 21, 17, 11, 12, 18, 13, 14, 14, 17, 21, 11, 21, 24, 16, 11, 14, 15, 7, 8, 11, 22, 12, 21, 17, 15, 16, 21, 17, 17, 16, 21, 22)
+Game <- 1:46
+scores <- data.frame(Game, Sara, Cesar)
+ping_pong <- ggplot(scores, aes(Game)) + geom_line(aes(y=Sara), color = "red") + geom_line(aes(y=Cesar), color = "blue")
+ping_pong
+library(ggplot2)
+library(plotly)
+Sara <- c(21, 17, 21, 21, 19, 21, 21, 23, 23, 21, 21, 21, 21, 22, 17, 21, 21, 21, 21, 21, 21, 21, 21, 18, 21, 12, 26, 21, 21, 21, 21, 21, 21, 21, 20, 21, 11, 21, 21, 21, 15, 21, 21, 21, 15, 24)
+Cesar <- c(12, 21, 12, 8, 21, 17, 19, 25, 21, 11, 19, 17, 17, 20, 21, 17, 11, 12, 18, 13, 14, 14, 17, 21, 11, 21, 24, 16, 11, 14, 15, 7, 8, 11, 22, 12, 21, 17, 15, 16, 21, 17, 17, 16, 21, 22)
+Game <- 1:46
+scores <- data.frame(Game, Sara, Cesar)
+ping_pong <- ggplot(scores, aes(Game)) + geom_line(aes(y=Sara), color = "red") + geom_line(aes(y=Cesar), color = "blue") + labs(x="Game", y="Score")
+ping_pong
+ping_pong2 <- ggplot(scores, aes(x=Game, y=Sara)) + geom_point()
+ping_pong2 <- ggplot(scores, aes(x=Game, y=Sara)) + geom_point()
+ping_pong2
+library(ggplot2)
+library(plotly)
+Sara <- c(21, 17, 21, 21, 19, 21, 21, 23, 23, 21, 21, 21, 21, 22, 17, 21, 21, 21, 21, 21, 21, 21, 21, 18, 21, 12, 26, 21, 21, 21, 21, 21, 21, 21, 20, 21, 11, 21, 21, 21, 15, 21, 21, 21, 15, 24)
+Cesar <- c(12, 21, 12, 8, 21, 17, 19, 25, 21, 11, 19, 17, 17, 20, 21, 17, 11, 12, 18, 13, 14, 14, 17, 21, 11, 21, 24, 16, 11, 14, 15, 7, 8, 11, 22, 12, 21, 17, 15, 16, 21, 17, 17, 16, 21, 22)
+Game <- 1:46
+scores <- data.frame(Game, Sara, Cesar)
+ping_pong <- ggplot(scores, aes(Game)) + geom_line(aes(y=Sara), color = "red") + geom_line(aes(y=Cesar), color = "blue") + geom_point() + labs(x="Game", y="Score")
+ping_pong
+library(ggplot2)
+library(plotly)
+Sara <- c(21, 17, 21, 21, 19, 21, 21, 23, 23, 21, 21, 21, 21, 22, 17, 21, 21, 21, 21, 21, 21, 21, 21, 18, 21, 12, 26, 21, 21, 21, 21, 21, 21, 21, 20, 21, 11, 21, 21, 21, 15, 21, 21, 21, 15, 24)
+Cesar <- c(12, 21, 12, 8, 21, 17, 19, 25, 21, 11, 19, 17, 17, 20, 21, 17, 11, 12, 18, 13, 14, 14, 17, 21, 11, 21, 24, 16, 11, 14, 15, 7, 8, 11, 22, 12, 21, 17, 15, 16, 21, 17, 17, 16, 21, 22)
+Game <- 1:46
+scores <- data.frame(Game, Sara, Cesar)
+ping_pong <- ggplot(scores, aes(x=Game, y=Sara)) + geom_line() + geom_point() + labs(x="Game", y="Score")
+ping_pong
+library(ggplot2)
+library(plotly)
+Sara <- c(21, 17, 21, 21, 19, 21, 21, 23, 23, 21, 21, 21, 21, 22, 17, 21, 21, 21, 21, 21, 21, 21, 21, 18, 21, 12, 26, 21, 21, 21, 21, 21, 21, 21, 20, 21, 11, 21, 21, 21, 15, 21, 21, 21, 15, 24)
+Cesar <- c(12, 21, 12, 8, 21, 17, 19, 25, 21, 11, 19, 17, 17, 20, 21, 17, 11, 12, 18, 13, 14, 14, 17, 21, 11, 21, 24, 16, 11, 14, 15, 7, 8, 11, 22, 12, 21, 17, 15, 16, 21, 17, 17, 16, 21, 22)
+Game <- 1:46
+scores <- data.frame(Game, Sara, Cesar)
+ping_pong <- ggplot() + geom_line(data = scores, aes(x=Game, y=Sara, color="red")) + geom_line(data = scores, aes(x=Game, y=Cesar, color="blue")) + geom_point(data = scores, aes(x=Game, y=Sara, color="red"), size=3) + geom_point(data = scores, aes(x=Game, y=Cesar, color="blue"), size=3) + labs(x="Game", y="Score")
+ping_pong
+ping_pong2 <- ggplot(scores, aes(x=Game, y=Sara)) + geom_point()
+ping_pong2
+ping_pong2 <- ggplot(scores, aes(x=Game, y=Sara)) + geom_line() + geom_point()
+ping_pong2
+ping_pong2 <- ggplot(scores, aes(x=Game, y=Sara)) + geom_line() + geom_point()
+ping_pong2
+library(ggplot2)
+library(plotly)
+Sara <- c(21, 17, 21, 21, 19, 21, 21, 23, 23, 21, 21, 21, 21, 22, 17, 21, 21, 21, 21, 21, 21, 21, 21, 18, 21, 12, 26, 21, 21, 21, 21, 21, 21, 21, 20, 21, 11, 21, 21, 21, 15, 21, 21, 21, 15, 24)
+Cesar <- c(12, 21, 12, 8, 21, 17, 19, 25, 21, 11, 19, 17, 17, 20, 21, 17, 11, 12, 18, 13, 14, 14, 17, 21, 11, 21, 24, 16, 11, 14, 15, 7, 8, 11, 22, 12, 21, 17, 15, 16, 21, 17, 17, 16, 21, 22)
+Game <- 1:46
+scores <- data.frame(Game, Sara, Cesar)
+ping_pong <- ggplot() + geom_line(data = scores, aes(x=Game, y=Sara, color="red")) + geom_line(data = scores, aes(x=Game, y=Cesar, color="blue")) + geom_point(data = scores, aes(x=Game, y=Sara, color="red"), size=3) + geom_point(data = scores, aes(x=Game, y=Cesar, color="blue"), size=3) + labs(x="Game", y="Score")
+ping_pong
+library(ggplot2)
+library(plotly)
+Sara <- c(21, 17, 21, 21, 19, 21, 21, 23, 23, 21, 21, 21, 21, 22, 17, 21, 21, 21, 21, 21, 21, 21, 21, 18, 21, 12, 26, 21, 21, 21, 21, 21, 21, 21, 20, 21, 11, 21, 21, 21, 15, 21, 21, 21, 15, 24)
+Cesar <- c(12, 21, 12, 8, 21, 17, 19, 25, 21, 11, 19, 17, 17, 20, 21, 17, 11, 12, 18, 13, 14, 14, 17, 21, 11, 21, 24, 16, 11, 14, 15, 7, 8, 11, 22, 12, 21, 17, 15, 16, 21, 17, 17, 16, 21, 22)
+Game <- 1:46
+scores <- data.frame(Game, Sara, Cesar)
+ping_pong <- ggplot() + geom_line(data = scores, aes(x=Game, y=Sara, color="purple")) + geom_line(data = scores, aes(x=Game, y=Cesar, color="blue")) + geom_point(data = scores, aes(x=Game, y=Sara, color="purple"), size=3) + geom_point(data = scores, aes(x=Game, y=Cesar, color="blue"), size=3) + labs(x="Game", y="Score")
+ping_pong
+library(ggplot2)
+library(plotly)
+Sara <- c(21, 17, 21, 21, 19, 21, 21, 23, 23, 21, 21, 21, 21, 22, 17, 21, 21, 21, 21, 21, 21, 21, 21, 18, 21, 12, 26, 21, 21, 21, 21, 21, 21, 21, 20, 21, 11, 21, 21, 21, 15, 21, 21, 21, 15, 24)
+Cesar <- c(12, 21, 12, 8, 21, 17, 19, 25, 21, 11, 19, 17, 17, 20, 21, 17, 11, 12, 18, 13, 14, 14, 17, 21, 11, 21, 24, 16, 11, 14, 15, 7, 8, 11, 22, 12, 21, 17, 15, 16, 21, 17, 17, 16, 21, 22)
+Game <- 1:46
+scores <- data.frame(Game, Sara, Cesar)
+ping_pong <- ggplot() + geom_line(data = scores, aes(x=Game, y=Sara, color="purple")) + geom_line(data = scores, aes(x=Game, y=Cesar, color="blue")) + geom_point(data = scores, aes(x=Game, y=Sara, color="purple"), size=3) + geom_point(data = scores, aes(x=Game, y=Cesar, color="blue"), size=3) + labs(x="Game", y="Score")
+ping_pong
+library(ggplot2)
+library(plotly)
+Sara <- c(21, 17, 21, 21, 19, 21, 21, 23, 23, 21, 21, 21, 21, 22, 17, 21, 21, 21, 21, 21, 21, 21, 21, 18, 21, 12, 26, 21, 21, 21, 21, 21, 21, 21, 20, 21, 11, 21, 21, 21, 15, 21, 21, 21, 15, 24)
+Cesar <- c(12, 21, 12, 8, 21, 17, 19, 25, 21, 11, 19, 17, 17, 20, 21, 17, 11, 12, 18, 13, 14, 14, 17, 21, 11, 21, 24, 16, 11, 14, 15, 7, 8, 11, 22, 12, 21, 17, 15, 16, 21, 17, 17, 16, 21, 22)
+Game <- 1:46
+scores <- data.frame(Game, Sara, Cesar)
+ping_pong <- ggplot() + geom_line(data = scores, aes(x=Game, y=Sara, color="purple")) + geom_point(data = scores, aes(x=Game, y=Sara, color="purple") + geom_line(data = scores, aes(x=Game, y=Cesar, color="blue")) , size=3) + geom_point(data = scores, aes(x=Game, y=Cesar, color="blue"), size=3) + labs(x="Game", y="Score")
+ping_pong
+library(ggplot2)
+library(plotly)
+Sara <- c(21, 17, 21, 21, 19, 21, 21, 23, 23, 21, 21, 21, 21, 22, 17, 21, 21, 21, 21, 21, 21, 21, 21, 18, 21, 12, 26, 21, 21, 21, 21, 21, 21, 21, 20, 21, 11, 21, 21, 21, 15, 21, 21, 21, 15, 24)
+Cesar <- c(12, 21, 12, 8, 21, 17, 19, 25, 21, 11, 19, 17, 17, 20, 21, 17, 11, 12, 18, 13, 14, 14, 17, 21, 11, 21, 24, 16, 11, 14, 15, 7, 8, 11, 22, 12, 21, 17, 15, 16, 21, 17, 17, 16, 21, 22)
+Game <- 1:46
+scores <- data.frame(Game, Sara, Cesar)
+ping_pong <- ggplot() + geom_line(data = scores, aes(x=Game, y=Sara, color="purple")) + geom_point(data = scores, aes(x=Game, y=Sara, color="purple"), size=3) + geom_line(data = scores, aes(x=Game, y=Cesar, color="blue")) + geom_point(data = scores, aes(x=Game, y=Cesar, color="blue"), size=3) + labs(x="Game", y="Score")
+ping_pong
+ping_pong3 <- ggplot(scores, aes(x=Game, y=Cesar)) + geom_line() + geom_point()
+ping_pong3
+ping_pong2 <- ggplot(scores, aes(x=Game, y=Sara)) + geom_line() + geom_point()
+ping_pong2
+library(ggplot2)
+library(plotly)
+Sara <- c(21, 17, 21, 21, 19, 21, 21, 23, 23, 21, 21, 21, 21, 22, 17, 21, 21, 21, 21, 21, 21, 21, 21, 18, 21, 12, 26, 21, 21, 21, 21, 21, 21, 21, 20, 21, 11, 21, 21, 21, 15, 21, 21, 21, 15, 24)
+Cesar <- c(12, 21, 12, 8, 21, 17, 19, 25, 21, 11, 19, 17, 17, 20, 21, 17, 11, 12, 18, 13, 14, 14, 17, 21, 11, 21, 24, 16, 11, 14, 15, 7, 8, 11, 22, 12, 21, 17, 15, 16, 21, 17, 17, 16, 21, 22)
+Game <- 1:46
+scores <- data.frame(Game, Sara, Cesar)
+ping_pong <- ggplot() + geom_line(data = scores, aes(x=Game, y=Sara, color="purple")) + geom_point(data = scores, aes(x=Game, y=Sara, color="purple"), size=3) + geom_line(data = scores, aes(x=Game, y=Cesar, color="blue")) + geom_point(data = scores, aes(x=Game, y=Cesar, color="blue"), size=3) + labs(x="Game", y="Score")
+ping_pong
+library(ggplot2)
+library(plotly)
+Sara <- c(21, 17, 21, 21, 19, 21, 21, 23, 23, 21, 21, 21, 21, 22, 17, 21, 21, 21, 21, 21, 21, 21, 21, 18, 21, 12, 26, 21, 21, 21, 21, 21, 21, 21, 20, 21, 11, 21, 21, 21, 15, 21, 21, 21, 15, 24)
+Cesar <- c(12, 21, 12, 8, 21, 17, 19, 25, 21, 11, 19, 17, 17, 20, 21, 17, 11, 12, 18, 13, 14, 14, 17, 21, 11, 21, 24, 16, 11, 14, 15, 7, 8, 11, 22, 12, 21, 17, 15, 16, 21, 17, 17, 16, 21, 22)
+Game <- 1:46
+scores <- data.frame(Game, Sara, Cesar)
+ping_pong <- ggplot() + geom_line(data = scores, aes(x=Game, y=Sara, color="purple")) + geom_point(data = scores, aes(x=Game, y=Sara, color="purple"), size=3) + labs(x="Game", y="Score")
+ping_pong
+library(ggplot2)
+library(plotly)
+Sara <- c(21, 17, 21, 21, 19, 21, 21, 23, 23, 21, 21, 21, 21, 22, 17, 21, 21, 21, 21, 21, 21, 21, 21, 18, 21, 12, 26, 21, 21, 21, 21, 21, 21, 21, 20, 21, 11, 21, 21, 21, 15, 21, 21, 21, 15, 24)
+Cesar <- c(12, 21, 12, 8, 21, 17, 19, 25, 21, 11, 19, 17, 17, 20, 21, 17, 11, 12, 18, 13, 14, 14, 17, 21, 11, 21, 24, 16, 11, 14, 15, 7, 8, 11, 22, 12, 21, 17, 15, 16, 21, 17, 17, 16, 21, 22)
+Game <- 1:46
+scores <- data.frame(Game, Sara, Cesar)
+ping_pong <- ggplot() + geom_line(data = scores, aes(x=Game, y=Sara)) + geom_point(data = scores, aes(x=Game, y=Sara), size=3) + labs(x="Game", y="Score")
+ping_pong
+library(ggplot2)
+library(plotly)
+Sara <- c(21, 17, 21, 21, 19, 21, 21, 23, 23, 21, 21, 21, 21, 22, 17, 21, 21, 21, 21, 21, 21, 21, 21, 18, 21, 12, 26, 21, 21, 21, 21, 21, 21, 21, 20, 21, 11, 21, 21, 21, 15, 21, 21, 21, 15, 24)
+Cesar <- c(12, 21, 12, 8, 21, 17, 19, 25, 21, 11, 19, 17, 17, 20, 21, 17, 11, 12, 18, 13, 14, 14, 17, 21, 11, 21, 24, 16, 11, 14, 15, 7, 8, 11, 22, 12, 21, 17, 15, 16, 21, 17, 17, 16, 21, 22)
+Game <- 1:46
+scores <- data.frame(Game, Sara, Cesar)
+ping_pong <- ggplot() + geom_line(data = scores, aes(x=Game, y=Sara)) + geom_point(data = scores, aes(x=Game, y=Sara), size=3) + labs(x="Game", y="Score")
+ping_pong
+library(ggplot2)
+library(plotly)
+Sara <- c(21, 17, 21, 21, 19, 21, 21, 23, 23, 21, 21, 21, 21, 22, 17, 21, 21, 21, 21, 21, 21, 21, 21, 18, 21, 12, 26, 21, 21, 21, 21, 21, 21, 21, 20, 21, 11, 21, 21, 21, 15, 21, 21, 21, 15, 24)
+Cesar <- c(12, 21, 12, 8, 21, 17, 19, 25, 21, 11, 19, 17, 17, 20, 21, 17, 11, 12, 18, 13, 14, 14, 17, 21, 11, 21, 24, 16, 11, 14, 15, 7, 8, 11, 22, 12, 21, 17, 15, 16, 21, 17, 17, 16, 21, 22)
+Game <- 1:46
+scores <- data.frame(Game, Sara, Cesar)
+ping_pong <- ggplot() + geom_line(data = scores, aes(x=Game, y=Sara)) + geom_point(data = scores, aes(x=Game, y=Sara), size=3) + geom_line(data = scores, aes(x=Game, y=Cesar)) + geom_point(data = scores, aes(x=Game, y=Cesar), size=3) + labs(x="Game", y="Score")
+ping_pong
+library(dplyr)
+library(ggplot2)
+library(plotly)
+Sara <- c(21, 17, 21, 21, 19, 21, 21, 23, 23, 21, 21, 21, 21, 22, 17, 21, 21, 21, 21, 21, 21, 21, 21, 18, 21, 12, 26, 21, 21, 21, 21, 21, 21, 21, 20, 21, 11, 21, 21, 21, 15, 21, 21, 21, 15, 24)
+Cesar <- c(12, 21, 12, 8, 21, 17, 19, 25, 21, 11, 19, 17, 17, 20, 21, 17, 11, 12, 18, 13, 14, 14, 17, 21, 11, 21, 24, 16, 11, 14, 15, 7, 8, 11, 22, 12, 21, 17, 15, 16, 21, 17, 17, 16, 21, 22)
+Game <- 1:46
+scores <- data.frame(Game, Sara, Cesar)
+ping_pongS <- ggplot() + geom_line(data = scores, aes(x=Game, y=Sara)) + geom_point(data = scores, aes(x=Game, y=Sara), size=3) + labs(x="Game", y="Score")
+ping_pongS
+ping_pongC <- ggplot() + geom_line(data = scores, aes(x=Game, y=Cesar)) + geom_point(data = scores, aes(x=Game, y=Cesar), size=3) + labs(x="Game", y="Score")
+ping_pongC
+library(dplyr)
+library(ggplot2)
+library(plotly)
+Sara <- c(21, 17, 21, 21, 19, 21, 21, 23, 23, 21, 21, 21, 21, 22, 17, 21, 21, 21, 21, 21, 21, 21, 21, 18, 21, 12, 26, 21, 21, 21, 21, 21, 21, 21, 20, 21, 11, 21, 21, 21, 15, 21, 21, 21, 15, 24)
+Cesar <- c(12, 21, 12, 8, 21, 17, 19, 25, 21, 11, 19, 17, 17, 20, 21, 17, 11, 12, 18, 13, 14, 14, 17, 21, 11, 21, 24, 16, 11, 14, 15, 7, 8, 11, 22, 12, 21, 17, 15, 16, 21, 17, 17, 16, 21, 22)
+Game <- 1:46
+scores <- data.frame(Game, Sara, Cesar)
+ping_pongS <- ggplot(data = scores, aes(x=Game, y=Sara)) + geom_line() + geom_point() + labs(x="Game", y="Score")
+ping_pongS
+ping_pongC <- ggplot() + geom_line(data = scores, aes(x=Game, y=Cesar)) + geom_point(data = scores, aes(x=Game, y=Cesar), size=3) + labs(x="Game", y="Score")
+ping_pongC
+library(dplyr)
+library(ggplot2)
+library(plotly)
+Sara <- c(21, 17, 21, 21, 19, 21, 21, 23, 23, 21, 21, 21, 21, 22, 17, 21, 21, 21, 21, 21, 21, 21, 21, 18, 21, 12, 26, 21, 21, 21, 21, 21, 21, 21, 20, 21, 11, 21, 21, 21, 15, 21, 21, 21, 15, 24)
+Cesar <- c(12, 21, 12, 8, 21, 17, 19, 25, 21, 11, 19, 17, 17, 20, 21, 17, 11, 12, 18, 13, 14, 14, 17, 21, 11, 21, 24, 16, 11, 14, 15, 7, 8, 11, 22, 12, 21, 17, 15, 16, 21, 17, 17, 16, 21, 22)
+Game <- 1:46
+scores <- data.frame(Game, Sara, Cesar)
+ping_pongS <- ggplot(data = scores, aes(x=Game, y=Sara)) + geom_line() + geom_point() + labs(x="Game", y="Score")
+ping_pongS
+ping_pongC <- ggplot(data = scores, aes(x=Game, y=Cesar)) + geom_line() + geom_point() + labs(x="Game", y="Score")
+ping_pongC
+library(dplyr)
+library(ggplot2)
+library(plotly)
+Sara <- c(21, 17, 21, 21, 19, 21, 21, 23, 23, 21, 21, 21, 21, 22, 17, 21, 21, 21, 21, 21, 21, 21, 21, 18, 21, 12, 26, 21, 21, 21, 21, 21, 21, 21, 20, 21, 11, 21, 21, 21, 15, 21, 21, 21, 15, 24)
+Cesar <- c(12, 21, 12, 8, 21, 17, 19, 25, 21, 11, 19, 17, 17, 20, 21, 17, 11, 12, 18, 13, 14, 14, 17, 21, 11, 21, 24, 16, 11, 14, 15, 7, 8, 11, 22, 12, 21, 17, 15, 16, 21, 17, 17, 16, 21, 22)
+Game <- 1:46
+scores <- data.frame(Game, Sara, Cesar)
+ping_pongS <- ggplot(data = scores, aes(x=Game, y=Sara)) + geom_line(color="orange") + geom_point() + labs(x="Game", y="Score")
+ping_pongS
+ping_pongC <- ggplot(data = scores, aes(x=Game, y=Cesar)) + geom_line() + geom_point() + labs(x="Game", y="Score")
+ping_pongC
+library(dplyr)
+library(ggplot2)
+library(plotly)
+Sara <- c(21, 17, 21, 21, 19, 21, 21, 23, 23, 21, 21, 21, 21, 22, 17, 21, 21, 21, 21, 21, 21, 21, 21, 18, 21, 12, 26, 21, 21, 21, 21, 21, 21, 21, 20, 21, 11, 21, 21, 21, 15, 21, 21, 21, 15, 24)
+Cesar <- c(12, 21, 12, 8, 21, 17, 19, 25, 21, 11, 19, 17, 17, 20, 21, 17, 11, 12, 18, 13, 14, 14, 17, 21, 11, 21, 24, 16, 11, 14, 15, 7, 8, 11, 22, 12, 21, 17, 15, 16, 21, 17, 17, 16, 21, 22)
+Game <- 1:46
+scores <- data.frame(Game, Sara, Cesar)
+ping_pongS <- ggplot(data = scores, aes(x=Game, y=Sara)) + geom_line(color="orange") + geom_point() + labs(x="Game", y="Score")
+ping_pongS
+ping_pongC <- ggplot(data = scores, aes(x=Game, y=Cesar)) + geom_line(color="blue") + geom_point() + labs(x="Game", y="Score")
+ping_pongC
+ping_pong <- ping_pongS + ping_pongC
+ping_pong  <- ggplot(data = scores, aes(x=Game)) +
+# Step 4: Add multiple lines using geom_line()
+geom_line(aes(y = Sara, color = "Line 1")) +
+geom_line(aes(y = Cesar, color = "Line 2")) +
+# Step 5: Add data points using geom_point()
+geom_point(aes(y = Sara, color = "Line 1"), size = 3) +
+geom_point(aes(y = Cesar, color = "Line 2"), size = 3)
+ping_pong
+library(dplyr)
+library(ggplot2)
+library(plotly)
+Sara <- c(21, 17, 21, 21, 19, 21, 21, 23, 23, 21, 21, 21, 21, 22, 17, 21, 21, 21, 21, 21, 21, 21, 21, 18, 21, 12, 26, 21, 21, 21, 21, 21, 21, 21, 20, 21, 11, 21, 21, 21, 15, 21, 21, 21, 15, 24)
+Cesar <- c(12, 21, 12, 8, 21, 17, 19, 25, 21, 11, 19, 17, 17, 20, 21, 17, 11, 12, 18, 13, 14, 14, 17, 21, 11, 21, 24, 16, 11, 14, 15, 7, 8, 11, 22, 12, 21, 17, 15, 16, 21, 17, 17, 16, 21, 22)
+Game <- 1:46
+scores <- data.frame(Game, Sara, Cesar)
+ping_pongS <- ggplot(data = scores, aes(x=Game, y=Sara)) + geom_line(color="orange") + geom_point() + labs(x="Game", y="Sara's Score")
+ping_pongS
+ping_pongC <- ggplot(data = scores, aes(x=Game, y=Cesar)) + geom_line(color="blue") + geom_point() + labs(x="Game", y="Cesar's Score")
+ping_pongC
+ping_pong  <- ggplot(data = scores, aes(x=Game)) +
+# Step 4: Add multiple lines using geom_line()
+geom_line(aes(y = Sara, color = "orange")) +
+geom_line(aes(y = Cesar, color = "blue")) +
+# Step 5: Add data points using geom_point()
+geom_point(aes(y = Sara, color = "orange"), size = 3) +
+geom_point(aes(y = Cesar, color = "blue"), size = 3)
+ping_pong
+ping_pong  <- ggplot(data = scores, aes(x=Game)) +
+# Step 4: Add multiple lines using geom_line()
+geom_line(aes(y = Sara, color = "Sara")) +
+geom_line(aes(y = Cesar, color = "Cesar")) +
+# Step 5: Add data points using geom_point()
+geom_point(aes(y = Sara, color = "Sara"), size = 3) +
+geom_point(aes(y = Cesar, color = "Cesar"), size = 3)
+ping_pong
+library(dplyr)
+library(ggplot2)
+library(plotly)
+Sara <- c(21, 17, 21, 21, 19, 21, 21, 23, 23, 21, 21, 21, 21, 22, 17, 21, 21, 21, 21, 21, 21, 21, 21, 18, 21, 12, 26, 21, 21, 21, 21, 21, 21, 21, 20, 21, 11, 21, 21, 21, 15, 21, 21, 21, 15, 24)
+Cesar <- c(12, 21, 12, 8, 21, 17, 19, 25, 21, 11, 19, 17, 17, 20, 21, 17, 11, 12, 18, 13, 14, 14, 17, 21, 11, 21, 24, 16, 11, 14, 15, 7, 8, 11, 22, 12, 21, 17, 15, 16, 21, 17, 17, 16, 21, 22)
+Game <- 1:46
+scores <- data.frame(Game, Sara, Cesar)
+ping_pongS <- ggplot(data = scores, aes(x=Game, y=Sara)) + geom_line(color="orange") + geom_point() + labs(x="Game", y="Sara's Score")
+ping_pongS
+ping_pongC <- ggplot(data = scores, aes(x=Game, y=Cesar)) + geom_line(color="blue") + geom_point() + labs(x="Game", y="Cesar's Score")
+ping_pongC
+ping_pong  <- ggplot(data = scores, aes(x=Game)) +
+# Step 4: Add multiple lines using geom_line()
+geom_line(aes(y = Sara, color = "Sara")) +
+geom_line(aes(y = Cesar, color = "Cesar")) +
+# Step 5: Add data points using geom_point()
+geom_point(aes(y = Sara, color = "Sara"), size = 3) +
+geom_point(aes(y = Cesar, color = "Cesar"), size = 3)
+ping_pong
+ping_pong  <- ggplot(data = scores, aes(x=Game)) +
+# Step 4: Add multiple lines using geom_line()
+geom_line(aes(y = Sara, color = "Sara")) +
+geom_line(aes(y = Cesar, color = "Cesar")) +
+# Step 5: Add data points using geom_point()
+geom_point(aes(y = Sara, color = "Sara"), size = 3) +
+geom_point(aes(y = Cesar, color = "Cesar"), size = 3)
++ labs(x="Game", y="Score")
+ping_pong  <- ggplot(data = scores, aes(x=Game)) +
+# Step 4: Add multiple lines using geom_line()
+geom_line(aes(y = Sara, color = "Sara")) +
+geom_line(aes(y = Cesar, color = "Cesar")) +
+# Step 5: Add data points using geom_point()
+geom_point(aes(y = Sara, color = "Sara"), size = 3) +
+geom_point(aes(y = Cesar, color = "Cesar"), size = 3) + labs(x="Game", y="Score")
+ping_pong
+ping_pong  <- ggplot(data = scores, aes(x=Game)) +
+# Step 4: Add multiple lines using geom_line()
+geom_line(aes(y = Sara, color = "Sara")) +
+geom_line(aes(y = Cesar, color = "Cesar")) +
+# Step 5: Add data points using geom_point()
+geom_point(aes(y = Sara, color = "Sara"), size = 3) +
+geom_point(aes(y = Cesar, color = "Cesar"), size = 3) + labs(x="Game", y="Score")
+plotly(ping_pong)
+ping_pong  <- ggplot(data = scores, aes(x=Game)) +
+# Step 4: Add multiple lines using geom_line()
+geom_line(aes(y = Sara, color = "Sara")) +
+geom_line(aes(y = Cesar, color = "Cesar")) +
+# Step 5: Add data points using geom_point()
+geom_point(aes(y = Sara, color = "Sara"), size = 3) +
+geom_point(aes(y = Cesar, color = "Cesar"), size = 3) + labs(x="Game", y="Score")
+ping_pong
+ping_pong  <- ggplot(data = scores, aes(x=Game)) +
+geom_line(aes(y = Sara, color = "Sara")) +
+geom_line(aes(y = Cesar, color = "Cesar")) + geom_point(aes(y = Sara, color = "Sara"), size = 3) +
+geom_point(aes(y = Cesar, color = "Cesar"), size = 3) + labs(title="The Sara-Cesar Ping Pong",x="Game", y="Score")
+ping_pong
+ping_pong  <- ggplot(data = scores, aes(x=Game)) +
+geom_line(aes(y = Sara, color = "Sara")) +
+geom_line(aes(y = Cesar, color = "Cesar")) + geom_point(aes(y = Sara, color = "Sara"), size = 3) +
+geom_point(aes(y = Cesar, color = "Cesar"), size = 3) + labs(title="The Sara-Cesar Ping Pong Series",x="Game", y="Score")
+ping_pong
+ggplotly(ping_pong)
+differnce <- Sara - Cesar
+difference
+difference <- Sara - Cesar
+difference
+library(shiny); runApp('Documents/GitHub/dspg23census/project_web/web_code.R')
+# Chunk 1: setup
+knitr::opts_chunk$set(echo = TRUE)
+# Chunk 2
+#Import libraries
+library(ggplot2)
+library(wordcloud)
+library(RColorBrewer)
+library(wordcloud2)
+library(reshape)
+library(tm)
+library(stringr)
+library(plotly)
+# Chunk 3
+#Reads in housing data
+housing <- read.csv('housing_cleaned.csv')
+setwd("~/Documents/GitHub/dspg23census/Housing")
+# Chunk 1: setup
+knitr::opts_chunk$set(echo = TRUE)
+# Chunk 2
+#Import libraries
+library(ggplot2)
+library(wordcloud)
+library(RColorBrewer)
+library(wordcloud2)
+library(reshape)
+library(tm)
+library(stringr)
+library(plotly)
+# Chunk 3
+#Reads in housing data
+housing <- read.csv('housing_cleaned.csv')
+# Chunk 4
+#Creates list of columns in df
+housing_columns = colnames(housing)
+#Drops 'X' column from df
+housing_columns = housing_columns[-1]
+housing_columns = housing_columns[-11]
+housing = subset(housing, select = housing_columns)
+# Chunk 5
+#Sub-Categories
+#Number/types of sub-categories-bar chart
+#Creates a bar graph of sub-category types
+sub_cat_counts <- function(state) {
+if(state=="all states") {
+sub_cats <- ggplot(housing, aes(x=Sub.categories)) + geom_bar(fill="blue") + labs(x="Sub-Categories", y="Count", title="Types of Sub-Categories") + theme(axis.text.x = element_text(angle = 25))
+ggplotly(sub_cats)
+}
+else { #fix
+State <- str_to_title(state)
+state_input <- housing[housing[, "State"]==state, ]
+state_df <- data.frame()
+state_df <- rbind(state_df, state_input)
+sub_cats <- ggplot(state_df, aes(x=Sub.categories)) + geom_bar(fill="blue") + labs(x="Sub-Categories", y="Count", title="Types of Sub-Categories") + theme(axis.text.x = element_text(angle = 25))
+ggplotly(sub_cats)
+}
+}
+# Chunk 6
+sub_cat_counts("california")
+# Chunk 7
+#Tool
+#Number/types of tools-pie chart
+#fix
+tools <- ggplot(housing, aes(x=Tool)) + geom_bar(fill="blue") + labs(x="Tool", y="Count", title="Types of Tools") + theme(axis.text.x = element_text(angle = 45))
+ggplotly(tools)
+# Chunk 8
+#Tool Name
+#Word cloud for tool names
+#Input is designated state
+tool_cloud <- function(state) {
+if(state=="all states"){
+combo <- ""
+for (i in 1:nrow(housing)) {
+combo <- paste(combo, housing$Tool.Name[i], sep="")
+}
+}
+else{
+#Combines all variables into one string
+combo <- ""
+for (i in 1:nrow(housing)) {
+if(housing$State[i]==state) {
+combo <- paste(combo, housing$Tool.Name[i], sep="")
+}
+}
+}
+#Turns string into corpus of words
+docs <- Corpus(VectorSource(combo))
+#Cleaning of corpus
+docs <- docs %>% tm_map(removeNumbers) %>% tm_map(removePunctuation) %>% tm_map(stripWhitespace)
+docs <- tm_map(docs, content_transformer(tolower))
+docs <- tm_map(docs, removeWords, stopwords("english"))
+#Turns corpus into term-document-matrix
+dtm <- TermDocumentMatrix(docs)
+mtx <- as.matrix(dtm)
+words <- sort(rowSums(mtx), decreasing = TRUE)
+df <- data.frame(word = names(words), freq=words)
+#Creates wordcloud
+set.seed(33)
+cloud <- wordcloud(words = df$word, freq = df$freq, min.freq = 1, max.words = 100, random.order = FALSE, rot.per = 0, colors = brewer.pal(4, "Set1"))
+return(cloud)
+}
+# Chunk 9
+#Variables
+#Word cloud for variable names
+#Input is designated state
+variable_cloud <- function(state) {
+if(state=="all states"){
+combo <- ""
+for (i in 1:nrow(housing)) {
+combo <- paste(combo, housing$Variables[i], sep="")
+}
+}
+else{
+#Combines all variables into one string
+combo <- ""
+for (i in 1:nrow(housing)) {
+if(housing$State[i]==state) {
+combo <- paste(combo, housing$Variables[i], sep="")
+}
+}
+}
+#Turns string into corpus of words
+docs <- Corpus(VectorSource(combo))
+#Cleaning of corpus
+docs <- docs %>% tm_map(removeNumbers) %>% tm_map(removePunctuation) %>% tm_map(stripWhitespace)
+docs <- tm_map(docs, content_transformer(tolower))
+docs <- tm_map(docs, removeWords, stopwords("english"))
+#Turns corpus into term-document-matrix
+dtm <- TermDocumentMatrix(docs)
+mtx <- as.matrix(dtm)
+words <- sort(rowSums(mtx), decreasing = TRUE)
+df <- data.frame(word = names(words), freq=words)
+#Creates wordcloud
+set.seed(33)
+cloud <- wordcloud(words = df$word, freq = df$freq, min.freq = 1, max.words = 100, random.order = FALSE, rot.per = 0, colors = brewer.pal(4, "Set1"))
+return(cloud)
+}
+# Chunk 10
+#Geographic Levels
+#Number/types of geographic levels-pie chart
+#fix
+geo <- ggplot(housing, aes(x=Geographic.Levels)) + geom_bar(fill="blue") + labs(x="Geographic Levels", y="Count", title="Types of Geoographic Levels") + theme(axis.text.x = element_text(angle = 45))
+ggplotly(geo)
+# Chunk 11
+#Data Sources-Census
+#Number/types of census sources-bar chart, pie chart, count
+#fix: exclude if value is NA
+#fix: by state
+census <- ggplot(housing, aes(x=Data.Sources.Census)) + geom_bar(fill="blue") + labs(x="Census Source", y="Count", title="Types of Census Sources") + theme(axis.text.x = element_text(angle = 45))
+ggplotly(census)
+# Chunk 12
+#Data Sources-Non Census
+#Number/types of non-census sources-bar chart, pie chart, count
+#fix: exclude if value is NA
+#fix: by state
+non_census <- ggplot(housing, aes(x=Data.Sources.Non.Census)) + geom_bar(fill="blue") + labs(x="Data Sources", y="Count", title="Data Sources") + theme(axis.text.x = element_text(angle = 45))
+ggplotly(non_census)
+# Chunk 13
+#Direct Links to Census
+#Count
+sum(!housing$Direct.links.to.Census=='n')
+# Chunk 14
+#Age of Data
+#Number/types of age of data-pie chart
+#Oldest data, most recent
+# Chunk 15
+#Historical Data
+#Count
+sum(housing$Historical.data=='y')
+runApp('~/Documents/GitHub/dspg23census/project_web/web_code.R')

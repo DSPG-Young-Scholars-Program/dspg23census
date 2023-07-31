@@ -524,7 +524,6 @@ ui <-  fluidPage(
                             p("- Treena Goswami*, Postdoc Researcher Associates"),
                         )),
              navbarMenu("Topic Modeling",
-             tabPanel("Gensim"),
              tabPanel("BERT",
                       box(title="BERT",
                           p("We applied BERT to the top 5 State Constitutions with the most amendments."),
@@ -556,30 +555,31 @@ ui <-  fluidPage(
                                              plotOutput("fin_econ_plot3")
                                    ))),
                         tabPanel("Housing",
-                      br(),
-                      sidebarLayout(sidebarPanel(
-                        selectInput("dropdownH", "Which state are you interested in?",
+                          br(),
+                          sidebarLayout(sidebarPanel(
+                          selectInput("dropdownH", "Which state are you interested in?",
                                     all_states)),
-                        mainPanel(textOutput("fin_hous_text1"),
-                                  plotOutput("fin_hous_plot1"),
-                                  textOutput("fin_hous_text2"),
-                                  plotOutput("fin_hous_plot2"),
-                                  textOutput("fin_hous_text3"),
-                                  plotOutput("fin_hous_plot3")
+                          mainPanel(textOutput("fin_hous_text1"), 
+                                    plotOutput("fin_hous_plot1"), 
+                                    textOutput("fin_hous_text2"), 
+                                    plotOutput("fin_hous_plot2"), 
+                                    textOutput("fin_hous_text3"), 
+                                    plotOutput("fin_hous_plot3")
                         ))),
                         tabPanel("Diversity"),
                         tabPanel("Health & Education",
-                      br(),
-                      sidebarLayout(sidebarPanel(
-                        selectInput("dropdownHE", "Which state are you interested in?",
+                          br(),
+                          sidebarLayout(sidebarPanel(
+                          selectInput("dropdownHE", "Which state are you interested in?",
                                     all_states)),
-                        mainPanel(textOutput("fin_HE_text1"),
-                                  plotOutput("fin_HE_plot1"),
-                                  textOutput("fin_HE_text2"),
-                                  plotOutput("fin_HE_plot2"),
-                                  textOutput("fin_HE_text3"),
-                                  plotOutput("fin_HE_plot3")
-                        )))),
+                          mainPanel(textOutput("fin_HE_text1"), 
+                                    plotOutput("fin_HE_plot1"), 
+                                    textOutput("fin_HE_text2"), 
+                                    plotOutput("fin_HE_plot2"), 
+                                    textOutput("fin_HE_text3"), 
+                                    plotOutput("fin_HE_plot3")
+                        )))
+                        ),
              tabPanel("Team",
                         box(title="Meet Our Team", width = 6,
                           br(),
