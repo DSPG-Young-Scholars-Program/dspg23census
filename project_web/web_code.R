@@ -324,7 +324,7 @@ ui <-  fluidPage(
     }
   ")),
   
-  navbarPage(title= tags$a(href = "https://datascienceforthepublicgood.org", target = "_blank", # "_blank" opens the link in a new tab
+  navbarPage(title= tags$a(href = "https://biocomplexity.virginia.edu/data-science-public-good-young-scholars-program", target = "_blank", # "_blank" opens the link in a new tab
                            tags$img(src = "DSPG_black-01.png", width = "120px", style="margin-top:-10px")
                            ),
              tabPanel("Overview",
@@ -335,10 +335,19 @@ ui <-  fluidPage(
                           #tags$a(href = "https://www.census.gov/",
                            #      img(src = "census.png", width = "65px")),
                       ),
-                      panel(h3("Project", style = "color: #1B3766;"),
-                                p("The goal of our project is to assist the U.S. Census Bureau in the creation of their Curated Data Enterprise, a tool that will combine data from multiple Census sources, to create a cohesive data lake that can be used as a tool by State governments."),
-                                p("To accomplish this, we’ve focused on identifying how state governments use data and identifying what those data sources are, such as Census, State government, or private sources. We’ve started doing this through our data discovery process, which has included a review of individual State Constitutions, and as requested by the Census Bureau, we’re conducting a review of State Data Centers."),
-                                p("The overall objective of this project is to report findings that the Census Bureau can use to better address state government data needs and to create a tool that facilitates user data access.   ")
+                      panel(h3("Project Overview", style = "color: #1B3766;"),
+                            p("The goal of our project is to assist the U.S. Census Bureau in the creation of their Curated Data Enterprise, a tool that will combine data from multiple Census sources, to create a cohesive data lake that can be used as a tool by State governments."),
+                            p("To accomplish this, we’ve focused on identifying how state governments use data and identifying what those data sources are, such as Census, State government, or private sources. We’ve started doing this through our data discovery process, which has included a review of individual State Constitutions, and as requested by the Census Bureau, we’re conducting a review of State Data Centers."),
+                            p("The overall objective of this project is to report findings that the Census Bureau can use to better address state government data needs and to create a tool that facilitates user data access.   "),
+                            
+                      ),
+                      panel(h3("Our Ideas", style = "color: #1B3766;"),
+                            p("1. Text analysis of state constitutions and amendments."),
+                            p("2. Evaluation of state, U.S. territories, and District of Columbia data centers."),
+                            p("3. Text analysis of state data center mission statements."),
+                            p("4. Email survey sent to all 56 FSCPE contacts."),
+                            p("5. Search of UVA library databases: Policy Commons Database (Policy File Index Database, State and Local Government Databases. Policy Map Customer Stories)")
+        
                       ),
                       panel(h3("Who We Are", style = "color: #1B3766;"),
                             h4("University of Virginia, Biocomplexity Institute, Social and Decision Analytics Division", style = "color: #E57200;"),
