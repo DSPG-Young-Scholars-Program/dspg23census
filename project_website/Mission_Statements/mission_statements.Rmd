@@ -1,0 +1,107 @@
+---
+title: "Mission Statements"
+output: html_document
+date: "2023-07-13"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(readxl)
+library(ggplot2)
+library(wordcloud)
+library(RColorBrewer)
+library(wordcloud2)
+library(reshape)
+library(tm)
+library(stringr)
+library(plotly)
+library(usmap)
+```
+
+```{r}
+#reads in SDC mission statement data
+data <- read_excel("mission_statements.xlsx")
+```
+
+```{r}
+#Combines all mission statements into one character
+combo <- ""
+for (i in 1:nrow(data)) {
+  if(data$Statement_Type[i]=='SDC') {
+    print(data$Mission_Statment_Text[i])
+    combo <- paste(combo, data$Mission_Statment_Text[i], sep="")
+  }
+}
+```
+
+```{r}
+#Wordclouds
+
+
+#Turns string into corpus of words
+docs <- Corpus(VectorSource(combo))
+
+#Cleaning of corpus
+docs <- docs %>% tm_map(removeNumbers) %>% tm_map(removePunctuation) %>% tm_map(stripWhitespace)
+docs <- tm_map(docs, content_transformer(tolower))
+docs <- tm_map(docs, removeWords, stopwords("english"))
+
+#Turns corpus into term-document-matrix
+dtm <- TermDocumentMatrix(docs)
+mtx <- as.matrix(dtm)
+words <- sort(rowSums(mtx), decreasing = TRUE)
+df <- data.frame(word = names(words), freq=words)
+
+#Creates wordcloud
+set.seed(33)
+
+wordcloud(words = df$word, freq = df$freq, min.freq = 1, max.words = 100, random.order = FALSE, rot.per = 0, colors = brewer.pal(4, "Set1"))
+```
+
+
+```{r}
+#Host Types 
+
+#Bar graph of host org. counts
+
+host_counts <- ggplot(data, aes(x=Host_Type)) + geom_bar(fill="blue") + labs(x="Type of Host Organization", y="Count", title="Host Ogranizations for SDC Lead Agencies")
+ggplotly(host_counts)
+
+#map of host types
+hosts <- data.frame(state = data$State, type = data$Host_Type)
+host_map <- plot_usmap(data = hosts, values = "type") + labs(title="Type of Lead Agency")
+ggplotly(host_map)
+```
+
+
+```{r}
+#Do SDCs have Mission Statements?
+
+#fix: this shows both SDC and Host Orgs, want only SDCss
+#Bar graph of Y/N statement counts
+statement_counts <- ggplot(data, aes(x=Mission_Statement_Status)) + geom_bar(fill="blue") + labs(x = "", y="Count", title="Do SDCs Have Mission Statements")
+ggplotly(statement_counts)
+```
+
+
+```{r}
+#Coordinating Agencies
+
+
+#make this prettier
+#Number of coordinating agencies by state
+coordinating_counts <- ggplot(data, aes(x=State, y=Coordinating)) + geom_point() + labs(x = "State", y="Number of Coordinating Agencies", title="Number of Coordinating Agencies by State") + theme(axis.text.x = element_text(angle = 45))
+ggplotly(coordinating_counts)
+
+
+#Map of number of coordinating agencies
+coord <- data.frame(state = data$State, number = data$Coordinating)
+coord_map <- plot_usmap(data=coord, values="number") + labs(title="Number of Coordinating Agencies")
+ggplotly(coord_map)
+```
+
+
+
