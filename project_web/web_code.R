@@ -45,19 +45,17 @@ mission_states <- c("All Sample States", "Alabama", "Arizona", "Arkansas", "Cali
 
 #Data Imports
 #Econ data
-
 econ_data <- read.csv("economy_compilation.csv")
-
 econ_data$Sub.categories = tolower(econ_data$Sub.categories)
 
 #Housing data
-housing_data <- read.csv('/Users/marijkevandergeer/Documents/GitHub/dspg23census/Housing/housing_cleaned.csv')
+housing_data <- read.csv('../Housing/housing_cleaned.csv')
 
 #Health and education data
-HE_data <- read.csv('/Users/marijkevandergeer/Documents/GitHub/dspg23census/Health_and_Education/HE_cleaned.csv')
+HE_data <- read.csv('../Health_and_Education/HE_cleaned.csv')
 
 #Mission statement data
-mission_statements <- read.csv('/Users/marijkevandergeer/Documents/GitHub/dspg23census/Mission_Statements/mission_statements.csv')
+mission_statements <- read.csv('../Mission_Statements/mission_statements.csv')
 
 
 #Map of host types for lead agencies
@@ -124,7 +122,7 @@ mission_cloud <- function(state) {
 }
 
 
-#Bar graph of sub-category types
+#Bar graph of sub-category types (For Housing & Health/Education)
 sub_cat_counts <- function(state, data_source) {
   if(state=="All Sample States") {
     sub_cats <- ggplot(data_source, aes(x=Sub.categories)) + geom_bar(fill="steelblue") + labs(x="Sub-Category", y="Counts") + theme(axis.text.x = element_text(angle = 25))
@@ -144,7 +142,7 @@ sub_cat_counts <- function(state, data_source) {
 #Plot for economic data
 econ_category_plot <- function(selected_state) {
   # Initialize variables to store the counts
-  if (selected_state == "All sample states"){
+  if (selected_state == "All Sample States"){
     data_to_use = econ_data$Sub.categories
   }
   else{
@@ -202,7 +200,7 @@ econ_sub_cat_and_tool <- function(selected_state){
   col_name = c("Tools","sub","count")
   colnames(df_stack2) <- col_name
   
-  if (selected_state == "All sample states" ){
+  if (selected_state == "All Sample States" ){
     data_to_use = econ_data
   }
   else{
@@ -385,7 +383,7 @@ econ_sub_cat_and_tool <- function(selected_state){
 }
 
 econ_pie_graph <- function(selected_state, data_table) {
-  if (selected_state == "All sample states") {
+  if (selected_state == "All Sample States") {
     data_to_use = data_table
   } else {
     data_to_use = data_table[data_table$State..Country == selected_state, ]
@@ -630,7 +628,9 @@ server <- function(input, output) {
 
   
   #Economy Findings
-  output$fin_econ_plot1 <- renderPlot({econ_category_plot(selected_state = input$dropdown1)})
+  output$fin_econ_plot1 <- renderPlot({
+    econ_category_plot(selected_state = input$dropdown3)
+    })
   
   output$fin_econ_plot2 <- renderPlot({
     econ_sub_cat_and_tool(selected_state = input$dropdown3)
