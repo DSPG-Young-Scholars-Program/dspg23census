@@ -345,9 +345,48 @@ pie(sorted_df$count , labels = sorted_df$`data source`, border="white", col=cbPa
 
 
 ```{r}
-
+pie_graph <-function(selected_state, data_table){
+  if (selected_state == "All states" ){
+    data_to_use = data_table
+  }
+  else{
+    data_to_use = data_table[data_table$State..Country== selected_state,]
+  }
+  
+  count_result <- data_to_use %>% group_by(Data.Source.Census..Standardized.) %>% summarize(count = n())
+  colnames(count_result) <- c("data source", "count")
+  count_result<- count_result[count_result$`data source` != "", ]
+  
+  countinue <- data_to_use %>% group_by(Data.Source.Non.Census..Standardized.) %>% summarize(count = n())
+  colnames(countinue) <- c("data source", "count")
+  countinue<- countinue[countinue$`data source` != "", ]
+  
+  combined_df <- rbind(count_result, countinue)
+  sorted_df <- combined_df[order(- combined_df$count), ]
+  pie(sorted_df$count , labels = sorted_df$`data source`, border="white", col=cbPalette, cex=0.5)
+}
 ```
 
+```{r}
+data_to_use = data[data$State..Country== "Arizona",]
+count_result <- data_to_use %>% group_by(Data.Source.Census..Standardized.) %>% summarize(count = n())
+colnames(count_result) <- c("data source", "count")
+count_result<- count_result[count_result$`data source` != "", ]
+
+countinue <- data_to_use %>% group_by(Data.Source.Non.Census..Standardized.) %>% summarize(count = n())
+colnames(countinue) <- c("data source", "count")
+countinue<- countinue[countinue$`data source` != "", ]
+
+combined_df <- rbind(count_result, countinue)
+print(combined_df)
+sorted_df <- combined_df[order(- combined_df$count), ]
+pie(sorted_df$count , labels = sorted_df$`data source`, border="white", col=cbPalette, cex=0.5)
+```
+
+```{r}
+pie_graph(data_table = data, selected_state = "Arizona")
+
+```
 
 
 
