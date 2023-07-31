@@ -11,7 +11,7 @@ library(data.table)
 library(rsconnect)
 library(forcats)
 library(plotly)
-library(DT)
+
 library(wordcloud)
 library(RColorBrewer)
 library(reshape)
@@ -20,6 +20,7 @@ library(stringr)
 library(usmap)
 library(readxl)
 library(gcookbook)
+
 
 
 
@@ -32,6 +33,7 @@ all_states <- c("All Sample States", "Alabama", "Alaska","Arizona", "Arkansas", 
                 "Massachusetts", "Michigan", "Minnesota", "Mississippi", "Missouri",
                 "Puerto Rico", "Guam")
 
+
 mission_states <- c("All Sample States", "Alabama", "Arizona", "Arkansas", "California",
                     "Connecticut", "Delaware", "District of Colombia", "Florida", "Hawaii", "Indiana",
                     "Iowa", "Kansas", "Kentucky", "Maine", "Maryland", "Massachusetts", "Minnesota", 
@@ -42,7 +44,9 @@ mission_states <- c("All Sample States", "Alabama", "Arizona", "Arkansas", "Cali
 
 #Data Imports
 #Econ data
-econ_data <- read.csv("/Users/marijkevandergeer/Downloads/economy_data.csv")
+
+econ_data <- read.csv("economy_compilation.csv")
+
 econ_data$Sub.categories = tolower(econ_data$Sub.categories)
 
 #Housing data
@@ -188,6 +192,214 @@ econ_category_plot <- function(selected_state) {
        labels = counts, pos = 3, cex = 0.8, col = "black")
 }
 
+sub_cat_and_tool <- function(selected_state){
+  df_stack2 <- data.frame(
+    tool = character(),
+    sub = character(),
+    count = numeric()
+  )
+  col_name = c("tool","sub","count")
+  colnames(df_stack2) <- col_name
+  
+  if (selected_state == "All states" ){
+    data_to_use = econ_data
+  }
+  else{
+    data_to_use = econ_data[econ_data$State..Country== selected_state,]
+  }
+  
+  for (i in 1:nrow(data_to_use)) {
+    #---------------------------employment----------------------------
+    if (any(grepl("employment", data_to_use[i,3]))) {
+      if(any(grepl("table download", data_to_use[i,4]))){
+        new_row <- c("table download", "employment",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("table", data_to_use[i,4]))){
+        new_row <- c("table", "employment",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("report", data_to_use[i,4]))){
+        new_row <- c("report", "employment",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("map", data_to_use[i,4]))){
+        new_row <- c("map", "employment",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("visualization", data_to_use[i,4]))){
+        new_row <- c("data visualization", "employment",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+    }
+    #--------------------------income----------------------------
+    if (any(grepl("income", data_to_use[i,3]))) {
+      if(any(grepl("table download", data_to_use[i,4]))){
+        new_row <- c("table download", "income",46)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("table", data_to_use[i,4]))){
+        new_row <- c("table", "income",46)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("report", data_to_use[i,4]))){
+        new_row <- c("report", "income",46)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("map", data_to_use[i,4]))){
+        new_row <- c("map", "income",46)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("visualization", data_to_use[i,4]))){
+        new_row <- c("data visualization", "income",46)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+    }
+    #---------------------------tax----------------------------
+    if (any(grepl("tax", data_to_use[i,3]))) {
+      if(any(grepl("table download", data_to_use[i,4]))){
+        new_row <- c("table download", "tax",9)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("table", data_to_use[i,4]))){
+        new_row <- c("table", "tax",9)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("report", data_to_use[i,4]))){
+        new_row <- c("report", "tax",9)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("map", data_to_use[i,4]))){
+        new_row <- c("map", "tax",9)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("visualization", data_to_use[i,4]))){
+        new_row <- c("data visualization", "tax",9)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+    }
+    #---------------------------labor force----------------------------
+    if (any(grepl("labor force", data_to_use[i,3]))) {
+      if(any(grepl("table download", data_to_use[i,4]))){
+        new_row <- c("table download", "labor force",18)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("table", data_to_use[i,4]))){
+        new_row <- c("table", "labor force",18)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("report", data_to_use[i,4]))){
+        new_row <- c("report", "labor force",18)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("map", data_to_use[i,4]))){
+        new_row <- c("map", "labor force",18)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("visualization", data_to_use[i,4]))){
+        new_row <- c("data visualization", "labor force",18)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+    }
+    #---------------------------wage----------------------------
+    if (any(grepl("wage", data_to_use[i,3]))) {
+      if(any(grepl("table download", data_to_use[i,4]))){
+        new_row <- c("table download", "wage",22)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("table", data_to_use[i,4]))){
+        new_row <- c("table", "wage",22)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("report", data_to_use[i,4]))){
+        new_row <- c("report", "wage",22)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("map", data_to_use[i,4]))){
+        new_row <- c("map", "wage",22)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("visualization", data_to_use[i,4]))){
+        new_row <- c("data visualization", "wage",22)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+    }
+    #---------------------------job----------------------------
+    if (any(grepl("job", data_to_use[i,3]))) {
+      if(any(grepl("table download", data_to_use[i,4]))){
+        new_row <- c("table download", "job",9)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("table", data_to_use[i,4]))){
+        new_row <- c("table", "job",9)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("report", data_to_use[i,4]))){
+        new_row <- c("report", "job",9)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("map", data_to_use[i,4]))){
+        new_row <- c("map", "job",9)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("visualization", data_to_use[i,4]))){
+        new_row <- c("data visualization", "job",9)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+    }
+    #---------------------------economy----------------------------
+    if (any(grepl("economy", data_to_use[i,3]))) {
+      if(any(grepl("table download", data_to_use[i,4]))){
+        new_row <- c("table download", "economy",38)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("table", data_to_use[i,4]))){
+        new_row <- c("table", "economy",38)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("report", data_to_use[i,4]))){
+        new_row <- c("report", "economy",38)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("map", data_to_use[i,4]))){
+        new_row <- c("map", "economy",38)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("visualization", data_to_use[i,4]))){
+        new_row <- c("data visualization", "economy",38)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+    }
+  }
+  colnames(df_stack2) <- col_name
+  
+  ggplot(df_stack2, aes(x = sub, y = 1, fill = tool)) +
+    geom_col() +
+    scale_fill_manual(values = cbPalette) +
+    xlab("sub-category")+
+    ylab("count")+
+    theme(axis.text.x = element_text(angle = 45, hjust = 1),
+          plot.title = element_text(hjust = 0.5, face = "bold"))+
+    ggtitle("Different type of tools inside each sub-category")
+}
+
+pie_graph <-function(selected_state, data_table){
+  if (selected_state == "All states" ){
+    data_to_use = data_table
+  }
+  else{
+    data_to_use = data_table[data_table$State..Country== selected_state,]
+  }
+  count_result <- data_to_use %>% group_by(Data.Source.Census..Standardized.) %>% summarize(count = n())
+  count_result <- count_result[-1, ]
+  countinue <- data_to_use %>% group_by(Data.Source.Non.Census..Standardized.) %>% summarize(count = n())
+  countinue <- countinue[-1, ]
+  colnames(count_result) <- c("data source", "count")
+  colnames(countinue) <- c("data source", "count")
+  combined_df <- rbind(count_result, countinue)
+  sorted_df <- combined_df[order(- combined_df$count), ]
+  pie(sorted_df$count , labels = sorted_df$`data source`, border="white", col=cbPalette, cex=0.5)
+}
 
 
 #Word cloud for variable names
@@ -347,6 +559,7 @@ ui <-  fluidPage(
 
 
 
+
 # Define server logic required to draw a histogram ----
 server <- function(input, output) {
   
@@ -363,6 +576,7 @@ server <- function(input, output) {
   #Economy Findings
   output$fin_econ_plot1 <- renderPlot({econ_category_plot(selected_state = input$dropdown1)})
   
+
   #Housing Findings
   output$fin_hous_text1 <- renderText({{paste("Type of Sub-Category for: ", input$dropdownH)}})
   output$fin_hous_plot1 <- renderPlot({sub_cat_counts(state=input$dropdownH, data_source = housing_data)})
@@ -378,6 +592,24 @@ server <- function(input, output) {
   output$fin_HE_plot2 <- renderPlot({tool_cloud(state=input$dropdownHE, data_source = HE_data)})
   output$fin_HE_text3 <- renderText({{paste("Word cloud on variables for: ", input$dropdownHE)}})
   output$fin_HE_plot3 <- renderPlot({variable_cloud(state=input$dropdownHE, data_source = HE_data)})
+
+  output$plot3_1 <- renderPlot({
+    econ_category_plot(selected_state = input$dropdown3)
+    
+    })
+  
+  output$plot3_2 <- renderPlot({
+    sub_cat_and_tool(selected_state = input$dropdown3)
+  })
+  
+  output$plot3_3 <- renderPlot({
+    pie_graph(selected_state = input$dropdown3, data_table = econ_data)
+  })
+  
+  output$text2 <- renderText({
+    {paste("Word cloud on", input$dropdown2)}
+  })
+
   
 }
 
