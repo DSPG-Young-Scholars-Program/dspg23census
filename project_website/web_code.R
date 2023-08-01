@@ -888,10 +888,6 @@ ui <-  fluidPage(
 # Define server logic required to draw a histogram ----
 server <- function(input, output) {
   
-  #Overview
-  output$overview_plot1 <- renderPlot({lead_types_map()})
-  output$overview_plot2 <- renderPlot({coord_num_map()})
-  
   #Topic Modeling-BERT
   
   #Mission Statements
@@ -900,7 +896,6 @@ server <- function(input, output) {
   
   #FSCPE
   output$fscpe_table <- renderDataTable(fscpe)
-  
 
   #Intro Findings
   output$intro_plot1 <- renderPlotly({lead_types_map()})
@@ -916,7 +911,6 @@ server <- function(input, output) {
   output$fin_dem_2 <- renderPlot({dem_sub_cat_and_tool(selected_state = input$dropdownD)})
   output$fin_dem_3 <- renderPlot({dem_census_source(selected_state = input$dropdownD)})
   output$fin_dem_4 <- renderPlot({dem_non_census_source(selected_state = input$dropdownD)})
-
 
   #Housing Findings
   output$download_housing_data <- downloadHandler(
@@ -941,7 +935,6 @@ server <- function(input, output) {
   output$fin_HE_plot2 <- renderPlot({tool_cloud(state=input$dropdownHE, data_source = HE_data)})
   output$fin_HE_text3 <- renderText({{paste("Word cloud on variables for: ", input$dropdownHE)}})
   output$fin_HE_plot3 <- renderPlot({variable_cloud(state=input$dropdownHE, data_source = HE_data)})
-
   
   #Economy Findings
   output$download_econ_data <- downloadHandler(
