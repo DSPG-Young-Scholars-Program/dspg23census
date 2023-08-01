@@ -16,9 +16,18 @@ library(gcookbook)
 library(knitr)
 library(kableExtra)
 
+library(wordcloud)
+library(RColorBrewer)
+library(reshape)
+library(tm)
+library(stringr)
+library(usmap)
+library(readxl)
+
+
 cbPalette <- c("#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
 
-all_states <- c("All sample states", "Alabama", "Alaska","Arizona", "Arkansas", "California",
+all_states <- c("All Sample States and Territories", "Alabama", "Alaska","Arizona", "Arkansas", "California",
                 "Colorado", "Connecticut", "Delaware", "District of Colombia", 
                 "Florida", "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana",
                 "Iowa", "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", 
@@ -31,7 +40,7 @@ dem_data$Sub.categories = tolower(dem_data$Sub.categories)
 # Plot 1
 dem_category_plot <- function(selected_state) {
   # Initialize variables to store the counts
-  if (selected_state == "All sample states"){
+  if (selected_state == "All Sample States and Territories"){
     data_to_use = dem_data$Sub.categories
   }
   else{
@@ -53,7 +62,7 @@ dem_category_plot <- function(selected_state) {
   counts <- c(estimates, projections)
   total_df <- data.frame(category, counts)
   # Barplot
-  barplot(counts, names.arg = category, col = "steelblue",
+  barplot(counts, names.arg = category, col = cbPalette,
           main = paste("Types of Sub-category:", selected_state),
           xlab = "Category: Demographics", ylab = "Counts", cex.names = 0.9, ylim = c(0, 250))
   # Add counts as text above the bars
@@ -73,7 +82,7 @@ dem_sub_cat_and_tool <- function(selected_state){
   col_name = c("tool","sub","count")
   colnames(df_stack2) <- col_name
   
-  if (selected_state == "All sample states" ){
+  if (selected_state == "All Sample States and Territories" ){
     data_to_use = dem_data
   }
   else{
@@ -165,7 +174,7 @@ dem_census_source <- function(selected_state){
   col_name = c("source")
   colnames(df_stack3) <- col_name
   
-  if (selected_state == "All sample states" ){
+  if (selected_state == "All Sample States and Territories" ){
     data_to_use = dem_data
   }
   else{
@@ -198,8 +207,9 @@ dem_census_source <- function(selected_state){
   colnames(df_stack3) <- col_name 
   source_types <- df_stack3 %>% group_by(source)%>%
     summarise(count = n())
-  print(source_types)
-  pie(source_types$count , labels = source_types$source, border="white", col=cbPalette, cex=0.5)
+  # Adding a title to the pie graph
+  title <- paste("Demographic Data  Source (Census) Distribution in", selected_state)
+  pie(source_types$count , labels = source_types$source, border="white", col=cbPalette, cex=0.5, main=title)
 }
 
 
@@ -211,7 +221,7 @@ dem_non_census_source <- function(selected_state){
   col_name = c("source")
   colnames(df_stack3) <- col_name
   
-  if (selected_state == "All sample states" ){
+  if (selected_state == "All Sample States and Territories" ){
     data_to_use = dem_data
   }
   else{
@@ -225,9 +235,75 @@ dem_non_census_source <- function(selected_state){
   df_stack3 <- data.frame(Source = sources)
   
   # Display the data frame using kable
-  kable(df_stack3, format = "html") %>%
-    kable_styling(full_width = FALSE) # You can set 'full_width = TRUE' for a wider table
+  #kable(df_stack3, format = "html") %>%
+   # kable_styling(full_width = FALSE) # You can set 'full_width = TRUE' for a wider table
 }
+
+
+#Makes wordclouds using input of 'combo'
+cloud <- function(combo) {
+  #Turns string into corpus of words
+  docs <- Corpus(VectorSource(combo))
+  
+  #Cleaning of corpus
+  docs <- docs %>% tm_map(removeNumbers) %>% tm_map(removePunctuation) %>% tm_map(stripWhitespace)
+  docs <- tm_map(docs, content_transformer(tolower))
+  docs <- tm_map(docs, removeWords, stopwords("english"))
+  
+  #Turns corpus into term-document-matrix
+  dtm <- TermDocumentMatrix(docs)
+  mtx <- as.matrix(dtm)
+  words <- sort(rowSums(mtx), decreasing = TRUE)
+  df <- data.frame(word = names(words), freq=words)
+  
+  #Creates wordcloud
+  set.seed(33)
+  wordcloud(words = df$word, freq = df$freq, min.freq = 1, max.words = 100, random.order = FALSE, rot.per = 0, colors = brewer.pal(4, "Set1"))
+}
+
+
+# Plot 5
+
+#Word cloud for variable names
+variable_cloud <- function(state, data_source) {
+  if(state=="All Sample States and Territories"){
+    combo <- ""
+    for (i in 1:nrow(data_source)) {
+      combo <- paste(combo, data_source[i,7], sep="")
+    }
+  }
+  else{
+    combo <- ""
+    for (i in 1:nrow(data_source)) {
+      if(data_source$State..Country[i]==state) {
+        combo <- paste(combo, data_source[i,7], sep="")
+      }
+    }
+  }
+  cloud(combo)
+}
+
+# Plot 6
+
+#Word cloud for tool names
+tool_cloud <- function(state, data_source) {
+  if(state=="All Sample States and Territories"){
+    combo <- ""
+    for (i in 1:nrow(data_source)) {
+      combo <- paste(combo, data_source[i,5], sep="")
+    }
+  }
+  else{
+    combo <- ""
+    for (i in 1:nrow(data_source)) {
+      if(data_source$State..Country[i]==state) {
+        combo <- paste(combo, data_source[i,5], sep="")
+      }
+    }
+  }
+  cloud(combo)
+}
+
 
 
 #------------------------------------------------------------------------------------
@@ -292,7 +368,11 @@ ui <-  fluidPage(
                         plotOutput("fin_dem_1"),
                         plotOutput("fin_dem_2"),
                         plotOutput("fin_dem_3"),
-                        plotOutput("fin_dem_4")
+                        dataTableOutput("fin_dem_4"),
+                        textOutput("fin_dem_text2"),
+                        plotOutput("fin_dem_plot2"),
+                        textOutput("fin_dem_text3"),
+                        plotOutput("fin_dem_plot3")
                       ))),
              tabPanel("Economy"),
              tabPanel("Housing"),
@@ -320,29 +400,18 @@ server <- function(input, output) {
   #    {paste("Distribution of Data Tools' Category in ", input$dropdown2)}
   #})
   
-  output$fin_dem_1 <- renderPlot({
-    dem_category_plot(selected_state = input$dropdown3)
-    
-  })
+  output$fin_dem_1 <- renderPlot({dem_category_plot(selected_state = input$dropdown3)})
+  output$fin_dem_2 <- renderPlot({dem_sub_cat_and_tool(selected_state = input$dropdown3)})
+  output$fin_dem_3 <- renderPlot({dem_census_source(selected_state = input$dropdown3)})
   
-  output$fin_dem_2 <- renderPlot({
-    dem_sub_cat_and_tool(selected_state = input$dropdown3)
-  })
-  
-  output$fin_dem_3 <- renderPlot({
-    dem_census_source(selected_state = input$dropdown3)
-  })
-  
-  output$fin_dem_4 <- renderPlot({
+  output$fin_dem_4 <- renderDataTable({
     dem_non_census_source(selected_state = input$dropdown3)
-  })
+ })
   
-  #output$fin_dem_4  <- dem_non_census_source(selected_state = input$dropdown3){
-   # ReactiveDf() %>%
-    #  kable(df_stack3, format = "html") %>%
-    #  kable_styling(full_width = FALSE)
-    
- # }
+  output$fin_dem_text2 <- renderText({{paste("Word cloud on tool names for: ", input$dropdown3)}})
+  output$fin_dem_plot2 <- renderPlot({tool_cloud(state=input$dropdown3, data_source = dem_data)})
+  output$fin_dem_text3 <- renderText({{paste("Word cloud on variables for: ", input$dropdown3)}})
+  output$fin_dem_plot3 <- renderPlot({variable_cloud(state=input$dropdown3, data_source = dem_data)})
   
   output$text2 <- renderText({
     {paste("Word cloud on", input$dropdown2)}
