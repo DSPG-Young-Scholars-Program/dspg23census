@@ -63,14 +63,18 @@ HE_data <- read.csv('Finding_Health_and_Education/HE_cleaned.csv')
 #Mission statement data
 mission_statements <- read.csv('Mission_Statements/mission_statements.csv')
 
+#FSCPE Response data
+fscpe <- read.csv('FSCPE Response.csv')
+
 
 
 #Maps
 
 #Map of host types for lead agencies
 lead_types_map <- function() {
+  custom_colors <- brewer.pal(4, "Set1")
   hosts <- data.frame(state = mission_statements$State, type = mission_statements$Host_Type)
-  host_map <- plot_usmap(data = hosts, values = "type") + labs(title="Type of Lead Agency by State")
+  host_map <- plot_usmap(data = hosts, values = "type") + labs(title="Type of Lead Agency by State") + scale_fill_manual(values=custom_colors)
   host_map
 }
 
@@ -81,9 +85,11 @@ coord_num_map <- function() {
   coord_map
 }
 
+#Map of states that we have/haven't examined
 examined_states <- function() {
+  custom_colors <- brewer.pal(2, "Set1")
   examined_SDC <- data.frame(state = mission_statements$State, value = mission_statements$Examined)
-  examined_map <- plot_usmap(data = examined_SDC, values="value") + labs(title = "States That We Have Examined")
+  examined_map <- plot_usmap(data = examined_SDC, values="value") + labs(title = "States That We Have Examined") + scale_fill_manual(values=custom_colors)
   examined_map
 }
 
@@ -140,7 +146,7 @@ mission_cloud <- function(state) {
 sub_cat_counts <- function(state, data_source) {
   if(state=="All Sample States") {
     sub_cats <- ggplot(data_source, aes(x=Sub.categories)) + geom_bar(fill="steelblue") + labs(x="Sub-Category", y="Counts") + theme(axis.text.x = element_text(angle = 25))
-    sub_cats
+    sub_cats + coord_flip()
   }
   else {
     State <- str_to_title(state)
@@ -148,7 +154,7 @@ sub_cat_counts <- function(state, data_source) {
     state_df <- data.frame()
     state_df <- rbind(state_df, state_input)
     sub_cats <- ggplot(state_df, aes(x=Sub.categories)) + geom_bar(fill="steelblue") + labs(x="Sub-Category", y="Counts") + theme(axis.text.x = element_text(angle = 25))
-    sub_cats
+    sub_cats + coord_flip()
   }
 }
 
@@ -771,19 +777,23 @@ ui <-  fluidPage(
                   br(),
                   box(title="Examining Mission Statements of State Data Centers",
                     p("Out of the 56 State Data Centers that we examined, 42 had mission statements that related to the work of the SDC."),
-                    p("States that did not have an SDC mission statement included: Colorado, Georgia, Idaho, Illinois, Louisiana, 
-                      Nebraska, New Mexico, Virginia, Washington, West Virginia, Wyoming, Puerto Rico, Guam, U.S. Virgin Islands, American Samoa"),
                     br(),
                     sidebarLayout(sidebarPanel(
                       selectInput("dropdownM", "Which state's mission statement are you interested in?", mission_states)),
                     mainPanel(textOutput("mission_text1"),
-                           plotOutput("mission_plot1"))))),
-             tabPanel("FSCPE Response"),
-             navbarMenu("SDC Findings",
+                           plotOutput("mission_plot1"))),
+                    p("States that did not have an SDC mission statement included: Colorado, Georgia, Idaho, Illinois, Louisiana, 
+                      Nebraska, New Mexico, Virginia, Washington, West Virginia, Wyoming, Puerto Rico, Guam, U.S. Virgin Islands, American Samoa"))),
+             tabPanel("FSCPE Response",
+                      box(title = "FSCPE Emails and Responses",
+                          p("We emailed 56 FSCPE contacts, asking about the top six data sources that they use."),
+                          p("Of the 56 contacts, we received responses from 10.")),
+                      mainPanel(dataTableOutput("fscpe_table"))),
+             navbarMenu("State Data Center Findings",
                         tabPanel("Intro",
-                                 mainPanel(plotOutput("intro_plot1"),
-                                           plotOutput("intro_plot2"),
-                                           plotOutput("intro_plot3"))),
+                                 mainPanel(plotlyOutput("intro_plot1"),
+                                           plotlyOutput("intro_plot2"),
+                                           plotlyOutput("intro_plot3"))),
                         tabPanel("Demographics",
                                  br(),
                                  sidebarLayout(sidebarPanel(
@@ -830,17 +840,13 @@ ui <-  fluidPage(
                                     plotOutput("fin_HE_plot2"), 
                                     textOutput("fin_HE_text3"), 
                                     plotOutput("fin_HE_plot3")
-                                    )))
-                        )))
+                                    ))),
+                        tabPanel("Conclusions"))))
   
  
 
 # Define server logic required to draw a histogram ----
 server <- function(input, output) {
-  
-  #Overview
-  output$overview_plot1 <- renderPlot({lead_types_map()})
-  output$overview_plot2 <- renderPlot({coord_num_map()})
   
   #Topic Modeling-BERT
   
@@ -848,19 +854,19 @@ server <- function(input, output) {
   output$mission_text1 <- renderText({{paste("Word cloud on", input$dropdownM, "mission statement.")}})
   output$mission_plot1 <- renderPlot({mission_cloud(state=input$dropdownM)})
   
-  
+  #FSCPE
+  output$fscpe_table <- renderDataTable(fscpe)
 
   #Intro Findings
-  output$intro_plot1 <- renderPlot({lead_types_map()})
-  output$intro_plot2 <- renderPlot({coord_num_map()})
-  output$intro_plot3 <- renderPlot({examined_states()})
+  output$intro_plot1 <- renderPlotly({lead_types_map()})
+  output$intro_plot2 <- renderPlotly({coord_num_map()})
+  output$intro_plot3 <- renderPlotly({examined_states()})
 
   #Demographic Findings
   output$fin_dem_1 <- renderPlot({dem_category_plot(selected_state = input$dropdownD)})
   output$fin_dem_2 <- renderPlot({dem_sub_cat_and_tool(selected_state = input$dropdownD)})
   output$fin_dem_3 <- renderPlot({dem_census_source(selected_state = input$dropdownD)})
   output$fin_dem_4 <- renderPlot({dem_non_census_source(selected_state = input$dropdownD)})
-
 
   #Housing Findings
   output$fin_hous_text1 <- renderText({{paste("Type of Sub-Category for: ", input$dropdownH)}})
@@ -877,7 +883,6 @@ server <- function(input, output) {
   output$fin_HE_plot2 <- renderPlot({tool_cloud(state=input$dropdownHE, data_source = HE_data)})
   output$fin_HE_text3 <- renderText({{paste("Word cloud on variables for: ", input$dropdownHE)}})
   output$fin_HE_plot3 <- renderPlot({variable_cloud(state=input$dropdownHE, data_source = HE_data)})
-
   
   #Economy Findings
   output$fin_econ_plot1 <- renderPlot({econ_category_plot(selected_state = input$dropdown3)})

@@ -23,7 +23,7 @@ library(usmap)
 
 
 ```{r}
-data <- read_excel("Mission_Statements/mission_statements.xlsx")
+data <- read_excel("~/Documents/GitHub/dspg23census/project_website/Mission_Statements/mission_statements.xlsx")
 ```
 
 
@@ -33,13 +33,21 @@ data <- read_excel("Mission_Statements/mission_statements.xlsx")
 #Bar graph of host org. counts
 host_counts <- ggplot(data, aes(x=Host_Type)) + geom_bar(fill="steelblue") + labs(x="Type of Host Organization", y="Count", title="Host Ogranizations for SDC Lead Agencies")
 ggplotly(host_counts)
+```
 
-#fix: change color
+```{r}
+#fix: change color - color blind palette
+#fix: add PR and Guam
 #map of host types
+
+custom_colors <- brewer.pal(4, "Set1")
 hosts <- data.frame(state = data$State, type = data$Host_Type)
-host_map <- plot_usmap(data = hosts, values = "type") + labs(title="Type of Lead Agency")
+host_map <- plot_usmap(data = hosts, values = "type", labels = TRUE) + labs(title="Type of Lead Agency") + scale_fill_manual(values=custom_colors)
 ggplotly(host_map)
 ```
+
+
+
 
 ```{r}
 #Do SDCs have Mission Statements?
@@ -66,10 +74,23 @@ coord_map <- plot_usmap(data=coord, values="number") + labs(title="Number of Coo
 ggplotly(coord_map)
 ```
 
+```{r}
+#Map of number of coordinating agencies
+#custom_colors <- brewer.pal(1, "Set1")
+
+coord <- data.frame(state = data$State, number = data$Coordinating)
+coord_map <- plot_usmap(data=coord, values="number") + labs(title="Number of Coordinating Agencies") #+ scale_fill_gradient(values=custom_colors)
+ggplotly(coord_map)
+```
+
+
 
 ```{r}
+custom_colors <- brewer.pal(2, "Set1")
+
+data$Examined <- factor(data$Examined)
 examined_SDC <- data.frame(state = data$State, value = data$Examined)
-examined_map <- plot_usmap(data = examined_SDC, values="value")
+examined_map <- plot_usmap(data = examined_SDC, values="value") + scale_fill_manual(values=custom_colors)
 ggplotly(examined_map)
 ```
 
