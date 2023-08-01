@@ -35,6 +35,13 @@ for (i in 1:nrow(data)) {
     combo <- paste(combo, data$Mission_Statment_Text[i], sep="")
   }
 }
+
+
+combo <- ""
+for (i in 1:nrow(data)) {
+    print(data$Mission_Statment_Text[i])
+    combo <- paste(combo, data$Mission_Statment_Text[i], sep="")
+}
 ```
 
 ```{r}
@@ -102,6 +109,7 @@ coord <- data.frame(state = data$State, number = data$Coordinating)
 coord_map <- plot_usmap(data=coord, values="number") + labs(title="Number of Coordinating Agencies")
 ggplotly(coord_map)
 ```
+
 
 
 
