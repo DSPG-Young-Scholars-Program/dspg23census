@@ -524,6 +524,10 @@ ui <-  fluidPage(
                             p("- Treena Goswami*, Postdoc Researcher Associates"),
                         )),
              tabPanel("Topic Modeling",
+                      box(title = "Topic Modeling",
+                          p("In statistics and natural language processing, a topic model is a type of statistical model for discovering the abstract 'topics' that occur in a collection of documents."),
+                          p("Some commonly used packages for topic modeling include GENSIM, BERT, and NLTK."),
+                          p("In our project, we used GENSIM and BERT to examine topics within State Constitutions.")),
                       box(title="BERT",
                           p("We applied BERT to the top 5 State Constitutions with the most amendments."),
                           p("1.California"),
@@ -531,17 +535,21 @@ ui <-  fluidPage(
                           p("3.Maryland"),
                           p("4.Oregon"),
                           p("5.Texas")),
-                      box(title="BERT Example: California Data")),
-  tabPanel("Mission Statements",
-           br(),
-           p("Out of all 56 SDCs, 39 had mission statements that related to the work of the SDC."),
-           sidebarLayout(sidebarPanel(
-             selectInput("dropdownM", "Which state's mission statement are you interested in?",
-                         mission_states)),
-             mainPanel(textOutput("mission_text1"),
-                       plotOutput("mission_plot1")
-             ))),
-             navbarMenu("Findings",
+                      box(title="BERT Example: California Data",
+                          tags$img(height=450, width=450, src="CABert.png"))),
+              tabPanel("Mission Statements",
+                  br(),
+                  box(title="Examining Mission Statements of State Data Centers",
+                    p("Out of the 56 State Data Centers that we examined, 39 had mission statements that related to the work of the SDC."),
+                    p("States that did not have an SDC mission statement included: Alaska, Colorado, Georgia, Idaho, Illinois, Louisiana, Michigan, 
+                      Nebraska, New Mexico, Virginia, Washington, West Virginia, Wyoming, Puerto Rico, Guam, U.S. Virgin Islands, American Samoa"),
+                    br(),
+                    sidebarLayout(sidebarPanel(
+                      selectInput("dropdownM", "Which state's mission statement are you interested in?", mission_states)),
+                    mainPanel(textOutput("mission_text1"),
+                           plotOutput("mission_plot1"))))),
+             navbarMenu("SDC Findings",
+                        tabPanel("Intro"),
                         tabPanel("Demographics"),
                         tabPanel("Economy",
                                  br(),
@@ -579,17 +587,8 @@ ui <-  fluidPage(
                                     plotOutput("fin_HE_plot3")
                         )))
                         ),
-             tabPanel("Team",
-                        box(title="Meet Our Team", width = 6,
-                          br(),
-                          h5("DSPG, University of Virginia, Biocomplexity Institute, Social and Decision Analytics"),
-                          p("- Marijke van der Geer, Fourth Year @ SDSU (Stats & DS)"),
-                          p("- Jianing Cai, Fourth Year @ UVA (CS & Math)"),
-                          br(),
-                          h5("University of Virginia, Biocomplexity Institute, Social and Decision Analytics"),
-                          p("- Vicki Lancaster, Principal Scientist"),
-                          p("- Neil Kattampallil, Research Scientist"),
-                          p("- Treena Goswami, Postdoc Researcher")))))
+             tabPanel("FSCPE"
+                        )))
   
  
 
