@@ -37,9 +37,9 @@ all_states <- c("All Sample States", "Alabama", "Alaska","Arizona", "Arkansas", 
                 "Puerto Rico", "Guam")
 
 
-mission_states <- c("All Sample States", "Alabama", "Arizona", "Arkansas", "California",
+mission_states <- c("All Sample States", "Alabama", "Alaska", "Arizona", "Arkansas", "California",
                     "Connecticut", "Delaware", "District of Colombia", "Florida", "Hawaii", "Indiana",
-                    "Iowa", "Kansas", "Kentucky", "Maine", "Maryland", "Massachusetts", "Minnesota", 
+                    "Iowa", "Kansas", "Kentucky", "Maine", "Maryland", "Massachusetts", "Michigan", "Minnesota", 
                     "Mississippi", "Missouri", "Montana", "Nevada", "New Hampshire", "New Jersey", "New York", 
                     "North Carolina", "North Dakota", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", 
                     "Rhode Island", "South Carolina", "South Dakota", "Tennessee", "Texas",
@@ -64,6 +64,9 @@ HE_data <- read.csv('Finding_Health_and_Education/HE_cleaned.csv')
 mission_statements <- read.csv('Mission_Statements/mission_statements.csv')
 
 
+
+#Maps
+
 #Map of host types for lead agencies
 lead_types_map <- function() {
   hosts <- data.frame(state = mission_statements$State, type = mission_statements$Host_Type)
@@ -71,12 +74,17 @@ lead_types_map <- function() {
   host_map
 }
 
-
 #Map of number of coordinating agencies
 coord_num_map <- function() {
   coord <- data.frame(state = mission_statements$State, number = mission_statements$Coordinating)
   coord_map <- plot_usmap(data=coord, values="number") + labs(title="Number of Coordinating Agencies by State")
   coord_map
+}
+
+examined_states <- function() {
+  examined_SDC <- data.frame(state = mission_statements$State, value = mission_statements$Examined)
+  examined_map <- plot_usmap(data = examined_SDC, values="value") + labs(title = "States That We Have Examined")
+  examined_map
 }
 
 
@@ -726,7 +734,6 @@ ui <-  fluidPage(
                             p("3. Email survey sent to all 56 The Federal-State Cooperative for Population Estimates (FSCPE) contacts."),
                             p("4. Evaluation of state, U.S. territories, and District of Columbia data centers."),
                             p("5. Search of UVA library databases: Policy Commons Database (Policy File Index Database, State and Local Government Databases. Policy Map Customer Stories)")
-        
                       ),
                       panel(h3("Who We Are", style = "color: #1B3766;"),
                             h4("University of Virginia, Biocomplexity Institute, Social and Decision Analytics Division", style = "color: #E57200;"),
@@ -746,9 +753,11 @@ ui <-  fluidPage(
                             h6("*For more information on the project, please reach out to ",
                                tags$a(href = "mailto:gcm8gw@virgnia.edu", "gcm8gw@virgnia.edu"))
                         )),
-             navbarMenu("Topic Modeling",
-             tabPanel("Gensim"),
-             tabPanel("BERT",
+             tabPanel("Topic Modeling",
+                      box(title = "Topic Modeling",
+                          p("In statistics and natural language processing, a topic model is a type of statistical model for discovering the abstract 'topics' that occur in a collection of documents."),
+                          p("Some commonly used packages for topic modeling include GENSIM, BERT, and NLTK."),
+                          p("In our project, we used GENSIM and BERT to examine topics within State Constitutions.")),
                       box(title="BERT",
                           p("We applied BERT to the top 5 State Constitutions with the most amendments."),
                           p("1.California"),
@@ -756,21 +765,24 @@ ui <-  fluidPage(
                           p("3.Maryland"),
                           p("4.Oregon"),
                           p("5.Texas")),
-                      box(title="BERT Example: California Data"))),
-             tabPanel("Mission Statements",
-                      br(),
-                      p("Out of all 56 SDCs, 39 had mission statements that related to the work of the SDC."),
-                      sidebarLayout(sidebarPanel(
-                        selectInput("dropdownM", "Which state's mission statement are you interested in?",
-                                    mission_states)),
-                        mainPanel(textOutput("mission_text1"),
-                                  plotOutput("mission_plot1")
-                                  ))),
-             tabPanel("FSCPE Response",
-                      ),
-             navbarMenu("Findings",
-                        tabPanel("Introduction"
-                                 ),
+                      box(title="BERT Example: California Data",
+                          tags$img(height=450, width=450, src="CABert.png"))),
+              tabPanel("Mission Statements",
+                  br(),
+                  box(title="Examining Mission Statements of State Data Centers",
+                    p("Out of the 56 State Data Centers that we examined, 42 had mission statements that related to the work of the SDC."),
+                    p("States that did not have an SDC mission statement included: Colorado, Georgia, Idaho, Illinois, Louisiana, 
+                      Nebraska, New Mexico, Virginia, Washington, West Virginia, Wyoming, Puerto Rico, Guam, U.S. Virgin Islands, American Samoa"),
+                    br(),
+                    sidebarLayout(sidebarPanel(
+                      selectInput("dropdownM", "Which state's mission statement are you interested in?", mission_states)),
+                    mainPanel(textOutput("mission_text1"),
+                           plotOutput("mission_plot1"))))),
+             navbarMenu("SDC Findings",
+                        tabPanel("Intro",
+                                 mainPanel(plotOutput("intro_plot1"),
+                                           plotOutput("intro_plot2"),
+                                           plotOutput("intro_plot3"))),
                         tabPanel("Demographics",
                                  br(),
                                  sidebarLayout(sidebarPanel(
@@ -794,30 +806,33 @@ ui <-  fluidPage(
                                              plotOutput("fin_econ_plot4")
                                              ))),
                         tabPanel("Housing",
-                                 br(),
-                                 sidebarLayout(sidebarPanel(
-                                   selectInput("dropdownH", "Which state are you interested in?",
-                                               all_states)),
-                                   mainPanel(textOutput("fin_hous_text1"),
-                                             plotOutput("fin_hous_plot1"),
-                                             textOutput("fin_hous_text2"),
-                                             plotOutput("fin_hous_plot2"),
-                                             textOutput("fin_hous_text3"),
-                                             plotOutput("fin_hous_plot3")
-                                             ))),
+                          br(),
+                          sidebarLayout(sidebarPanel(
+                          selectInput("dropdownH", "Which state are you interested in?",
+                                    all_states)),
+                          mainPanel(textOutput("fin_hous_text1"), 
+                                    plotOutput("fin_hous_plot1"), 
+                                    textOutput("fin_hous_text2"), 
+                                    plotOutput("fin_hous_plot2"), 
+                                    textOutput("fin_hous_text3"), 
+                                    plotOutput("fin_hous_plot3")
+                                   ))),
                         tabPanel("Diversity"),
                         tabPanel("Health & Education",
-                                 br(),
-                                 sidebarLayout(sidebarPanel(
-                                   selectInput("dropdownHE", "Which state are you interested in?",
-                                               all_states)),
-                                   mainPanel(textOutput("fin_HE_text1"),
-                                             plotOutput("fin_HE_plot1"),
-                                             textOutput("fin_HE_text2"),
-                                             plotOutput("fin_HE_plot2"),
-                                             textOutput("fin_HE_text3"),
-                                             plotOutput("fin_HE_plot3")
-                                             )))
+                          br(),
+                          sidebarLayout(sidebarPanel(
+                          selectInput("dropdownHE", "Which state are you interested in?",
+                                    all_states)),
+                          mainPanel(textOutput("fin_HE_text1"), 
+                                    plotOutput("fin_HE_plot1"), 
+                                    textOutput("fin_HE_text2"), 
+                                    plotOutput("fin_HE_plot2"), 
+                                    textOutput("fin_HE_text3"), 
+                                    plotOutput("fin_HE_plot3")
+                        )))
+                        ),
+             tabPanel("FSCPE"
+
                         )))
   
  
@@ -836,11 +851,18 @@ server <- function(input, output) {
   output$mission_plot1 <- renderPlot({mission_cloud(state=input$dropdownM)})
   
   
+
+  #Intro Findings
+  output$intro_plot1 <- renderPlot({lead_types_map()})
+  output$intro_plot2 <- renderPlot({coord_num_map()})
+  output$intro_plot3 <- renderPlot({examined_states()})
+
   #Demographic Findings
   output$fin_dem_1 <- renderPlot({dem_category_plot(selected_state = input$dropdownD)})
   output$fin_dem_2 <- renderPlot({dem_sub_cat_and_tool(selected_state = input$dropdownD)})
   output$fin_dem_3 <- renderPlot({dem_census_source(selected_state = input$dropdownD)})
   output$fin_dem_4 <- renderPlot({dem_non_census_source(selected_state = input$dropdownD)})
+
 
   #Housing Findings
   output$fin_hous_text1 <- renderText({{paste("Type of Sub-Category for: ", input$dropdownH)}})
