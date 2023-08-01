@@ -20,6 +20,8 @@ library(stringr)
 library(usmap)
 library(readxl)
 library(gcookbook)
+library(knitr)
+library(kableExtra)
 
 
 
@@ -44,6 +46,9 @@ mission_states <- c("All Sample States", "Alabama", "Alaska", "Arizona", "Arkans
                     "Utah", "Vermont", "Wisconsin")
 
 #Data Imports
+#Demo data
+dem_data <- read.csv("Finding_Demographics/SDC_Demographics.csv")
+dem_data$Sub.categories = tolower(dem_data$Sub.categories)
 
 #Econ data
 econ_data <- read.csv("Finding_Economy/economy_compilation.csv")
@@ -193,7 +198,7 @@ econ_category_plot <- function(selected_state) {
   total_df <- data.frame(category, counts)
   # Barplot
   barplot(counts, names.arg = category, col = "steelblue",
-          main = paste("Distribution of Data Tools' Category in", selected_state),
+          main = paste("Types of Sub-category:", selected_state),
           xlab = "Category: Economy", ylab = "Counts", cex.names = 0.9, ylim = c(0, 60))
   # Add counts as text above the bars
   text(x = c(0.7, 1.9, 3.1, 4.3, 5.5, 6.7, 7.9), y = counts,
@@ -427,7 +432,7 @@ econ_pie_graph_noncensus <- function(selected_state, data_table) {
   # Adding a title to the pie graph
   title <- paste("Economy Data Source (Non Census) Distribution in", selected_state)
   
-  #par(mfrow = c(1, 1), mar = c(4, 4, 2, 2))
+  par(mfrow = c(1, 1), mar = c(4, 4, 2, 2))
   pie(sorted_df$count, labels = sorted_df$`data source`, border = "white", col = cbPalette, cex = 1, main = title)
 }
 
@@ -469,6 +474,207 @@ tool_cloud <- function(state, data_source) {
     }
   }
   cloud(combo)
+}
+
+# Plot 1
+dem_category_plot <- function(selected_state) {
+  # Initialize variables to store the counts
+  if (selected_state == "All Sample States"){
+    data_to_use = dem_data$Sub.categories
+  }
+  else{
+    data_to_use = dem_data$Sub.categories[dem_data$State..Country == selected_state]
+  }
+  estimates <- 0
+  projections <- 0
+  
+  for (i in data_to_use) {
+    if (any(grepl("estimates", i))) {
+      estimates <- estimates + 1
+    }
+    if (any(grepl("projections", i))) {
+      projections <- projections + 1
+    }
+  }
+  # Create data frame for plotting
+  category <- c("Estimates", "Projections")
+  counts <- c(estimates, projections)
+  total_df <- data.frame(category, counts)
+  # Barplot
+  barplot(counts, names.arg = category, col = "steelblue",
+          main = paste("Types of Sub-category:", selected_state),
+          xlab = "Category: Demographics", ylab = "Counts", cex.names = 0.9, ylim = c(0, 250))
+  # Add counts as text above the bars
+  text(x = c(0.7, 1.9, 3.1, 4.3, 5.5, 6.7, 7.9), y = counts,
+       labels = counts, pos = 3, cex = 0.8, col = "black")
+}
+
+# Plot 2
+dem_data$Tool = tolower(dem_data$Tool)
+
+dem_sub_cat_and_tool <- function(selected_state){
+  df_stack2 <- data.frame(
+    tool = character(),
+    sub = character(),
+    count = numeric()
+  )
+  col_name = c("tool","sub","count")
+  colnames(df_stack2) <- col_name
+  
+  if (selected_state == "All Sample States" ){
+    data_to_use = dem_data
+  }
+  else{
+    data_to_use = dem_data[dem_data$State..Country== selected_state,]
+  }
+  
+  for (i in 1:nrow(data_to_use)) {
+    #---------------------------estimates----------------------------
+    if (any(grepl("estimates", data_to_use[i,3]))) {
+      if(any(grepl("viewer", data_to_use[i,4]))){
+        new_row <- c("Table", "Estimates",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("download", data_to_use[i,4]))){
+        new_row <- c("Table Download", "Estimates",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("report", data_to_use[i,4]))){
+        new_row <- c("Report", "Estimates",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("map", data_to_use[i,4]))){
+        new_row <- c("Map", "Estimates",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("visualization", data_to_use[i,4]))){
+        new_row <- c("Data Visualization", "Estimates",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("infographic", data_to_use[i,4]))){
+        new_row <- c("Infographic", "Estimates",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("crosswalk", data_to_use[i,4]))){
+        new_row <- c("Crosswalk", "Estimates",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+    }
+    #---------------------------projections----------------------------
+    if (any(grepl("projections", data_to_use[i,3]))) {
+      if(any(grepl("viewer", data_to_use[i,4]))){
+        new_row <- c("Table", "Projections",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("download", data_to_use[i,4]))){
+        new_row <- c("Table Download", "Projections",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("report", data_to_use[i,4]))){
+        new_row <- c("Report", "Projections",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("map", data_to_use[i,4]))){
+        new_row <- c("Map", "Projections",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("visualization", data_to_use[i,4]))){
+        new_row <- c("Data Visualization", "Projections",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("infographic", data_to_use[i,4]))){
+        new_row <- c("Infographic", "Projections",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("crosswalk", data_to_use[i,4]))){
+        new_row <- c("Crosswalk", "Projections",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+    }
+  }
+  colnames(df_stack2) <- col_name
+  
+  ggplot(df_stack2, aes(x = sub, y = 1, fill = tool)) +
+    geom_col() +
+    scale_fill_manual(values = cbPalette) +
+    xlab("Sub-categories: Demographics")+
+    ylab("Counts")+
+    theme(axis.text.x = element_text(angle = 45, hjust = 1),
+          plot.title = element_text(hjust = 0.4, face = "bold"))+
+    ggtitle("Different type of tools inside each sub-category of Demographics")
+}
+
+
+# Plot 3
+dem_census_source <- function(selected_state){
+  df_stack3 <- data.frame(
+    source = character()
+  )
+  col_name = c("source")
+  colnames(df_stack3) <- col_name
+  
+  if (selected_state == "All Sample States" ){
+    data_to_use = dem_data
+  }
+  else{
+    data_to_use = dem_data[dem_data$State..Country== selected_state,]
+  }
+  
+  for (i in 1:nrow(data_to_use)) {
+    #---------------------------Census Sources----------------------------
+    if(any(grepl("Bureau", data_to_use[i,12]))){
+      new_row <- c("Census Bureau")
+      df_stack3 <- rbind(df_stack3, new_row)
+    }
+    if(any(grepl("Decennial", data_to_use[i,12]))){
+      new_row <- c("Decennial Census")
+      df_stack3 <- rbind(df_stack3, new_row)
+    }
+    if(any(grepl("Redistricting", data_to_use[i,12]))){
+      new_row <- c("Census Redistricting Files")
+      df_stack3 <- rbind(df_stack3, new_row)
+    }
+    if(any(grepl("ACS", data_to_use[i,12]))){
+      new_row <- c("American Community Survey")
+      df_stack3 <- rbind(df_stack3, new_row)
+    }
+    if(any(grepl("CPS", data_to_use[i,12]))){
+      new_row <- c("Current Population Survey")
+      df_stack3 <- rbind(df_stack3, new_row)
+    }
+  }
+  colnames(df_stack3) <- col_name 
+  source_types <- df_stack3 %>% group_by(source)%>%
+    summarise(count = n())
+  print(source_types)
+  pie(source_types$count , labels = source_types$source, border="white", col=cbPalette, cex=0.5)
+}
+
+
+# Plot 4
+dem_non_census_source <- function(selected_state){
+  df_stack3 <- data.frame(
+    source = character()
+  )
+  col_name = c("source")
+  colnames(df_stack3) <- col_name
+  
+  if (selected_state == "All Sample States" ){
+    data_to_use = dem_data
+  }
+  else{
+    data_to_use = dem_data[dem_data$State..Country== selected_state,]
+  }
+  
+  # Split the rows by commas and drop duplicates
+  sources <- unique(unlist(strsplit(data_to_use$Data.Sources.Non.Census2, ",\\s*")))
+  
+  # Create a new data frame with a single column named "source" containing the sources
+  df_stack3 <- data.frame(Source = sources)
+  
+  # Display the data frame using kable
+  kable(df_stack3, format = "html") %>%
+    kable_styling(full_width = FALSE) # You can set 'full_width = TRUE' for a wider table
 }
 
 
@@ -525,10 +731,9 @@ ui <-  fluidPage(
                       panel(h3("Our Ideas", style = "color: #1B3766;"),
                             p("1. Text analysis of state constitutions and amendments."),
                             p("2. Text analysis of state data center mission statements."),
-                            p("3. Evaluation of state, U.S. territories, and District of Columbia data centers."),
-                            p("4. Email survey sent to all 56 FSCPE (Federal-State Cooperative for Population Estimates) contacts."),
-                            p("5. Search of UVA library databases: Policy Commons Database (Policy File Index Database, State and Local Government Databases Policy Map Customer Stories)")
-        
+                            p("3. Email survey sent to all 56 The Federal-State Cooperative for Population Estimates (FSCPE) contacts."),
+                            p("4. Evaluation of state, U.S. territories, and District of Columbia data centers."),
+                            p("5. Search of UVA library databases: Policy Commons Database (Policy File Index Database, State and Local Government Databases. Policy Map Customer Stories)")
                       ),
                       panel(h3("Who We Are", style = "color: #1B3766;"),
                             h4("University of Virginia, Biocomplexity Institute, Social and Decision Analytics Division", style = "color: #E57200;"),
@@ -544,7 +749,9 @@ ui <-  fluidPage(
                             p("- Jianing Cai, Fourth Year at UVA (CS & Math)"),
                             p("- Vicki Lancaster, Principal Scientist"),
                             p("- Neil Kattampallil, Research Scientist"),
-                            p("- Treena Goswami*, Postdoc Researcher Associates"),
+                            p("- Treena Goswami *, Postdoctoral Research Associate"),
+                            h6("*For more information on the project, please reach out to ",
+                               tags$a(href = "mailto:gcm8gw@virgnia.edu", "gcm8gw@virgnia.edu"))
                         )),
              tabPanel("Topic Modeling",
                       box(title = "Topic Modeling",
@@ -576,7 +783,17 @@ ui <-  fluidPage(
                                  mainPanel(plotOutput("intro_plot1"),
                                            plotOutput("intro_plot2"),
                                            plotOutput("intro_plot3"))),
-                        tabPanel("Demographics"),
+                        tabPanel("Demographics",
+                                 br(),
+                                 sidebarLayout(sidebarPanel(
+                                   selectInput("dropdownD", "Which state are you interested in?",
+                                               all_states)
+                                 ),
+                                 mainPanel(plotOutput("fin_dem_1"),
+                                           plotOutput("fin_dem_2"),
+                                           plotOutput("fin_dem_3"),
+                                           plotOutput("fin_dem_4")
+                                           ))),
                         tabPanel("Economy",
                                  br(),
                                  sidebarLayout(sidebarPanel(
@@ -587,7 +804,7 @@ ui <-  fluidPage(
                                              plotOutput("fin_econ_plot2"),
                                              plotOutput("fin_econ_plot3"),
                                              plotOutput("fin_econ_plot4")
-                                   ))),
+                                             ))),
                         tabPanel("Housing",
                           br(),
                           sidebarLayout(sidebarPanel(
@@ -599,7 +816,7 @@ ui <-  fluidPage(
                                     plotOutput("fin_hous_plot2"), 
                                     textOutput("fin_hous_text3"), 
                                     plotOutput("fin_hous_plot3")
-                        ))),
+                                   ))),
                         tabPanel("Diversity"),
                         tabPanel("Health & Education",
                           br(),
@@ -615,6 +832,7 @@ ui <-  fluidPage(
                         )))
                         ),
              tabPanel("FSCPE"
+
                         )))
   
  
@@ -633,10 +851,18 @@ server <- function(input, output) {
   output$mission_plot1 <- renderPlot({mission_cloud(state=input$dropdownM)})
   
   
+
   #Intro Findings
   output$intro_plot1 <- renderPlot({lead_types_map()})
   output$intro_plot2 <- renderPlot({coord_num_map()})
   output$intro_plot3 <- renderPlot({examined_states()})
+
+  #Demographic Findings
+  output$fin_dem_1 <- renderPlot({dem_category_plot(selected_state = input$dropdownD)})
+  output$fin_dem_2 <- renderPlot({dem_sub_cat_and_tool(selected_state = input$dropdownD)})
+  output$fin_dem_3 <- renderPlot({dem_census_source(selected_state = input$dropdownD)})
+  output$fin_dem_4 <- renderPlot({dem_non_census_source(selected_state = input$dropdownD)})
+
 
   #Housing Findings
   output$fin_hous_text1 <- renderText({{paste("Type of Sub-Category for: ", input$dropdownH)}})
