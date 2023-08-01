@@ -399,7 +399,7 @@ econ_pie_graph_census<- function(selected_state, data_table) {
   title <- paste("Economy Data Census Source (Census) Distribution in", selected_state)
   
   par(mfrow = c(1, 1), mar = c(4, 4, 2, 2))
-  pie(sorted_df$count, labels = sorted_df$`data source`, border = "white", col = cbPalette, cex = 0.6, main = title)
+  pie(sorted_df$count, labels = sorted_df$`data source`, border = "white", col = cbPalette, cex = 1, main = title)
 }
 
 econ_pie_graph_noncensus <- function(selected_state, data_table) {
@@ -418,8 +418,8 @@ econ_pie_graph_noncensus <- function(selected_state, data_table) {
   # Adding a title to the pie graph
   title <- paste("Economy Data Source (Non Census) Distribution in", selected_state)
   
-  par(mfrow = c(1, 1), mar = c(4, 4, 2, 2))
-  pie(sorted_df$count, labels = sorted_df$`data source`, border = "white", col = cbPalette, cex = 0.6, main = title)
+  #par(mfrow = c(1, 1), mar = c(4, 4, 2, 2))
+  pie(sorted_df$count, labels = sorted_df$`data source`, border = "white", col = cbPalette, cex = 1, main = title)
 }
 
 
