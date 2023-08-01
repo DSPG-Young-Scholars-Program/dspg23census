@@ -11,7 +11,7 @@ library(data.table)
 library(rsconnect)
 library(forcats)
 library(plotly)
-
+library(DT)
 library(wordcloud)
 library(RColorBrewer)
 library(reshape)
@@ -46,6 +46,7 @@ mission_states <- c("All Sample States", "Alabama", "Alaska", "Arizona", "Arkans
                     "Utah", "Vermont", "Wisconsin")
 
 #Data Imports
+
 #Demo data
 dem_data <- read.csv("Finding_Demographics/SDC_Demographics.csv")
 dem_data$Sub.categories = tolower(dem_data$Sub.categories)
@@ -65,7 +66,6 @@ mission_statements <- read.csv('Mission_Statements/mission_statements.csv')
 
 #FSCPE Response data
 fscpe <- read.csv('FSCPE Response.csv')
-
 
 
 #Maps
@@ -203,13 +203,17 @@ econ_category_plot <- function(selected_state) {
   counts <- c(employment, income, tax, lf, wage, job, economy)
   total_df <- data.frame(category, counts)
   # Barplot
-  barplot(counts, names.arg = category, col = "steelblue",
-          main = paste("Types of Sub-category:", selected_state),
-          xlab = "Category: Economy", ylab = "Counts", cex.names = 0.9, ylim = c(0, 60))
-  # Add counts as text above the bars
-  text(x = c(0.7, 1.9, 3.1, 4.3, 5.5, 6.7, 7.9), y = counts,
-       labels = counts, pos = 3, cex = 0.8, col = "black")
-}
+  ggplot(total_df, aes(x = category, y = counts)) +
+    geom_bar(stat = "identity", position = "dodge", width = 0.7, col = "#999999", fill = "steelblue") +
+    geom_text(aes(label = counts), position = position_stack(vjust = 0.5), vjust = -0.5, cex = 0.8, col = "black") +
+    labs(title = paste("Types of Sub-category:", selected_state),
+         x = "Category: Economy", y = "Counts") +
+    theme_minimal() +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1),
+          legend.position = "none")
+  
+  
+  }
 
 econ_sub_cat_and_tool <- function(selected_state){
   df_stack2 <- data.frame(
@@ -316,7 +320,7 @@ econ_sub_cat_and_tool <- function(selected_state){
         df_stack2 <- rbind(df_stack2, new_row)
       }
       if(any(grepl("visualization", data_to_use[i,4]))){
-        new_row <- c("Data Visualization", "Labor Lorce",18)
+        new_row <- c("Data Visualization", "Labor Force",18)
         df_stack2 <- rbind(df_stack2, new_row)
       }
     }
@@ -392,7 +396,7 @@ econ_sub_cat_and_tool <- function(selected_state){
   }
   colnames(df_stack2) <- col_name
   
-  ggplot(df_stack2, aes(x = sub, y = 1, fill = Tools)) +
+  bar1 <- ggplot(df_stack2, aes(x = sub, y = 1, fill = Tools)) +
     geom_col() +
     scale_fill_manual(values = cbPalette) +
     xlab("Sub-categories: Economy")+
@@ -400,6 +404,8 @@ econ_sub_cat_and_tool <- function(selected_state){
     theme(axis.text.x = element_text(angle = 45, hjust = 1),
           plot.title = element_text(hjust = 0.5, face = "bold"))+
     ggtitle("Different type of tools inside each sub-category of Economy")
+  
+  bar1 + theme_minimal()
 }
 
 econ_pie_graph_census<- function(selected_state, data_table) {
@@ -416,7 +422,7 @@ econ_pie_graph_census<- function(selected_state, data_table) {
   sorted_df <- count_result[order(- count_result$count), ]
   
   # Adding a title to the pie graph
-  title <- paste("Economy Data Census Source (Census) Distribution in", selected_state)
+  title <- paste("Economy Data Census Source (Census) \n Distribution in", selected_state)
   
   par(mfrow = c(1, 1), mar = c(4, 4, 2, 2))
   pie(sorted_df$count, labels = sorted_df$`data source`, border = "white", col = cbPalette, cex = 1, main = title)
@@ -433,13 +439,14 @@ econ_pie_graph_noncensus <- function(selected_state, data_table) {
   colnames(countinue) <- c("data source", "count")
   countinue <- countinue[countinue$`data source` != "", ]
 
-  sorted_df <- countinue[order(- countinue$count), ]
+  #sorted_df <- countinue[order(- countinue$count), ]
   
   # Adding a title to the pie graph
-  title <- paste("Economy Data Source (Non Census) Distribution in", selected_state)
+  title <- paste("Economy Data Source (Non Census) \n Distribution in", selected_state)
   
   par(mfrow = c(1, 1), mar = c(4, 4, 2, 2))
-  pie(sorted_df$count, labels = sorted_df$`data source`, border = "white", col = cbPalette, cex = 1, main = title)
+  #pie(sorted_df$count, labels = sorted_df$`data source`, border = "white", col = cbPalette, cex = 1, main = title)
+  pie(countinue$count, labels = countinue$`data source`, border = "white", col = cbPalette, cex = 1, main = title)
 }
 
 
@@ -507,12 +514,15 @@ dem_category_plot <- function(selected_state) {
   counts <- c(estimates, projections)
   total_df <- data.frame(category, counts)
   # Barplot
-  barplot(counts, names.arg = category, col = "steelblue",
-          main = paste("Types of Sub-category:", selected_state),
-          xlab = "Category: Demographics", ylab = "Counts", cex.names = 0.9, ylim = c(0, 250))
-  # Add counts as text above the bars
-  text(x = c(0.7, 1.9, 3.1, 4.3, 5.5, 6.7, 7.9), y = counts,
-       labels = counts, pos = 3, cex = 0.8, col = "black")
+  ggplot(total_df, aes(x = category, y = counts)) +
+    geom_bar(stat = "identity", position = "dodge", width = 0.7, col = "#999999", fill = "steelblue") +
+    geom_text(aes(label = counts), position = position_stack(vjust = 0.5), vjust = -0.5, cex = 0.8, col = "black") +
+    labs(title = paste("Types of Sub-category:", selected_state),
+         x = "Category: Demographics", y = "Counts") +
+    theme_minimal() +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1),
+          legend.position = "none")
+  
 }
 
 # Plot 2
@@ -520,11 +530,11 @@ dem_data$Tool = tolower(dem_data$Tool)
 
 dem_sub_cat_and_tool <- function(selected_state){
   df_stack2 <- data.frame(
-    tool = character(),
+    Tools = character(),
     sub = character(),
     count = numeric()
   )
-  col_name = c("tool","sub","count")
+  col_name = c("Tools","sub","count")
   colnames(df_stack2) <- col_name
   
   if (selected_state == "All Sample States" ){
@@ -600,14 +610,20 @@ dem_sub_cat_and_tool <- function(selected_state){
   }
   colnames(df_stack2) <- col_name
   
-  ggplot(df_stack2, aes(x = sub, y = 1, fill = tool)) +
+  bar1 <- ggplot(df_stack2, aes(x = sub, y = 1, fill = Tools)) +
     geom_col() +
     scale_fill_manual(values = cbPalette) +
-    xlab("Sub-categories: Demographics")+
-    ylab("Counts")+
+    xlab("Sub-categories: Economy") +
+    ylab("Counts") +
     theme(axis.text.x = element_text(angle = 45, hjust = 1),
-          plot.title = element_text(hjust = 0.4, face = "bold"))+
+          plot.title = element_text(size = 20, face = "bold", hjust = 0.5)) +
     ggtitle("Different type of tools inside each sub-category of Demographics")
+  
+  # Set the plot margin to center the title
+  bar1 + theme_minimal() +
+    theme(plot.title.position = "plot", plot.margin = margin(30, 0, 30, 0))
+  
+  
 }
 
 
@@ -773,16 +789,16 @@ ui <-  fluidPage(
                           p("5.Texas")),
                       box(title="BERT Example: California Data",
                           tags$img(height=450, width=450, src="CABert.png"))),
-              tabPanel("Mission Statements",
-                  br(),
-                  box(title="Examining Mission Statements of State Data Centers",
-                    p("Out of the 56 State Data Centers that we examined, 42 had mission statements that related to the work of the SDC."),
-                    br(),
-                    sidebarLayout(sidebarPanel(
-                      selectInput("dropdownM", "Which state's mission statement are you interested in?", mission_states)),
-                    mainPanel(textOutput("mission_text1"),
-                           plotOutput("mission_plot1"))),
-                    p("States that did not have an SDC mission statement included: Colorado, Georgia, Idaho, Illinois, Louisiana, 
+             tabPanel("Mission Statements",
+                      br(),
+                      box(title="Examining Mission Statements of State Data Centers",
+                          p("Out of the 56 State Data Centers that we examined, 42 had mission statements that related to the work of the SDC."),
+                          br(),
+                          sidebarLayout(sidebarPanel(
+                            selectInput("dropdownM", "Which state's mission statement are you interested in?", mission_states)),
+                            mainPanel(textOutput("mission_text1"),
+                                      plotOutput("mission_plot1"))),
+                          p("States that did not have an SDC mission statement included: Colorado, Georgia, Idaho, Illinois, Louisiana, 
                       Nebraska, New Mexico, Virginia, Washington, West Virginia, Wyoming, Puerto Rico, Guam, U.S. Virgin Islands, American Samoa"))),
              tabPanel("FSCPE Response",
                       box(title = "FSCPE Emails and Responses",
@@ -795,10 +811,12 @@ ui <-  fluidPage(
                                            plotlyOutput("intro_plot2"),
                                            plotlyOutput("intro_plot3"))),
                         tabPanel("Demographics",
+                                 h3(style ="color: #1B3766;","Demographics Findings"),
                                  br(),
                                  sidebarLayout(sidebarPanel(
                                    selectInput("dropdownD", "Which state are you interested in?",
-                                               all_states)
+                                               all_states),
+                                   downloadButton("download_demo_data", "Download Demographics Data")
                                  ),
                                  mainPanel(plotOutput("fin_dem_1"),
                                            plotOutput("fin_dem_2"),
@@ -806,42 +824,64 @@ ui <-  fluidPage(
                                            plotOutput("fin_dem_4")
                                            ))),
                         tabPanel("Economy",
+                                 h3("Economy Findings"),
+                                 br(),
+                                 sidebarLayout(
+                                   sidebarPanel(
+                                     selectInput("dropdown3", "Which state are you interested in?", all_states),
+                                     downloadButton("download_econ_data", "Download Economy Data")
+                                   ),
+                                   mainPanel(
+                                     plotOutput("fin_econ_plot1"),
+                                     plotOutput("fin_econ_plot2"),
+                                   )
+                                 ),
+                                 br(),
+                                 fluidRow(
+                                   column(width = 6, plotOutput("fin_econ_plot3")),
+                                   column(width = 6, plotOutput("fin_econ_plot4"))
+                                 )),
+                        
+                        tabPanel("Housing",
+                                 h3("Housing Findings"),
                                  br(),
                                  sidebarLayout(sidebarPanel(
-                                   selectInput("dropdown3", "Which state are you interested in?",
-                                               all_states)
+                                   selectInput("dropdownH", "Which state are you interested in?",
+                                    all_states),
+                                   downloadButton("download_housing_data", "Download Housing Data")
                                    ),
-                                   mainPanel(plotOutput("fin_econ_plot1"),
-                                             plotOutput("fin_econ_plot2"),
-                                             plotOutput("fin_econ_plot3"),
-                                             plotOutput("fin_econ_plot4")
+                                   mainPanel(textOutput("fin_hous_text1"), 
+                                             plotOutput("fin_hous_plot1"), 
+                                             textOutput("fin_hous_text2"), 
+                                             plotOutput("fin_hous_plot2"), 
+                                             textOutput("fin_hous_text3"), 
+                                             plotOutput("fin_hous_plot3")
                                              ))),
-                        tabPanel("Housing",
-                          br(),
-                          sidebarLayout(sidebarPanel(
-                          selectInput("dropdownH", "Which state are you interested in?",
-                                    all_states)),
-                          mainPanel(textOutput("fin_hous_text1"), 
-                                    plotOutput("fin_hous_plot1"), 
-                                    textOutput("fin_hous_text2"), 
-                                    plotOutput("fin_hous_plot2"), 
-                                    textOutput("fin_hous_text3"), 
-                                    plotOutput("fin_hous_plot3")
-                                   ))),
-                        tabPanel("Diversity"),
+                        
+                        tabPanel("Diversity",
+                                 h3("Diversity Findings"),
+                                 br(),
+                                 sidebarLayout(sidebarPanel(
+                                   selectInput("dropdownH", "Which state are you interested in?",
+                                               all_states)),
+                                   mainPanel(p("testing"))
+                                 )),
+                        
                         tabPanel("Health & Education",
-                          br(),
-                          sidebarLayout(sidebarPanel(
-                          selectInput("dropdownHE", "Which state are you interested in?",
-                                    all_states)),
-                          mainPanel(textOutput("fin_HE_text1"), 
-                                    plotOutput("fin_HE_plot1"), 
-                                    textOutput("fin_HE_text2"), 
-                                    plotOutput("fin_HE_plot2"), 
-                                    textOutput("fin_HE_text3"), 
-                                    plotOutput("fin_HE_plot3")
-                                    ))),
-                        tabPanel("Conclusions"))))
+                                 h3("Health and Education Findings"),
+                                 br(),
+                                 sidebarLayout(sidebarPanel(
+                                   selectInput("dropdownHE", "Which state are you interested in?",
+                                               all_states),
+                                   downloadButton("download_HE_data", "Download Health & Education Data")),
+                                   mainPanel(textOutput("fin_HE_text1"), 
+                                             plotOutput("fin_HE_plot1"), 
+                                             textOutput("fin_HE_text2"), 
+                                             plotOutput("fin_HE_plot2"), 
+                                             textOutput("fin_HE_text3"), 
+                                             plotOutput("fin_HE_plot3")
+                                             )))
+                        )))
   
  
 
@@ -863,12 +903,20 @@ server <- function(input, output) {
   output$intro_plot3 <- renderPlotly({examined_states()})
 
   #Demographic Findings
+  output$download_demo_data <- downloadHandler(
+    filename = function() {paste("demo_data_", Sys.Date(), ".csv", sep = "")},
+    content = function(file) {write.csv(dem_data, file)}
+  )
   output$fin_dem_1 <- renderPlot({dem_category_plot(selected_state = input$dropdownD)})
   output$fin_dem_2 <- renderPlot({dem_sub_cat_and_tool(selected_state = input$dropdownD)})
   output$fin_dem_3 <- renderPlot({dem_census_source(selected_state = input$dropdownD)})
   output$fin_dem_4 <- renderPlot({dem_non_census_source(selected_state = input$dropdownD)})
 
   #Housing Findings
+  output$download_housing_data <- downloadHandler(
+    filename = function() {paste("housing_data_", Sys.Date(), ".csv", sep = "")},
+    content = function(file) {write.csv(housing_data, file)}
+  )
   output$fin_hous_text1 <- renderText({{paste("Type of Sub-Category for: ", input$dropdownH)}})
   output$fin_hous_plot1 <- renderPlot({sub_cat_counts(state=input$dropdownH, data_source = housing_data)})
   output$fin_hous_text2 <- renderText({{paste("Word cloud on tool names for: ", input$dropdownH)}})
@@ -877,6 +925,10 @@ server <- function(input, output) {
   output$fin_hous_plot3 <- renderPlot({variable_cloud(state=input$dropdownH, data_source = housing_data)})
   
   #Health/Education Findings
+  output$download_HE_data <- downloadHandler(
+    filename = function() {paste("health_edu_data_", Sys.Date(), ".csv", sep = "")},
+    content = function(file) {write.csv(HE_data, file)}
+  )
   output$fin_HE_text1 <- renderText({{paste("Type of Sub-Category for: ", input$dropdownHE)}})
   output$fin_HE_plot1 <- renderPlot({sub_cat_counts(state=input$dropdownHE, data_source = HE_data)})
   output$fin_HE_text2 <- renderText({{paste("Word cloud on tool names for: ", input$dropdownHE)}})
@@ -885,6 +937,10 @@ server <- function(input, output) {
   output$fin_HE_plot3 <- renderPlot({variable_cloud(state=input$dropdownHE, data_source = HE_data)})
   
   #Economy Findings
+  output$download_econ_data <- downloadHandler(
+    filename = function() {paste("econ_data_", Sys.Date(), ".csv", sep = "")},
+    content = function(file) {write.csv(econ_data, file)}
+  )
   output$fin_econ_plot1 <- renderPlot({econ_category_plot(selected_state = input$dropdown3)})
   output$fin_econ_plot2 <- renderPlot({econ_sub_cat_and_tool(selected_state = input$dropdown3)})
   output$fin_econ_plot3 <- renderPlot({econ_pie_graph_census(selected_state = input$dropdown3, data_table = econ_data)})
