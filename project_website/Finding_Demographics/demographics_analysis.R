@@ -13,6 +13,8 @@ library(forcats)
 library(plotly)
 library(DT)
 library(gcookbook)
+library(knitr)
+library(kableExtra)
 
 cbPalette <- c("#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
 
@@ -23,9 +25,10 @@ all_states <- c("All sample states", "Alabama", "Alaska","Arizona", "Arkansas", 
                 "Massachusetts", "Michigan", "Minnesoda", "Mississippi", "Missouri",
                 "Puerto Rico", "Guam")
 
-dem_data <- read.csv("/home/gcm8gw/Git/dspg23census/project_web/SDC_Demographics.csv")
+dem_data <- read.csv("/home/gcm8gw/Git/dspg23census/project_website/Finding_Demographics/SDC_Demographics.csv")
 dem_data$Sub.categories = tolower(dem_data$Sub.categories)
 
+# Plot 1
 dem_category_plot <- function(selected_state) {
   # Initialize variables to store the counts
   if (selected_state == "All sample states"){
@@ -58,6 +61,7 @@ dem_category_plot <- function(selected_state) {
        labels = counts, pos = 3, cex = 0.8, col = "black")
 }
 
+# Plot 2
 dem_data$Tool = tolower(dem_data$Tool)
 
 dem_sub_cat_and_tool <- function(selected_state){
@@ -152,24 +156,78 @@ dem_sub_cat_and_tool <- function(selected_state){
     ggtitle("Different type of tools inside each sub-category of Demographics")
 }
 
-dem_pie_graph <-function(selected_state, data_table){
+
+# Plot 3
+dem_census_source <- function(selected_state){
+  df_stack3 <- data.frame(
+    source = character()
+  )
+  col_name = c("source")
+  colnames(df_stack3) <- col_name
+  
   if (selected_state == "All sample states" ){
-    data_to_use = data_table
+    data_to_use = dem_data
   }
   else{
-    data_to_use = data_table[data_table$State..Country== selected_state,]
+    data_to_use = dem_data[dem_data$State..Country== selected_state,]
   }
-  count_result <- data_to_use %>% group_by(Data.Source.Census2) %>% summarize(count = n())
-  count_result <- count_result[-1, ]
-  countinue <- data_to_use %>% group_by(Data.Source.Non.Census) %>% summarize(count = n())
-  countinue <- countinue[-1, ]
-  colnames(count_result) <- c("Data Source", "Counts")
-  colnames(countinue) <- c("Data Source", "Counts")
-  combined_df <- rbind(count_result, countinue)
-  sorted_df <- combined_df[order(- combined_df$count), ]
-  pie(sorted_df$count , labels = sorted_df$`data source`, border="white", col=cbPalette, cex=0.5)
+  
+  for (i in 1:nrow(data_to_use)) {
+    #---------------------------Census Sources----------------------------
+    if(any(grepl("Bureau", data_to_use[i,12]))){
+      new_row <- c("Census Bureau")
+      df_stack3 <- rbind(df_stack3, new_row)
+    }
+    if(any(grepl("Decennial", data_to_use[i,12]))){
+      new_row <- c("Decennial Census")
+      df_stack3 <- rbind(df_stack3, new_row)
+    }
+    if(any(grepl("Redistricting", data_to_use[i,12]))){
+      new_row <- c("Census Redistricting Files")
+      df_stack3 <- rbind(df_stack3, new_row)
+    }
+    if(any(grepl("ACS", data_to_use[i,12]))){
+      new_row <- c("American Community Survey")
+      df_stack3 <- rbind(df_stack3, new_row)
+    }
+    if(any(grepl("CPS", data_to_use[i,12]))){
+      new_row <- c("Current Population Survey")
+      df_stack3 <- rbind(df_stack3, new_row)
+    }
+  }
+  colnames(df_stack3) <- col_name 
+  source_types <- df_stack3 %>% group_by(source)%>%
+    summarise(count = n())
+  print(source_types)
+  pie(source_types$count , labels = source_types$source, border="white", col=cbPalette, cex=0.5)
 }
 
+
+# Plot 4
+dem_non_census_source <- function(selected_state){
+  df_stack3 <- data.frame(
+    source = character()
+  )
+  col_name = c("source")
+  colnames(df_stack3) <- col_name
+  
+  if (selected_state == "All sample states" ){
+    data_to_use = dem_data
+  }
+  else{
+    data_to_use = dem_data[dem_data$State..Country== selected_state,]
+  }
+  
+  # Split the rows by commas and drop duplicates
+  sources <- unique(unlist(strsplit(data_to_use$Data.Sources.Non.Census2, ",\\s*")))
+  
+  # Create a new data frame with a single column named "source" containing the sources
+  df_stack3 <- data.frame(Source = sources)
+  
+  # Display the data frame using kable
+  kable(df_stack3, format = "html") %>%
+    kable_styling(full_width = FALSE) # You can set 'full_width = TRUE' for a wider table
+}
 
 
 #------------------------------------------------------------------------------------
@@ -233,7 +291,8 @@ ui <-  fluidPage(
                       mainPanel(#textOutput("text3"),
                         plotOutput("fin_dem_1"),
                         plotOutput("fin_dem_2"),
-                        plotOutput("fin_dem_3")
+                        plotOutput("fin_dem_3"),
+                        plotOutput("fin_dem_4")
                       ))),
              tabPanel("Economy"),
              tabPanel("Housing"),
@@ -271,14 +330,28 @@ server <- function(input, output) {
   })
   
   output$fin_dem_3 <- renderPlot({
-    dem_pie_graph(selected_state = input$dropdown3, data_table = dem_data)
+    dem_census_source(selected_state = input$dropdown3)
   })
+  
+  output$fin_dem_4 <- renderPlot({
+    dem_non_census_source(selected_state = input$dropdown3)
+  })
+  
+  #output$fin_dem_4  <- dem_non_census_source(selected_state = input$dropdown3){
+   # ReactiveDf() %>%
+    #  kable(df_stack3, format = "html") %>%
+    #  kable_styling(full_width = FALSE)
+    
+ # }
   
   output$text2 <- renderText({
     {paste("Word cloud on", input$dropdown2)}
   })
   
+
 }
+
+
 
 
 shinyApp(ui = ui, server = server)
