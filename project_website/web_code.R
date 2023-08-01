@@ -46,9 +46,6 @@ mission_states <- c("All Sample States", "Alabama", "Alaska", "Arizona", "Arkans
                     "Utah", "Vermont", "Wisconsin")
 
 #Data Imports
-#FSCPE
-fscpe_response <- read.csv("FSCPE_Response.csv")
-colnames(fscpe_response) <- c("State", "Index", "Data Tools/Application Name", "Data Source Name", "Web Link to Data Tool", "Brief Description")
 
 #Demo data
 dem_data <- read.csv("Finding_Demographics/SDC_Demographics.csv")
@@ -67,14 +64,17 @@ HE_data <- read.csv('Finding_Health_and_Education/HE_cleaned.csv')
 #Mission statement data
 mission_statements <- read.csv('Mission_Statements/mission_statements.csv')
 
+#FSCPE Response data
+fscpe <- read.csv('FSCPE Response.csv')
 
 
 #Maps
 
 #Map of host types for lead agencies
 lead_types_map <- function() {
+  custom_colors <- brewer.pal(4, "Set1")
   hosts <- data.frame(state = mission_statements$State, type = mission_statements$Host_Type)
-  host_map <- plot_usmap(data = hosts, values = "type") + labs(title="Type of Lead Agency by State")
+  host_map <- plot_usmap(data = hosts, values = "type") + labs(title="Type of Lead Agency by State") + scale_fill_manual(values=custom_colors)
   host_map
 }
 
@@ -85,9 +85,11 @@ coord_num_map <- function() {
   coord_map
 }
 
+#Map of states that we have/haven't examined
 examined_states <- function() {
+  custom_colors <- brewer.pal(2, "Set1")
   examined_SDC <- data.frame(state = mission_statements$State, value = mission_statements$Examined)
-  examined_map <- plot_usmap(data = examined_SDC, values="value") + labs(title = "States That We Have Examined")
+  examined_map <- plot_usmap(data = examined_SDC, values="value") + labs(title = "States That We Have Examined") + scale_fill_manual(values=custom_colors)
   examined_map
 }
 
@@ -144,7 +146,7 @@ mission_cloud <- function(state) {
 sub_cat_counts <- function(state, data_source) {
   if(state=="All Sample States") {
     sub_cats <- ggplot(data_source, aes(x=Sub.categories)) + geom_bar(fill="steelblue") + labs(x="Sub-Category", y="Counts") + theme(axis.text.x = element_text(angle = 25))
-    sub_cats
+    sub_cats + coord_flip()
   }
   else {
     State <- str_to_title(state)
@@ -152,7 +154,7 @@ sub_cat_counts <- function(state, data_source) {
     state_df <- data.frame()
     state_df <- rbind(state_df, state_input)
     sub_cats <- ggplot(state_df, aes(x=Sub.categories)) + geom_bar(fill="steelblue") + labs(x="Sub-Category", y="Counts") + theme(axis.text.x = element_text(angle = 25))
-    sub_cats
+    sub_cats + coord_flip()
   }
 }
 
@@ -787,26 +789,27 @@ ui <-  fluidPage(
                           p("5.Texas")),
                       box(title="BERT Example: California Data",
                           tags$img(height=450, width=450, src="CABert.png"))),
-              tabPanel("Mission Statements",
-                  br(),
-                  box(title="Examining Mission Statements of State Data Centers",
-                    p("Out of the 56 State Data Centers that we examined, 42 had mission statements that related to the work of the SDC."),
-                    p("States that did not have an SDC mission statement included: Colorado, Georgia, Idaho, Illinois, Louisiana, 
-                      Nebraska, New Mexico, Virginia, Washington, West Virginia, Wyoming, Puerto Rico, Guam, U.S. Virgin Islands, American Samoa")),
-                  br(),
-                  sidebarLayout(sidebarPanel(
-                    selectInput("dropdownM", "Which state's mission statement are you interested in?", mission_states)),
-                    mainPanel(textOutput("mission_text1"),
-                              plotOutput("mission_plot1")))),
+             tabPanel("Mission Statements",
+                      br(),
+                      box(title="Examining Mission Statements of State Data Centers",
+                          p("Out of the 56 State Data Centers that we examined, 42 had mission statements that related to the work of the SDC."),
+                          br(),
+                          sidebarLayout(sidebarPanel(
+                            selectInput("dropdownM", "Which state's mission statement are you interested in?", mission_states)),
+                            mainPanel(textOutput("mission_text1"),
+                                      plotOutput("mission_plot1"))),
+                          p("States that did not have an SDC mission statement included: Colorado, Georgia, Idaho, Illinois, Louisiana, 
+                      Nebraska, New Mexico, Virginia, Washington, West Virginia, Wyoming, Puerto Rico, Guam, U.S. Virgin Islands, American Samoa"))),
              tabPanel("FSCPE Response",
-                      box(title="Responses Collected from FSCPE Contacts",
-                          p("The Federal-State Cooperative for Population Estimates (FSCPE)")),
-                      DTOutput("fscpe_table")),
-             navbarMenu("SDC Findings",
+                      box(title = "FSCPE Emails and Responses",
+                          p("We emailed 56 FSCPE contacts, asking about the top six data sources that they use."),
+                          p("Of the 56 contacts, we received responses from 10.")),
+                      mainPanel(dataTableOutput("fscpe_table"))),
+             navbarMenu("State Data Center Findings",
                         tabPanel("Intro",
-                                 plotOutput("intro_plot1"),
-                                 plotOutput("intro_plot2"),
-                                 plotOutput("intro_plot3")),
+                                 mainPanel(plotlyOutput("intro_plot1"),
+                                           plotlyOutput("intro_plot2"),
+                                           plotlyOutput("intro_plot3"))),
                         tabPanel("Demographics",
                                  h3(style ="color: #1B3766;","Demographics Findings"),
                                  br(),
@@ -895,14 +898,14 @@ server <- function(input, output) {
   output$mission_text1 <- renderText({{paste("Word cloud on", input$dropdownM, "mission statement.")}})
   output$mission_plot1 <- renderPlot({mission_cloud(state=input$dropdownM)})
   
-  #FSCPE Response
-  output$fscpe_table <- renderDT({fscpe_response})
+  #FSCPE
+  output$fscpe_table <- renderDataTable(fscpe)
   
 
   #Intro Findings
-  output$intro_plot1 <- renderPlot({lead_types_map()})
-  output$intro_plot2 <- renderPlot({coord_num_map()})
-  output$intro_plot3 <- renderPlot({examined_states()})
+  output$intro_plot1 <- renderPlotly({lead_types_map()})
+  output$intro_plot2 <- renderPlotly({coord_num_map()})
+  output$intro_plot3 <- renderPlotly({examined_states()})
 
   #Demographic Findings
   output$download_demo_data <- downloadHandler(
