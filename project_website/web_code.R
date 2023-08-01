@@ -778,6 +778,7 @@ ui <-  fluidPage(
                       selectInput("dropdownM", "Which state's mission statement are you interested in?", mission_states)),
                     mainPanel(textOutput("mission_text1"),
                            plotOutput("mission_plot1"))))),
+             tabPanel("FSCPE Response"),
              navbarMenu("SDC Findings",
                         tabPanel("Intro",
                                  mainPanel(plotOutput("intro_plot1"),
@@ -829,10 +830,7 @@ ui <-  fluidPage(
                                     plotOutput("fin_HE_plot2"), 
                                     textOutput("fin_HE_text3"), 
                                     plotOutput("fin_HE_plot3")
-                        )))
-                        ),
-             tabPanel("FSCPE"
-
+                                    )))
                         )))
   
  
