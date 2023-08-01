@@ -31,6 +31,9 @@ dem_data <- read.csv("/home/gcm8gw/Git/dspg23census/project_website/Finding_Demo
 dem_data$Sub.categories = tolower(dem_data$Sub.categories)
 dem_data$Tool = tolower(dem_data$Tool)
 
+dem_data$Name.of.tool
+dem_data$Variables.Used..list.all.that.apply.
+
 ### Census Sources
 dem_census_source <- function(selected_state){
   df_stack3 <- data.frame(
@@ -100,21 +103,132 @@ dem_non_census_source <- function(selected_state){
   # Create a new data frame with a single column named "source" containing the sources
   df_stack3 <- data.frame(Source = sources)
   
-  # Display the data frame using kable
-  kable(df_stack3, format = "html") %>%
-    kable_styling(full_width = FALSE) # You can set 'full_width = TRUE' for a wider table
 }
   
   
 dem_non_census_source(selected_state = "All sample states")
 
 
-# Call the function for "All sample states":
-all_states_sources <- dem_census_source("All sample states")
 
-# Call the function for a specific state, for example, "California":
-california_sources <- dem_non_census_source("California")
 
+
+# Plot 5
+
+#Makes wordclouds using input of 'combo'
+cloud <- function(combo) {
+  #Turns string into corpus of words
+  docs <- Corpus(VectorSource(combo))
+  
+  #Cleaning of corpus
+  docs <- docs %>% tm_map(removeNumbers) %>% tm_map(removePunctuation) %>% tm_map(stripWhitespace)
+  docs <- tm_map(docs, content_transformer(tolower))
+  docs <- tm_map(docs, removeWords, stopwords("english"))
+  
+  #Turns corpus into term-document-matrix
+  dtm <- TermDocumentMatrix(docs)
+  mtx <- as.matrix(dtm)
+  words <- sort(rowSums(mtx), decreasing = TRUE)
+  df <- data.frame(word = names(words), freq=words)
+  
+  #Creates wordcloud
+  set.seed(33)
+  wordcloud(words = df$word, freq = df$freq, min.freq = 1, max.words = 100, random.order = FALSE, rot.per = 0, colors = brewer.pal(4, "Set1"))
+}
+
+
+
+#Word cloud for variable names
+variable_cloud <- function(state, data_source) {
+  if(state=="All Sample States and Territories"){
+    combo <- ""
+    for (i in 1:nrow(data_source)) {
+      combo <- paste(combo, data_source[i,7], sep="")
+    }
+  }
+  else{
+    combo <- ""
+    for (i in 1:nrow(data_source)) {
+      if(data_source$State..Country[i]==state) {
+        combo <- paste(combo, data_source[i,7], sep="")
+      }
+    }
+  }
+  cloud(combo)
+}
+
+variable_cloud(state = 'All Sample States and Territories', data_source = dem_data)
+
+
+# Geographic levels
+dem_data$Geographic.Levels2 = tolower(dem_data$Geographic.Levels2)
+
+dem_geography_plot <- function(selected_state) {
+  # Initialize variables to store the counts
+  if (selected_state == "All Sample States and Territories"){
+    data_to_use = dem_data$Geographic.Levels2
+  }
+  else{
+    data_to_use = dem_data$Geographic.Levels2[dem_data$State..Country == selected_state]
+  }
+  estimates <- 0
+  projections <- 0
+  
+  for (i in data_to_use) {
+    if (any(grepl("estimates", i))) {
+      estimates <- estimates + 1
+    }
+    if (any(grepl("projections", i))) {
+      projections <- projections + 1
+    }
+    if (any(grepl("projections", i))) {
+      projections <- projections + 1
+    }
+    if (any(grepl("projections", i))) {
+      projections <- projections + 1
+    }
+    if (any(grepl("projections", i))) {
+      projections <- projections + 1
+    }
+    if (any(grepl("projections", i))) {
+      projections <- projections + 1
+    }
+    if (any(grepl("projections", i))) {
+      projections <- projections + 1
+    }
+    if (any(grepl("projections", i))) {
+      projections <- projections + 1
+    }
+    if (any(grepl("projections", i))) {
+      projections <- projections + 1
+    }
+    if (any(grepl("projections", i))) {
+      projections <- projections + 1
+    }
+    if (any(grepl("projections", i))) {
+      projections <- projections + 1
+    }
+    if (any(grepl("projections", i))) {
+      projections <- projections + 1
+    }
+    if (any(grepl("projections", i))) {
+      projections <- projections + 1
+    }
+    if (any(grepl("projections", i))) {
+      projections <- projections + 1
+    }
+  }
+  # Create data frame for plotting
+  category <- c("Estimates", "Projections")
+  counts <- c(estimates, projections)
+  total_df <- data.frame(category, counts)
+  # Barplot
+  barplot(counts, names.arg = category, col = cbPalette,
+          main = paste("Types of Sub-category:", selected_state),
+          xlab = "Category: Demographics", ylab = "Counts", cex.names = 0.9, ylim = c(0, 250))
+  # Add counts as text above the bars
+  text(x = c(0.7, 1.9, 3.1, 4.3, 5.5, 6.7, 7.9), y = counts,
+       labels = counts, pos = 3, cex = 0.8, col = "black")
+}
 
 ############################################################################
 
