@@ -382,7 +382,7 @@ econ_sub_cat_and_tool <- function(selected_state){
     ggtitle("Different type of tools inside each sub-category of Economy")
 }
 
-econ_pie_graph <- function(selected_state, data_table) {
+econ_pie_graph_census<- function(selected_state, data_table) {
   if (selected_state == "All Sample States") {
     data_to_use = data_table
   } else {
@@ -392,21 +392,35 @@ econ_pie_graph <- function(selected_state, data_table) {
   count_result <- data_to_use %>% group_by(Data.Source.Census..Standardized.) %>% summarize(count = n())
   colnames(count_result) <- c("data source", "count")
   count_result <- count_result[count_result$`data source` != "", ]
+
+  sorted_df <- count_result[order(- count_result$count), ]
+  
+  # Adding a title to the pie graph
+  title <- paste("Economy Data Census Source (Census) Distribution in", selected_state)
+  
+  par(mfrow = c(1, 1), mar = c(4, 4, 2, 2))
+  pie(sorted_df$count, labels = sorted_df$`data source`, border = "white", col = cbPalette, cex = 1, main = title)
+}
+
+econ_pie_graph_noncensus <- function(selected_state, data_table) {
+  if (selected_state == "All Sample States") {
+    data_to_use = data_table
+  } else {
+    data_to_use = data_table[data_table$State..Country == selected_state, ]
+  }
   
   countinue <- data_to_use %>% group_by(Data.Source.Non.Census..Standardized.) %>% summarize(count = n())
   colnames(countinue) <- c("data source", "count")
   countinue <- countinue[countinue$`data source` != "", ]
-  
-  combined_df <- rbind(count_result, countinue)
-  sorted_df <- combined_df[order(- combined_df$count), ]
+
+  sorted_df <- countinue[order(- countinue$count), ]
   
   # Adding a title to the pie graph
-  title <- paste("Economy Data Source Distribution in", selected_state)
+  title <- paste("Economy Data Source (Non Census) Distribution in", selected_state)
   
-  par(mfrow = c(1, 1), mar = c(4, 4, 2, 2))
-  pie(sorted_df$count, labels = sorted_df$`data source`, border = "white", col = cbPalette, cex = 0.6, main = title)
+  #par(mfrow = c(1, 1), mar = c(4, 4, 2, 2))
+  pie(sorted_df$count, labels = sorted_df$`data source`, border = "white", col = cbPalette, cex = 1, main = title)
 }
-
 
 
 #Word cloud for variable names
@@ -559,7 +573,8 @@ ui <-  fluidPage(
                                    ),
                                    mainPanel(plotOutput("fin_econ_plot1"),
                                              plotOutput("fin_econ_plot2"),
-                                             plotOutput("fin_econ_plot3")
+                                             plotOutput("fin_econ_plot3"),
+                                             plotOutput("fin_econ_plot4")
                                    ))),
                         tabPanel("Housing",
                           br(),
@@ -626,18 +641,10 @@ server <- function(input, output) {
 
   
   #Economy Findings
-  output$fin_econ_plot1 <- renderPlot({
-    econ_category_plot(selected_state = input$dropdown3)
-    })
-  
-  output$fin_econ_plot2 <- renderPlot({
-    econ_sub_cat_and_tool(selected_state = input$dropdown3)
-  })
-  
-  output$fin_econ_plot3 <- renderPlot({
-    econ_pie_graph(selected_state = input$dropdown3, data_table = econ_data)
-  })
-
+  output$fin_econ_plot1 <- renderPlot({econ_category_plot(selected_state = input$dropdown3)})
+  output$fin_econ_plot2 <- renderPlot({econ_sub_cat_and_tool(selected_state = input$dropdown3)})
+  output$fin_econ_plot3 <- renderPlot({econ_pie_graph_census(selected_state = input$dropdown3, data_table = econ_data)})
+  output$fin_econ_plot4 <- renderPlot({econ_pie_graph_noncensus(selected_state = input$dropdown3, data_table = econ_data)})
   
 }
 
