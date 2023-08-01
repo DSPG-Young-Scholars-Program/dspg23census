@@ -1,0 +1,75 @@
+---
+title: "Intro_findings"
+output: html_document
+date: "2023-08-01"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(readxl)
+library(ggplot2)
+library(wordcloud)
+library(RColorBrewer)
+library(wordcloud2)
+library(reshape)
+library(tm)
+library(stringr)
+library(plotly)
+library(usmap)
+```
+
+
+```{r}
+data <- read_excel("Mission_Statements/mission_statements.xlsx")
+```
+
+
+```{r}
+#Host Types 
+
+#Bar graph of host org. counts
+host_counts <- ggplot(data, aes(x=Host_Type)) + geom_bar(fill="steelblue") + labs(x="Type of Host Organization", y="Count", title="Host Ogranizations for SDC Lead Agencies")
+ggplotly(host_counts)
+
+#fix: change color
+#map of host types
+hosts <- data.frame(state = data$State, type = data$Host_Type)
+host_map <- plot_usmap(data = hosts, values = "type") + labs(title="Type of Lead Agency")
+ggplotly(host_map)
+```
+
+```{r}
+#Do SDCs have Mission Statements?
+
+#fix: this shows both SDC and Host Orgs, want only SDCs
+#Bar graph of Y/N statement counts
+statement_counts <- ggplot(data, aes(x=Mission_Statement_Status)) + geom_bar(fill="steelblue") + labs(x = "", y="Count", title="Do SDCs Have Mission Statements")
+ggplotly(statement_counts)
+```
+
+```{r}
+#Coordinating Agencies
+
+
+#make this prettier
+#Number of coordinating agencies by state
+coordinating_counts <- ggplot(data, aes(x=State, y=Coordinating)) + geom_point() + labs(x = "State", y="Number of Coordinating Agencies", title="Number of Coordinating Agencies by State") + theme(axis.text.x = element_text(angle = 45))
+ggplotly(coordinating_counts)
+
+
+#Map of number of coordinating agencies
+coord <- data.frame(state = data$State, number = data$Coordinating)
+coord_map <- plot_usmap(data=coord, values="number") + labs(title="Number of Coordinating Agencies")
+ggplotly(coord_map)
+```
+
+
+```{r}
+examined_SDC <- data.frame(state = data$State, value = data$Examined)
+examined_map <- plot_usmap(data = examined_SDC, values="value")
+ggplotly(examined_map)
+```
+
