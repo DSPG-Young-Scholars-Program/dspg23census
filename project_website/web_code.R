@@ -11,7 +11,7 @@ library(data.table)
 library(rsconnect)
 library(forcats)
 library(plotly)
-
+library(DT)
 library(wordcloud)
 library(RColorBrewer)
 library(reshape)
@@ -46,6 +46,10 @@ mission_states <- c("All Sample States", "Alabama", "Alaska", "Arizona", "Arkans
                     "Utah", "Vermont", "Wisconsin")
 
 #Data Imports
+#FSCPE
+fscpe_response <- read.csv("FSCPE_Response.csv")
+colnames(fscpe_response) <- c("State", "Index", "Data Tools/Application Name", "Data Source Name", "Web Link to Data Tool", "Brief Description")
+
 #Demo data
 dem_data <- read.csv("Finding_Demographics/SDC_Demographics.csv")
 dem_data$Sub.categories = tolower(dem_data$Sub.categories)
@@ -772,13 +776,16 @@ ui <-  fluidPage(
                   box(title="Examining Mission Statements of State Data Centers",
                     p("Out of the 56 State Data Centers that we examined, 42 had mission statements that related to the work of the SDC."),
                     p("States that did not have an SDC mission statement included: Colorado, Georgia, Idaho, Illinois, Louisiana, 
-                      Nebraska, New Mexico, Virginia, Washington, West Virginia, Wyoming, Puerto Rico, Guam, U.S. Virgin Islands, American Samoa"),
-                    br(),
-                    sidebarLayout(sidebarPanel(
-                      selectInput("dropdownM", "Which state's mission statement are you interested in?", mission_states)),
+                      Nebraska, New Mexico, Virginia, Washington, West Virginia, Wyoming, Puerto Rico, Guam, U.S. Virgin Islands, American Samoa")),
+                  br(),
+                  sidebarLayout(sidebarPanel(
+                    selectInput("dropdownM", "Which state's mission statement are you interested in?", mission_states)),
                     mainPanel(textOutput("mission_text1"),
-                           plotOutput("mission_plot1"))))),
-             tabPanel("FSCPE Response"),
+                              plotOutput("mission_plot1")))),
+             tabPanel("FSCPE Response",
+                      box(title="Responses Collected from FSCPE Contacts",
+                          p("The Federal-State Cooperative for Population Estimates (FSCPE)")),
+                      DTOutput("fscpe_table")),
              navbarMenu("SDC Findings",
                         tabPanel("Intro",
                                  mainPanel(plotOutput("intro_plot1"),
@@ -848,6 +855,8 @@ server <- function(input, output) {
   output$mission_text1 <- renderText({{paste("Word cloud on", input$dropdownM, "mission statement.")}})
   output$mission_plot1 <- renderPlot({mission_cloud(state=input$dropdownM)})
   
+  #FSCPE Response
+  output$fscpe_table <- renderDT({fscpe_response})
   
 
   #Intro Findings
