@@ -190,7 +190,7 @@ econ_category_plot <- function(selected_state) {
   total_df <- data.frame(category, counts)
   # Barplot
   barplot(counts, names.arg = category, col = "steelblue",
-          main = paste("Distribution of Data Tools' Category in", selected_state),
+          main = paste("Types of Sub-category:", selected_state),
           xlab = "Category: Economy", ylab = "Counts", cex.names = 0.9, ylim = c(0, 60))
   # Add counts as text above the bars
   text(x = c(0.7, 1.9, 3.1, 4.3, 5.5, 6.7, 7.9), y = counts,
@@ -424,7 +424,7 @@ econ_pie_graph_noncensus <- function(selected_state, data_table) {
   # Adding a title to the pie graph
   title <- paste("Economy Data Source (Non Census) Distribution in", selected_state)
   
-  #par(mfrow = c(1, 1), mar = c(4, 4, 2, 2))
+  par(mfrow = c(1, 1), mar = c(4, 4, 2, 2))
   pie(sorted_df$count, labels = sorted_df$`data source`, border = "white", col = cbPalette, cex = 1, main = title)
 }
 
@@ -722,9 +722,9 @@ ui <-  fluidPage(
                       ),
                       panel(h3("Our Ideas", style = "color: #1B3766;"),
                             p("1. Text analysis of state constitutions and amendments."),
-                            p("2. Evaluation of state, U.S. territories, and District of Columbia data centers."),
-                            p("3. Text analysis of state data center mission statements."),
-                            p("4. Email survey sent to all 56 FSCPE contacts."),
+                            p("2. Text analysis of state data center mission statements."),
+                            p("3. Email survey sent to all 56 The Federal-State Cooperative for Population Estimates (FSCPE) contacts."),
+                            p("4. Evaluation of state, U.S. territories, and District of Columbia data centers."),
                             p("5. Search of UVA library databases: Policy Commons Database (Policy File Index Database, State and Local Government Databases. Policy Map Customer Stories)")
         
                       ),
@@ -742,7 +742,9 @@ ui <-  fluidPage(
                             p("- Jianing Cai, Fourth Year at UVA (CS & Math)"),
                             p("- Vicki Lancaster, Principal Scientist"),
                             p("- Neil Kattampallil, Research Scientist"),
-                            p("- Treena Goswami*, Postdoc Researcher Associates"),
+                            p("- Treena Goswami *, Postdoctoral Research Associate"),
+                            h6("*For more information on the project, please reach out to ",
+                               tags$a(href = "mailto:gcm8gw@virgnia.edu", "gcm8gw@virgnia.edu"))
                         )),
              navbarMenu("Topic Modeling",
              tabPanel("Gensim"),
@@ -755,28 +757,31 @@ ui <-  fluidPage(
                           p("4.Oregon"),
                           p("5.Texas")),
                       box(title="BERT Example: California Data"))),
-  tabPanel("Mission Statements",
-           br(),
-           p("Out of all 56 SDCs, 39 had mission statements that related to the work of the SDC."),
-           sidebarLayout(sidebarPanel(
-             selectInput("dropdownM", "Which state's mission statement are you interested in?",
-                         mission_states)),
-             mainPanel(textOutput("mission_text1"),
-                       plotOutput("mission_plot1")
-             ))),
+             tabPanel("Mission Statements",
+                      br(),
+                      p("Out of all 56 SDCs, 39 had mission statements that related to the work of the SDC."),
+                      sidebarLayout(sidebarPanel(
+                        selectInput("dropdownM", "Which state's mission statement are you interested in?",
+                                    mission_states)),
+                        mainPanel(textOutput("mission_text1"),
+                                  plotOutput("mission_plot1")
+                                  ))),
+             tabPanel("FSCPE Response",
+                      ),
              navbarMenu("Findings",
+                        tabPanel("Introduction"
+                                 ),
                         tabPanel("Demographics",
                                  br(),
                                  sidebarLayout(sidebarPanel(
                                    selectInput("dropdownD", "Which state are you interested in?",
                                                all_states)
                                  ),
-                                 mainPanel(#textOutput("text3"),
-                                   plotOutput("fin_dem_1"),
-                                   plotOutput("fin_dem_2"),
-                                   plotOutput("fin_dem_3"),
-                                   plotOutput("fin_dem_4")
-                                 ))),
+                                 mainPanel(plotOutput("fin_dem_1"),
+                                           plotOutput("fin_dem_2"),
+                                           plotOutput("fin_dem_3"),
+                                           plotOutput("fin_dem_4")
+                                           ))),
                         tabPanel("Economy",
                                  br(),
                                  sidebarLayout(sidebarPanel(
@@ -787,43 +792,33 @@ ui <-  fluidPage(
                                              plotOutput("fin_econ_plot2"),
                                              plotOutput("fin_econ_plot3"),
                                              plotOutput("fin_econ_plot4")
-                                   ))),
+                                             ))),
                         tabPanel("Housing",
-                      br(),
-                      sidebarLayout(sidebarPanel(
-                        selectInput("dropdownH", "Which state are you interested in?",
-                                    all_states)),
-                        mainPanel(textOutput("fin_hous_text1"),
-                                  plotOutput("fin_hous_plot1"),
-                                  textOutput("fin_hous_text2"),
-                                  plotOutput("fin_hous_plot2"),
-                                  textOutput("fin_hous_text3"),
-                                  plotOutput("fin_hous_plot3")
-                        ))),
+                                 br(),
+                                 sidebarLayout(sidebarPanel(
+                                   selectInput("dropdownH", "Which state are you interested in?",
+                                               all_states)),
+                                   mainPanel(textOutput("fin_hous_text1"),
+                                             plotOutput("fin_hous_plot1"),
+                                             textOutput("fin_hous_text2"),
+                                             plotOutput("fin_hous_plot2"),
+                                             textOutput("fin_hous_text3"),
+                                             plotOutput("fin_hous_plot3")
+                                             ))),
                         tabPanel("Diversity"),
                         tabPanel("Health & Education",
-                      br(),
-                      sidebarLayout(sidebarPanel(
-                        selectInput("dropdownHE", "Which state are you interested in?",
-                                    all_states)),
-                        mainPanel(textOutput("fin_HE_text1"),
-                                  plotOutput("fin_HE_plot1"),
-                                  textOutput("fin_HE_text2"),
-                                  plotOutput("fin_HE_plot2"),
-                                  textOutput("fin_HE_text3"),
-                                  plotOutput("fin_HE_plot3")
-                        )))),
-             tabPanel("Team",
-                        box(title="Meet Our Team", width = 6,
-                          br(),
-                          h5("DSPG, University of Virginia, Biocomplexity Institute, Social and Decision Analytics"),
-                          p("- Marijke van der Geer, Fourth Year @ SDSU (Stats & DS)"),
-                          p("- Jianing Cai, Fourth Year @ UVA (CS & Math)"),
-                          br(),
-                          h5("University of Virginia, Biocomplexity Institute, Social and Decision Analytics"),
-                          p("- Vicki Lancaster, Principal Scientist"),
-                          p("- Neil Kattampallil, Research Scientist"),
-                          p("- Treena Goswami, Postdoc Researcher")))))
+                                 br(),
+                                 sidebarLayout(sidebarPanel(
+                                   selectInput("dropdownHE", "Which state are you interested in?",
+                                               all_states)),
+                                   mainPanel(textOutput("fin_HE_text1"),
+                                             plotOutput("fin_HE_plot1"),
+                                             textOutput("fin_HE_text2"),
+                                             plotOutput("fin_HE_plot2"),
+                                             textOutput("fin_HE_text3"),
+                                             plotOutput("fin_HE_plot3")
+                                             )))
+                        )))
   
  
 
