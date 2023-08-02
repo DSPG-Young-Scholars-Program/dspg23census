@@ -9,8 +9,13 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r}
-health_edu <- read.csv('HE_cleaned.csv')
+health_edu <- read.csv('HE_data.csv')
 ```
+
+```{r}
+cbPalette <- c("#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
+```
+
 
 ```{r}
 #Creates list of columns in df
@@ -175,4 +180,303 @@ variable_cloud <- function(state) {
 #Count
 sum(health_edu$Historical.data=='y')
 ```
+
+```{r}
+#pie chart
+h_edu_pie_graph_noncensus <- function(state, data_source) {
+  if (state == "All Sample States") {
+    data_to_use = data_source
+  } 
+  else {
+    data_to_use = data_source[data_source$State == state, ]
+  }
+  
+  countinue <- data_to_use %>% group_by(Data.Sources.Non.Census) %>% summarize(count = n())
+  colnames(countinue) <- c("data source", "count")
+  countinue <- countinue[countinue$`data source` != "", ]
+
+  # Adding a title to the pie graph
+  title <- paste("Housing Data Source (Non Census) \n Distribution in", state)
+  
+  par(mfrow = c(1, 1), mar = c(4, 4, 2, 2))
+  pie(countinue$count, labels = countinue$`data source`, border = "white", col = cbPalette, cex = 1, main = title)
+}
+```
+
+```{r}
+h_edu_pie_graph_noncensus("All Sample States", health_edu)
+```
+
+```{r}
+h_edu_pie_graph_census <- function(state, data_source) {
+    if (state == "All Sample States") {
+    data_to_use = data_source
+  } else {
+    data_to_use = data_source[data_source$State == state, ]
+  }
+  
+  countinue <- data_to_use %>% group_by(Data.Sources.Non.Census) %>% summarize(count = n())
+  colnames(countinue) <- c("data source", "count")
+  countinue <- countinue[countinue$`data source` != "", ]
+  
+  #sorted_df <- countinue[order(- countinue$count), ]
+  
+  # Adding a title to the pie graph
+  title <- paste("Economy Data Source (Non Census) \n Distribution in", state)
+  
+  par(mfrow = c(1, 1), mar = c(4, 4, 2, 2))
+  #pie(sorted_df$count, labels = sorted_df$`data source`, border = "white", col = cbPalette, cex = 1, main = title)
+  pie(countinue$count, labels = countinue$`data source`, border = "white", col = cbPalette, cex = 1, main = title)
+}
+
+h_edu_pie_graph_census("All Sample States", health_edu)
+```
+
+```{r}
+h_edu_subcat_tools <- function(state, data_source) {
+    if(state=="All Sample States and Territories") {
+    sub_cats <- ggplot(data_source, aes(x=Sub.categories)) + geom_bar(col = "#999999", fill="steelblue") + labs(x="Category", y="Counts") + theme_minimal() + theme(axis.text.x = element_text(angle = 45, hjust=1))
+    sub_cats #+ coord_flip()
+  }
+  else {
+    State <- str_to_title(state)
+    state_input <- data_source[data_source[, "State..Country"]==state, ]
+    state_df <- data.frame()
+    state_df <- rbind(state_df, state_input)
+    sub_cats <- ggplot(state_df, aes(x=Sub.categories)) + geom_bar(col = "#999999", fill="steelblue") + labs(x="Category", y="Counts") + theme_minimal() + theme(axis.text.x = element_text(angle = 45, hjust=1))
+    sub_cats #+ coord_flip()
+  }
+}
+
+h_edu_subcat_tools("California", health_edu)
+```
+
+```{r}
+ # library
+library(ggplot2)
+ 
+# create a dataset
+specie <- c(rep("sorgho" , 3) , rep("poacee" , 3) , rep("banana" , 3) , rep("triticum" , 3) )
+condition <- rep(c("normal" , "stress" , "Nitrogen") , 4)
+value <- abs(rnorm(12 , 0 , 15))
+data <- data.frame(specie,condition,value)
+ 
+# Stacked
+ggplot(data, aes(fill=condition, y=value, x=specie)) + 
+    geom_bar(position="stack", stat="identity")
+```
+
+```{r}
+#fix
+age_of_data_plot <- function(state, data_source) {
+      if(state=="All Sample States and Territories") {
+          ggplot(health_edu, aes(x=Age.of.data)) + geom_bar(col = "#999999", fill="steelblue") + labs(x="Year of Latest Vintage", y="Count")
+      }
+      else {
+        State <- str_to_title(state)
+        state_input <- data_source[data_source[, "State..Country"]==state, ]
+        state_df <- data.frame()
+        state_df <- rbind(state_df, state_input)
+        ggplot(state_df, aes(x=Age.of.data)) + geom_bar(col = "#999999", fill="steelblue") + labs(x="Year of Latest Vintage", y="Count")
+  }
+}
+age_of_data_plot("California", health_edu) 
+```
+
+```{r}
+#sub-cats and tools
+econ_sub_cat_and_tool <- function(state, data_source){
+  df_stack2 <- data.frame(
+    Tools = character(),
+    sub = character(),
+    count = numeric()
+  )
+  col_name = c("Tools","sub","count")
+  colnames(df_stack2) <- col_name
+  
+  if (selected_state == "All Sample States and Territories" ){
+    data_to_use = data_source
+  }
+  else{
+    data_to_use = data_source[data_source$State..Country == state,]
+  }
+  
+  for (i in 1:nrow(data_to_use)) {
+    #---------------------------employment----------------------------
+    if (any(grepl("employment", data_to_use[i,3]))) {
+      if(any(grepl("table download", data_to_use[i,4]))){
+        new_row <- c("Table Download", "Employment",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("table", data_to_use[i,4]))){
+        new_row <- c("Table", "Employment",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("report", data_to_use[i,4]))){
+        new_row <- c("Report", "Employment",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("map", data_to_use[i,4]))){
+        new_row <- c("Map", "Employment",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("visualization", data_to_use[i,4]))){
+        new_row <- c("Data Visualization", "Employment",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+    }
+    #--------------------------income----------------------------
+    if (any(grepl("income", data_to_use[i,3]))) {
+      if(any(grepl("table download", data_to_use[i,4]))){
+        new_row <- c("Table Download", "Income",46)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("table", data_to_use[i,4]))){
+        new_row <- c("Table", "Income",46)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("report", data_to_use[i,4]))){
+        new_row <- c("Report", "Income",46)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("map", data_to_use[i,4]))){
+        new_row <- c("Map", "Income",46)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("visualization", data_to_use[i,4]))){
+        new_row <- c("Data Visualization", "Income",46)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+    }
+    #---------------------------tax----------------------------
+    if (any(grepl("tax", data_to_use[i,3]))) {
+      if(any(grepl("table download", data_to_use[i,4]))){
+        new_row <- c("Table Download", "Tax",9)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("table", data_to_use[i,4]))){
+        new_row <- c("Table", "Tax",9)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("report", data_to_use[i,4]))){
+        new_row <- c("Report", "Tax",9)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("map", data_to_use[i,4]))){
+        new_row <- c("Map", "Tax",9)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("visualization", data_to_use[i,4]))){
+        new_row <- c("Data Visualization", "Tax",9)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+    }
+    #---------------------------labor force----------------------------
+    if (any(grepl("labor force", data_to_use[i,3]))) {
+      if(any(grepl("table download", data_to_use[i,4]))){
+        new_row <- c("Table Download", "Labor Force",18)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("table", data_to_use[i,4]))){
+        new_row <- c("Table", "Labor Force",18)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("report", data_to_use[i,4]))){
+        new_row <- c("Report", "Labor Force",18)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("map", data_to_use[i,4]))){
+        new_row <- c("Map", "Labor Force",18)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("visualization", data_to_use[i,4]))){
+        new_row <- c("Data Visualization", "Labor Force",18)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+    }
+    #---------------------------wage----------------------------
+    if (any(grepl("wage", data_to_use[i,3]))) {
+      if(any(grepl("table download", data_to_use[i,4]))){
+        new_row <- c("Table Download", "Wage",22)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("table", data_to_use[i,4]))){
+        new_row <- c("Table", "Wage",22)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("report", data_to_use[i,4]))){
+        new_row <- c("Report", "Wage",22)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("map", data_to_use[i,4]))){
+        new_row <- c("Map", "Wage",22)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("visualization", data_to_use[i,4]))){
+        new_row <- c("Data Visualization", "Wage",22)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+    }
+    #---------------------------job----------------------------
+    if (any(grepl("job", data_to_use[i,3]))) {
+      if(any(grepl("table download", data_to_use[i,4]))){
+        new_row <- c("Table Download", "Job",9)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("table", data_to_use[i,4]))){
+        new_row <- c("Table", "Job",9)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("report", data_to_use[i,4]))){
+        new_row <- c("Report", "Job",9)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("map", data_to_use[i,4]))){
+        new_row <- c("Map", "Job",9)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("visualization", data_to_use[i,4]))){
+        new_row <- c("Data Visualization", "Job",9)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+    }
+    #---------------------------economy----------------------------
+    if (any(grepl("economy", data_to_use[i,3]))) {
+      if(any(grepl("table download", data_to_use[i,4]))){
+        new_row <- c("Table Download", "Economy",38)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("table", data_to_use[i,4]))){
+        new_row <- c("Table", "Economy",38)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("report", data_to_use[i,4]))){
+        new_row <- c("Report", "Economy",38)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("map", data_to_use[i,4]))){
+        new_row <- c("Map", "Economy",38)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("visualization", data_to_use[i,4]))){
+        new_row <- c("Data Visualization", "Economy",38)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+    }
+  }
+  colnames(df_stack2) <- col_name
+  
+  bar1 <- ggplot(df_stack2, aes(x = sub, y = 1, fill = Tools)) +
+    geom_col() +
+    scale_fill_manual(values = cbPalette) +
+    xlab("Sub-categories: Economy")+
+    ylab("Counts")+
+    theme(axis.text.x = element_text(angle = 45, hjust = 1),
+          plot.title = element_text(hjust = 0.5, face = "bold"))+
+    ggtitle("Different type of tools inside each sub-category of Economy")
+  
+  bar1 + theme_minimal()
+}
+```
+
 
