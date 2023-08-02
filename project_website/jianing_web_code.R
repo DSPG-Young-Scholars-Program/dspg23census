@@ -216,7 +216,7 @@ econ_category_plot <- function(selected_state) {
   total_df <- data.frame(category, counts)
   # Barplot
   ggplot(total_df, aes(x = category, y = counts)) +
-    geom_bar(stat = "identity", position = "dodge", width = 0.7, col = "#999999", fill = "steelblue") +
+    geom_bar(stat = "identity", position = "dodge", width = 0.7, col = "#999999", fill = "#0072B2") +
     geom_text(aes(label = counts), position = position_stack(vjust = 0.5), vjust = -0.5, cex = 0.8, col = "black") +
     labs(title = paste("Types of Sub-category:", selected_state),
          x = "Category: Economy", y = "Counts") +
@@ -854,7 +854,7 @@ div_tool_type_plot <- function(selected_state) {
   total_df <- data.frame(tool_name, counts)
   # Barplot
   ggplot(total_df, aes(x = tool_name, y = counts)) +
-    geom_bar(stat = "identity", position = "dodge", width = 0.7, col = "#999999", fill = "steelblue") +
+    geom_bar(stat = "identity", position = "dodge", width = 0.7, col = "#999999", fill = "#0072B2") +
     geom_text(aes(label = counts), position = position_stack(vjust = 0.5), vjust = -0.5, cex = 0.8, col = "black") +
     labs(title = paste("Types of Tools:", selected_state),
          x = "Type of Tools: Diversity", y = "Counts") +
@@ -1025,15 +1025,19 @@ ui <-  fluidPage(
                       p("Some commonly used packages for topic modeling include GENSIM, BERT, and NLTK."),
                       p("In our project, we used GENSIM and BERT to examine topics within State Constitutions."),
                       br(),
+                      h4("BERT",style = "color: #E57200;"),
+                      p("We applied BERT to the top 5 State Constitutions with the most amendments."),
+                      p("1.California"),
+                      p("2.Hawaii"),
+                      p("3.Maryland"),
+                      p("4.Oregon"),
+                      p("5.Texas"),
+                      br(),
                       fluidRow(
-                        column(width = 6, 
-                               h4("BERT",style = "color: #E57200;"),
-                               p("We applied BERT to the top 5 State Constitutions with the most amendments."),
-                               p("1.California"),
-                               p("2.Hawaii"),
-                               p("3.Maryland"),
-                               p("4.Oregon"),
-                               p("5.Texas")),
+                        column(width = 6,
+                               h4("BERT Example: California Topics",style = "color: #E57200;"),
+                               tags$img(height=380, width=450, src="BERT_CA_Topics.png")
+                               ),
                         column(width = 6, 
                                h4("BERT Example: California Data",style = "color: #E57200;"),
                                tags$img(height=450, width=450, src="CABert.png")))),
@@ -1173,7 +1177,6 @@ ui <-  fluidPage(
                                           div(class="center-content",
                                               textOutput("fin_div_varname_text")),
                                           plotOutput("fin_div_varname_plot"),
-                                          p("place-holder for diversity non census table"),
                                           plotOutput("fin_div_historical_plot"))
                                  )),
                         
