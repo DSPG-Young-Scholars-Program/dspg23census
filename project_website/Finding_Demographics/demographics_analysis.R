@@ -12,13 +12,29 @@ library(rsconnect)
 library(forcats)
 library(plotly)
 library(DT)
+library(wordcloud)
+library(RColorBrewer)
+library(reshape)
+library(tm)
+library(stringr)
+library(usmap)
+library(readxl)
 library(gcookbook)
 library(knitr)
 library(kableExtra)
 
+library(wordcloud)
+library(RColorBrewer)
+library(reshape)
+library(tm)
+library(stringr)
+library(usmap)
+library(readxl)
+
+
 cbPalette <- c("#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
 
-all_states <- c("All sample states", "Alabama", "Alaska","Arizona", "Arkansas", "California",
+all_states <- c("All Sample States and Territories", "Alabama", "Alaska","Arizona", "Arkansas", "California",
                 "Colorado", "Connecticut", "Delaware", "District of Colombia", 
                 "Florida", "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana",
                 "Iowa", "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", 
@@ -28,10 +44,11 @@ all_states <- c("All sample states", "Alabama", "Alaska","Arizona", "Arkansas", 
 dem_data <- read.csv("/home/gcm8gw/Git/dspg23census/project_website/Finding_Demographics/SDC_Demographics.csv")
 dem_data$Sub.categories = tolower(dem_data$Sub.categories)
 
-# Plot 1
+# Plot 1 - Type of subcategories
+
 dem_category_plot <- function(selected_state) {
   # Initialize variables to store the counts
-  if (selected_state == "All sample states"){
+  if (selected_state == "All Sample States and Territories"){
     data_to_use = dem_data$Sub.categories
   }
   else{
@@ -52,16 +69,23 @@ dem_category_plot <- function(selected_state) {
   category <- c("Estimates", "Projections")
   counts <- c(estimates, projections)
   total_df <- data.frame(category, counts)
-  # Barplot
-  barplot(counts, names.arg = category, col = "steelblue",
-          main = paste("Types of Sub-category:", selected_state),
-          xlab = "Category: Demographics", ylab = "Counts", cex.names = 0.9, ylim = c(0, 250))
-  # Add counts as text above the bars
-  text(x = c(0.7, 1.9, 3.1, 4.3, 5.5, 6.7, 7.9), y = counts,
-       labels = counts, pos = 3, cex = 0.8, col = "black")
+  
+  
+  # Create the ggplot bar plot
+ ggplot(total_df, aes(x = category, y = counts)) +
+    geom_bar(stat = "identity", position = "dodge", fill = "#0072B2") +
+    labs(
+      title = paste("Types of Sub-category:", selected_state),
+      x = "Category: Demographics",
+      y = "Counts"
+    ) +
+    theme_minimal() + theme(axis.text.x = element_text(angle = 45, hjust = 1), 
+                            plot.title = element_text(hjust = 0.4, face = "bold"))
+ # + coord_cartesian(ylim = c(0, 250))
 }
 
-# Plot 2
+# Plot 2 - Type of tools for subcategory
+
 dem_data$Tool = tolower(dem_data$Tool)
 
 dem_sub_cat_and_tool <- function(selected_state){
@@ -73,7 +97,7 @@ dem_sub_cat_and_tool <- function(selected_state){
   col_name = c("tool","sub","count")
   colnames(df_stack2) <- col_name
   
-  if (selected_state == "All sample states" ){
+  if (selected_state == "All Sample States and Territories" ){
     data_to_use = dem_data
   }
   else{
@@ -151,13 +175,246 @@ dem_sub_cat_and_tool <- function(selected_state){
     scale_fill_manual(values = cbPalette) +
     xlab("Sub-categories: Demographics")+
     ylab("Counts")+
-    theme(axis.text.x = element_text(angle = 45, hjust = 1),
-          plot.title = element_text(hjust = 0.4, face = "bold"))+
+    theme_minimal() + theme(axis.text.x = element_text(angle = 45, hjust = 1), 
+                            plot.title = element_text(hjust = 0.4, face = "bold"))+
     ggtitle("Different type of tools inside each sub-category of Demographics")
+    
+}
+
+# Plot 3 - Geographic levels
+
+dem_data$Geographic.Levels2 = tolower(dem_data$Geographic.Levels2)
+
+dem_geography_plot <- function(selected_state) {
+  df_stack3 <- data.frame(
+    geography = character()
+  )
+  col_name = c("Geography")
+  colnames(df_stack3) <- col_name
+  
+  
+  # Initialize variables to store the counts
+  if (selected_state == "All Sample States and Territories"){
+    data_to_use = dem_data
+  }
+  else{
+    data_to_use = dem_data[dem_data$State..Country == selected_state,]
+  }
+  
+  
+  for (i in 1:nrow(data_to_use)) {
+    if(any(grepl("alaska", data_to_use[i,9]))){
+      new_row <- c("Alaska Native")
+      df_stack3 <- rbind(df_stack3, new_row)}
+    if (any(grepl("block", data_to_use[i,9]))) {
+      new_row <- c("Block")
+      df_stack3 <- rbind(df_stack3, new_row)}
+    if (any(grepl("group", data_to_use[i,9]))) {
+      new_row <- c("Block Group")
+      df_stack3 <- rbind(df_stack3, new_row)}
+    if (any(grepl("borough", data_to_use[i,9]))) {
+      new_row <- c("Borough")
+      df_stack3 <- rbind(df_stack3, new_row)}
+    if (any(grepl("census", data_to_use[i,9]))) {
+      new_row <- c("Census Area")
+      df_stack3 <- rbind(df_stack3, new_row)}
+    if (any(grepl("subarea", data_to_use[i,9]))) {
+      new_row <- c("Census Subarea")
+      df_stack3 <- rbind(df_stack3, new_row)}
+    if (any(grepl("census designated place", data_to_use[i,9]))) {
+      new_row <- c("Census Designated Place")
+      df_stack3 <- rbind(df_stack3, new_row)}
+    if (any(grepl("tract", data_to_use[i,9]))) {
+      new_row <- c("Census Tract")
+      df_stack3 <- rbind(df_stack3, new_row)}
+    if (any(grepl("town", data_to_use[i,9]))) {
+      new_row <- c("City/Town")
+      df_stack3 <- rbind(df_stack3, new_row)}
+    if (any(grepl("county", data_to_use[i,9]))) {
+      new_row <- c("County")
+      df_stack3 <- rbind(df_stack3, new_row)}
+    if (any(grepl("subdivision", data_to_use[i,9]))) {
+      new_row <- c("County Subdivision")
+      df_stack3 <- rbind(df_stack3, new_row)}
+    if (any(grepl("combined", data_to_use[i,9]))) {
+      new_row <- c("Combined Statistical Area")
+      df_stack3 <- rbind(df_stack3, new_row)}
+    if (any(grepl("congressional", data_to_use[i,9]))) {
+      new_row <- c("Congressional District")
+      df_stack3 <- rbind(df_stack3, new_row)}
+    if (any(grepl("development", data_to_use[i,9]))) {
+      new_row <- c("Development District")
+      df_stack3 <- rbind(df_stack3, new_row)}
+    if (any(grepl("economic", data_to_use[i,9]))) {
+      new_row <- c("Economic Region")
+      df_stack3 <- rbind(df_stack3, new_row)}
+    if (any(grepl("incorporated city", data_to_use[i,9]))) {
+      new_row <- c("Incorporated City")
+      df_stack3 <- rbind(df_stack3, new_row)}
+    if (any(grepl("incorporated place", data_to_use[i,9]))) {
+      new_row <- c("Incorporated Place")
+      df_stack3 <- rbind(df_stack3, new_row)}
+    if (any(grepl("jurisdiction", data_to_use[i,9]))) {
+      new_row <- c("Jurisdiction")
+      df_stack3 <- rbind(df_stack3, new_row)}
+    if (any(grepl("legislative", data_to_use[i,9]))) {
+      new_row <- c("Legislative District")
+      df_stack3 <- rbind(df_stack3, new_row)}
+    if (any(grepl("metropolitan", data_to_use[i,9]))) {
+      new_row <- c("Metropolitan Area")
+      df_stack3 <- rbind(df_stack3, new_row)}
+    if (any(grepl("micropolitan", data_to_use[i,9]))) {
+      new_row <- c("Micropolitan Area")
+      df_stack3 <- rbind(df_stack3, new_row)}
+    if (any(grepl("municipality", data_to_use[i,9]))) {
+      new_row <- c("Municipality")
+      df_stack3 <- rbind(df_stack3, new_row)}
+    if (any(grepl("nation", data_to_use[i,9]))) {
+      new_row <- c("Nation")
+      df_stack3 <- rbind(df_stack3, new_row)}
+    if (any(grepl("native", data_to_use[i,9]))) {
+      new_row <- c("Native Village Statistical Area")
+      df_stack3 <- rbind(df_stack3, new_row)}
+    if (any(grepl("corporation", data_to_use[i,9]))) {
+      new_row <- c("Native Regional Corporation")
+      df_stack3 <- rbind(df_stack3, new_row)}
+    if (any(grepl("neighborhood", data_to_use[i,9]))) {
+      new_row <- c("Neighborhood Cluster")
+      df_stack3 <- rbind(df_stack3, new_row)}
+    if (any(grepl("parish", data_to_use[i,9]))) {
+      new_row <- c("Parish")
+      df_stack3 <- rbind(df_stack3, new_row)}
+    if (any(grepl("places", data_to_use[i,9]))) {
+      new_row <- c("Place")
+      df_stack3 <- rbind(df_stack3, new_row)}
+    if (any(grepl("prosperity", data_to_use[i,9]))) {
+      new_row <- c("Prosperity Region")
+      df_stack3 <- rbind(df_stack3, new_row)}
+    if (any(grepl("puma", data_to_use[i,9]))) {
+      new_row <- c("Public Use Microdata Area")
+      df_stack3 <- rbind(df_stack3, new_row)}
+    if (any(grepl("school", data_to_use[i,9]))) {
+      new_row <- c("School District")
+      df_stack3 <- rbind(df_stack3, new_row)}
+    if (any(grepl("region", data_to_use[i,9]))) {
+      new_row <- c("Region")
+      df_stack3 <- rbind(df_stack3, new_row)}
+    if (any(grepl("state", data_to_use[i,9]))) {
+      new_row <- c("State")
+      df_stack3 <- rbind(df_stack3, new_row)}
+    if (any(grepl("substate", data_to_use[i,9]))) {
+      new_row <- c("Substate Region")
+      df_stack3 <- rbind(df_stack3, new_row)}
+    if (any(grepl("summary", data_to_use[i,9]))) {
+      new_row <- c("Summary Level")
+      df_stack3 <- rbind(df_stack3, new_row)}
+    if (any(grepl("township", data_to_use[i,9]))) {
+      new_row <- c("Township")
+      df_stack3 <- rbind(df_stack3, new_row)}
+    if (any(grepl("urbanized", data_to_use[i,9]))) {
+      new_row <- c("Urbanized Area")
+      df_stack3 <- rbind(df_stack3, new_row)}
+    if (any(grepl("rural", data_to_use[i,9]))) {
+      new_row <- c("Urban/Rural")
+      df_stack3 <- rbind(df_stack3, new_row)}
+    if (any(grepl("village", data_to_use[i,9]))) {
+      new_row <- c("Village")
+      df_stack3 <- rbind(df_stack3, new_row)}
+    if (any(grepl("ward", data_to_use[i,9]))) {
+      new_row <- c("Ward")
+      df_stack3 <- rbind(df_stack3, new_row)}
+    if (any(grepl("zcta", data_to_use[i,9]))) {
+      new_row <- c("ZCTA")
+      df_stack3 <- rbind(df_stack3, new_row)}
+    if (any(grepl("zip", data_to_use[i,9]))) {
+      new_row <- c("Zip Code")
+      df_stack3 <- rbind(df_stack3, new_row)}
+  }
+  colnames(df_stack3) <- col_name 
+  geography_types <- df_stack3 %>% group_by(Geography)%>%
+    summarise(count = n())
+  
+  
+  ggplot(geography_types, aes(x = Geography, y = count)) +
+    geom_col(width=.8) +
+    scale_fill_manual(values = cbPalette) +
+    labs(x="Geography: Demographics", y="Counts") + 
+    theme_minimal() + theme(axis.text.x = element_text(angle = 45, hjust = 1),
+          plot.title = element_text(hjust = 0.4, face = "bold")) +coord_flip()+
+    ggtitle("Types of Geographic Levels") 
+    
+  
 }
 
 
-# Plot 3
+# Plot 4 - Age of data 
+# to be inserted
+
+# Needed to make word clouds using input of 'combo'
+cloud <- function(combo) {
+  # Turns string into corpus of words
+  docs <- Corpus(VectorSource(combo))
+  
+  # Cleaning of corpus
+  docs <- docs %>% tm_map(removeNumbers) %>% tm_map(removePunctuation) %>% tm_map(stripWhitespace)
+  docs <- tm_map(docs, content_transformer(tolower))
+  docs <- tm_map(docs, removeWords, stopwords("english"))
+  
+  # Turns corpus into term-document-matrix
+  dtm <- TermDocumentMatrix(docs)
+  mtx <- as.matrix(dtm)
+  words <- sort(rowSums(mtx), decreasing = TRUE)
+  df <- data.frame(word = names(words), freq=words)
+  
+  # Creates word cloud
+  set.seed(33)
+  wordcloud(words = df$word, freq = df$freq, min.freq = 1, max.words = 100, random.order = FALSE, rot.per = 0, colors = brewer.pal(4, "Set1"))
+}
+
+
+# Plot 5 - Word cloud for tool names
+
+tool_cloud <- function(state, data_source) {
+  if(state=="All Sample States and Territories"){
+    combo <- ""
+    for (i in 1:nrow(data_source)) {
+      combo <- paste(combo, data_source[i,5], sep="")
+    }
+  }
+  else{
+    combo <- ""
+    for (i in 1:nrow(data_source)) {
+      if(data_source$State..Country[i]==state) {
+        combo <- paste(combo, data_source[i,5], sep="")
+      }
+    }
+  }
+  cloud(combo)
+}
+
+# Plot 6 - Word cloud for list of variables
+
+variable_cloud <- function(state, data_source) {
+  if(state=="All Sample States and Territories"){
+    combo <- ""
+    for (i in 1:nrow(data_source)) {
+      combo <- paste(combo, data_source[i,7], sep="")
+    }
+  }
+  else{
+    combo <- ""
+    for (i in 1:nrow(data_source)) {
+      if(data_source$State..Country[i]==state) {
+        combo <- paste(combo, data_source[i,7], sep="")
+      }
+    }
+  }
+  cloud(combo)
+}
+
+
+# Plot 7 - Census Sources 
+
 dem_census_source <- function(selected_state){
   df_stack3 <- data.frame(
     source = character()
@@ -165,7 +422,7 @@ dem_census_source <- function(selected_state){
   col_name = c("source")
   colnames(df_stack3) <- col_name
   
-  if (selected_state == "All sample states" ){
+  if (selected_state == "All Sample States and Territories" ){
     data_to_use = dem_data
   }
   else{
@@ -198,12 +455,13 @@ dem_census_source <- function(selected_state){
   colnames(df_stack3) <- col_name 
   source_types <- df_stack3 %>% group_by(source)%>%
     summarise(count = n())
-  print(source_types)
-  pie(source_types$count , labels = source_types$source, border="white", col=cbPalette, cex=0.5)
+  # Adding a title to the pie graph
+  title <- paste("Demographic Data Source (Census) \n Distribution in", selected_state)
+  pie(source_types$count , labels = source_types$source, border="white", col=cbPalette, cex=0.5, main=title)
 }
 
 
-# Plot 4
+# Plot 8 - Non Census sources
 dem_non_census_source <- function(selected_state){
   df_stack3 <- data.frame(
     source = character()
@@ -211,7 +469,7 @@ dem_non_census_source <- function(selected_state){
   col_name = c("source")
   colnames(df_stack3) <- col_name
   
-  if (selected_state == "All sample states" ){
+  if (selected_state == "All Sample States and Territories" ){
     data_to_use = dem_data
   }
   else{
@@ -225,9 +483,22 @@ dem_non_census_source <- function(selected_state){
   df_stack3 <- data.frame(Source = sources)
   
   # Display the data frame using kable
-  kable(df_stack3, format = "html") %>%
-    kable_styling(full_width = FALSE) # You can set 'full_width = TRUE' for a wider table
+  #kable(df_stack3, format = "html") %>%
+   # kable_styling(full_width = FALSE) # You can set 'full_width = TRUE' for a wider table
 }
+
+
+
+
+# Plot 9 - Link to census data
+# to be inserted
+
+# Plot 10 - Historical data
+# to be inserted
+
+
+
+
 
 
 #------------------------------------------------------------------------------------
@@ -241,6 +512,7 @@ ui <-  fluidPage(
       justify-content: center;
       align-items: center;
       height: 100%;
+      font-weight: bold;
     }
   ")),
   tags$style(HTML("
@@ -283,66 +555,71 @@ ui <-  fluidPage(
              ))),
   navbarMenu("Findings",
              tabPanel("Demographics",
+                      h3(style ="color: #1B3766;","Demographics Findings"),
                       br(),
                       sidebarLayout(sidebarPanel(
-                        selectInput("dropdown3", "Which state are you interested in?",
-                                    all_states)
+                        selectInput("dropdownD", "Which state are you interested in?",
+                                    all_states),
+                        downloadButton("download_demo_data", "Download Demographics Data")
                       ),
                       mainPanel(#textOutput("text3"),
-                        plotOutput("fin_dem_1"),
-                        plotOutput("fin_dem_2"),
-                        plotOutput("fin_dem_3"),
-                        plotOutput("fin_dem_4")
-                      ))),
+                        plotOutput("fin_dem_plot1"),
+                        plotOutput("fin_dem_plot2"),
+                        plotOutput("fin_dem_plot3"),
+                        #plotOutput("fin_dem_plot4")
+                        )
+                      ),
+                      br(),
+                      fluidRow(
+                        column(width = 6,
+                          div(class="center-content",
+                              textOutput("fin_dem_text5")),
+                            plotOutput("fin_dem_plot5"),
+                            plotOutput("fin_dem_plot7")),
+                           #plotOutput("fin_dem_plot9")),
+                        column(width = 6,
+                            div(class="center-content",
+                                  textOutput("fin_dem_text6")),
+                                plotOutput("fin_dem_plot6"),
+                            div(class="center-content",
+                                textOutput("fin_dem_text8")),
+                                dataTableOutput("fin_dem_plot8"))
+                                #plotOutput("fin_dem_plot10"))
+                      )),
+             
              tabPanel("Economy"),
              tabPanel("Housing"),
              tabPanel("Diversity"),
              tabPanel("Health & Education")
-  ),
-  tabPanel("Team",
-           box(title="Meet Our Team", width = 6,
-               br(),
-               h5("DSPG, University of Virginia, Biocomplexity Institute, Social and Decision Analytics"),
-               p("- Marijke van der Geer, Fourth Year @ SDSU (Stats & DS)"),
-               p("- Jianing Cai, Fourth Year @ UVA (CS & Math)"),
-               br(),
-               h5("University of Virginia, Biocomplexity Institute, Social and Decision Analytics"),
-               p("- Vicki Lancaster, Principal Scientist"),
-               p("- Neil Kattampallil, Research Scientist"),
-               p("- Treena Goswami, Postdoc Researcher")))))
+             )
+  ))
 
 
 
 # Define server logic required to draw a histogram ----
 server <- function(input, output) {
   
-  #output$text2 <- renderText({
-  #    {paste("Distribution of Data Tools' Category in ", input$dropdown2)}
-  #})
+  #Demographic Findings
+  output$download_demo_data <- downloadHandler(
+    filename = function() {paste("demo_data_", Sys.Date(), ".csv", sep = "")},
+    content = function(file) {write.csv(dem_data, file)}
+  )
   
-  output$fin_dem_1 <- renderPlot({
-    dem_category_plot(selected_state = input$dropdown3)
-    
-  })
+  output$fin_dem_plot1 <- renderPlot({dem_category_plot(selected_state = input$dropdownD)})
+  output$fin_dem_plot2 <- renderPlot({dem_sub_cat_and_tool(selected_state = input$dropdownD)})
+  output$fin_dem_plot3 <- renderPlot({dem_geography_plot(selected_state = input$dropdownD)})
+  #output$fin_dem_plot4 <- renderPlot({TO_BE_INSERTED(selected_state = input$dropdownD)})
+  output$fin_dem_text5 <- renderText({{paste("Word cloud on tool names for: ", input$dropdownD)}})
+  output$fin_dem_plot5 <- renderPlot({tool_cloud(state=input$dropdownD, data_source = dem_data)})
+  output$fin_dem_text6 <- renderText({{paste("Word cloud on variables for: ", input$dropdownD)}})
+  output$fin_dem_plot6 <- renderPlot({variable_cloud(state=input$dropdownD, data_source = dem_data)})
+  output$fin_dem_plot7 <- renderPlot({dem_census_source(selected_state = input$dropdownD)})
+  output$fin_dem_text8 <- renderText({{paste("Demographic Data Source (Census) Distribution in", input$dropdownD)}})
+  output$fin_dem_plot8 <- renderDataTable({dem_non_census_source(selected_state = input$dropdownD)})
+  #output$fin_dem_plot9 <- renderPlot({TO_BE_INSERTED(selected_state = input$dropdownD)})
+  #output$fin_dem_plot10 <- renderPlot({TO_BE_INSERTED(selected_state = input$dropdownD)})
+
   
-  output$fin_dem_2 <- renderPlot({
-    dem_sub_cat_and_tool(selected_state = input$dropdown3)
-  })
-  
-  output$fin_dem_3 <- renderPlot({
-    dem_census_source(selected_state = input$dropdown3)
-  })
-  
-  output$fin_dem_4 <- renderPlot({
-    dem_non_census_source(selected_state = input$dropdown3)
-  })
-  
-  #output$fin_dem_4  <- dem_non_census_source(selected_state = input$dropdown3){
-   # ReactiveDf() %>%
-    #  kable(df_stack3, format = "html") %>%
-    #  kable_styling(full_width = FALSE)
-    
- # }
   
   output$text2 <- renderText({
     {paste("Word cloud on", input$dropdown2)}
