@@ -980,10 +980,17 @@ ui <-  fluidPage(
                            #      img(src = "census.png", width = "65px")),
                       ),
                       panel(h3("Project Overview", style = "color: #1B3766;"),
-                            p("The goal of our project is to assist the U.S. Census Bureau in the creation of their Curated Data Enterprise, a tool that will combine data from multiple Census sources, to create a cohesive data lake that can be used as a tool by State governments."),
-                            p("To accomplish this, we’ve focused on identifying how state governments use data and identifying what those data sources are, such as Census, State government, or private sources. We’ve started doing this through our data discovery process, which has included a review of individual State Constitutions, and as requested by the Census Bureau, we’re conducting a review of State Data Centers."),
-                            p("The overall objective of this project is to report findings that the Census Bureau can use to better address state government data needs and to create a tool that facilitates user data access.   "),
-                            
+                            p("The goal of our project is to assist the U.S. Census Bureau in the creation of their Curated Data Enterprise, 
+                              a tool that will combine data from multiple Census sources, to create a cohesive data lake that can be used as 
+                              a tool by State governments."),
+                            p("To accomplish this, we’ve focused on identifying how state governments use data and identifying what those data
+                              sources are, such as Census, State government, or private sources. We’ve started doing this through our data 
+                              discovery process in which we collected data from state constitutions, state data centers, and the Federal-State 
+                              Cooperative for Population Estimates contacts."),
+                            p("The overall objective of this project is to gain insight into how entities harness the power of data and report 
+                              findings on how states leverage their data, the tools they use, and the deliverables they produce, so that the 
+                              Census Bureau can use out fidnings to better address state government data needs and to create a tool that facilitates
+                              user data access."),        
                       ),
                       panel(h3("Our Ideas", style = "color: #1B3766;"),
                             p("1. Text analysis of state constitutions and amendments."),
@@ -1049,10 +1056,11 @@ ui <-  fluidPage(
                       h3("FSCPE Emails and Responses", style = "color: #1B3766;"),
                       br(),
                       h4("What is FSCPE?", style = "color: #E57200;"),
-                      p("FSCPE stands for The Federal-State Cooperative for Population Estimates, it is an informal cooperation between the 
-                        Federal Government and the states in the area of local population estimates existed as early as 1953. State FSCPE 
-                        agencies, designated by their respective governors, work in cooperation with the Census Bureau's Program Branches 
-                        to produce population estimates."),
+                      p("FSCPE stands for", 
+                        tags$a(href = "https://www.census.gov/programs-surveys/popest/about/fscpe.html", "The Federal-State Cooperative for Population Estimates", style = "display: inline"),
+                        ". it is an informal cooperation between the Federal Government and the states in the area of local population estimates
+                        existed as early as 1953. State FSCPE agencies, designated by their respective governors, work in cooperation with the
+                        Census Bureau's Program Branches to produce population estimates."),
                       br(),
                       h4("Emails and Responses", style = "color: #E57200;"),
                       p("We emailed 56 FSCPE contacts, asking about the top six data sources that they use."),
@@ -1065,7 +1073,8 @@ ui <-  fluidPage(
                                  h3("Survey Finding on State Data Centers", style = "color: #1B3766;"),
                                  br(),
                                  h4("What is State Data Center?", style = "color: #E57200;"),
-                                 p("The State Data Center (SDC) Program is one of the Census Bureau's longest and most successful partnerships. 
+                                 p(tags$a(href = "https://www.census.gov/about/partners/sdc.html", "The State Data Center (SDC) Program", style = "display: inline"),
+                                   " is one of the Census Bureau's longest and most successful partnerships. 
                                    This partnership between the 50 states, the District of Columbia, Puerto Rico, the island areas and the Census 
                                    Bureau was created in 1978 to make data available locally to the public through a network of state agencies, 
                                    universities, libraries, and regional and local governments."),
