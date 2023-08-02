@@ -94,7 +94,7 @@ dem_sub_cat_and_tool <- function(selected_state){
     sub = character(),
     count = numeric()
   )
-  col_name = c("tool","sub","count")
+  col_name = c("Tools","sub","count")
   colnames(df_stack2) <- col_name
   
   if (selected_state == "All Sample States and Territories" ){
@@ -170,7 +170,7 @@ dem_sub_cat_and_tool <- function(selected_state){
   }
   colnames(df_stack2) <- col_name
   
-  ggplot(df_stack2, aes(x = sub, y = 1, fill = tool)) +
+  ggplot(df_stack2, aes(x = sub, y = 1, fill = Tools)) +
     geom_col() +
     scale_fill_manual(values = cbPalette) +
     xlab("Sub-categories: Demographics")+
@@ -348,7 +348,29 @@ dem_geography_plot <- function(selected_state) {
 
 
 # Plot 4 - Age of data 
-# to be inserted
+
+dem_age_of_data_plot <- function(state, data_source) {
+  data_source$Age.of.data2 <- as.integer(data_source$Age.of.data2)
+  if(state=="All Sample States and Territories") {
+    ggplot(data_source, aes(x=Age.of.data2)) + geom_bar(width=0.7, col = "#999999", fill="#0072B2") + 
+      labs(x="Year of Latest Vintage", y="Counts", title=paste("Age of Demographic Data in", state)) + theme_minimal() +
+      theme(axis.text.x = element_text(angle = 45, hjust = 1),
+            plot.title = element_text(hjust = 0.4, face = "bold"))
+    
+  }
+  else {
+    State <- str_to_title(state)
+    state_input <- data_source[data_source[, "State..Country"]==state, ]
+    state_df <- data.frame()
+    state_df <- rbind(state_df, state_input)
+    state_df$Age.of.data2 <- as.integer(state_df$Age.of.data2)
+    ggplot(state_df, aes(x=Age.of.data2)) + geom_bar(width = 0.7, col = "#999999", fill="#0072B2") + 
+      labs(x="Year of Latest Vintage", y="Counts", title=paste("Age of Demographic Data in", state)) + theme_minimal() +
+      theme(axis.text.x = element_text(angle = 45, hjust = 1),
+                            plot.title = element_text(hjust = 0.4, face = "bold")) 
+      
+  }
+}
 
 # Needed to make word clouds using input of 'combo'
 cloud <- function(combo) {
@@ -491,10 +513,58 @@ dem_non_census_source <- function(selected_state){
 
 
 # Plot 9 - Link to census data
-# to be inserted
+
+dem_direct_census_link <- function(selected_state, data_table) {
+  if (selected_state == "All Sample States and Territories") {
+    data_to_use <- dem_data
+  } else {
+    data_to_use <- dem_data[dem_data$State..Country == selected_state, ]
+  }
+  
+  count_result <- data_to_use %>% group_by(Direct.links.to.Census) %>% summarize(count = n())
+  colnames(count_result) <- c("direct link", "count")
+  count_result <- count_result[count_result$`direct link` != "", ]
+  
+  sorted_df <- count_result[order(-count_result$count), ]
+  
+  # Replace "N" with "No" and "Y" with "Yes"
+  sorted_df$`direct link` <- ifelse(sorted_df$`direct link` ==  "N", "No", "Yes")
+  
+  # Adding a title to the pie graph
+  title <- paste("Demographics Data Census Link \n Distribution in", selected_state)
+  
+  par(mfrow = c(1, 1), mar = c(4, 4, 2, 2))
+  pie(sorted_df$count, labels = sorted_df$`direct link`, border = "white", col = cbPalette, cex = 1, main = title)
+}
+
+
 
 # Plot 10 - Historical data
-# to be inserted
+
+dem_historical_data <- function(selected_state, data_table) {
+  if (selected_state == "All Sample States and Territories") {
+    data_to_use <- dem_data
+  } else {
+    data_to_use <- dem_data[dem_data$State..Country == selected_state, ]
+  }
+  
+  count_result <- data_to_use %>% group_by(Historical.data) %>% summarize(count = n())
+  colnames(count_result) <- c("historical data", "count")
+  count_result <- count_result[count_result$`historical data` != "", ]
+  count_result <- count_result[count_result$`historical data` != "N/A", ]
+  
+  sorted_df <- count_result[order(-count_result$count), ]
+  
+  # Replace "N" with "No" and "Y" with "Yes"
+  sorted_df$`historical data` <- ifelse(sorted_df$`historical data` == "N ", "No", "Yes")
+  
+  # Adding a title to the pie graph
+  title <- paste("Demographics Historical Data \n Distribution in", selected_state)
+  
+  par(mfrow = c(1, 1), mar = c(4, 4, 2, 2))
+  pie(sorted_df$count, labels = sorted_df$`historical data`, border = "white", col = cbPalette, cex = 1, main = title)
+}
+
 
 
 
@@ -564,9 +634,12 @@ ui <-  fluidPage(
                       ),
                       mainPanel(#textOutput("text3"),
                         plotOutput("fin_dem_plot1"),
+                        br(),
                         plotOutput("fin_dem_plot2"),
+                        br(),
                         plotOutput("fin_dem_plot3"),
-                        #plotOutput("fin_dem_plot4")
+                        br(),
+                        plotOutput("fin_dem_plot4"),
                         )
                       ),
                       br(),
@@ -575,24 +648,48 @@ ui <-  fluidPage(
                           div(class="center-content",
                               textOutput("fin_dem_text5")),
                             plotOutput("fin_dem_plot5"),
-                            plotOutput("fin_dem_plot7")),
-                           #plotOutput("fin_dem_plot9")),
+                            plotOutput("fin_dem_plot7"),
+                            br(),
+                            br(),
+                            plotOutput("fin_dem_plot9")),
                         column(width = 6,
                             div(class="center-content",
                                   textOutput("fin_dem_text6")),
                                 plotOutput("fin_dem_plot6"),
+                            br(),
                             div(class="center-content",
                                 textOutput("fin_dem_text8")),
-                                dataTableOutput("fin_dem_plot8"))
-                                #plotOutput("fin_dem_plot10"))
+                            dataTableOutput("fin_dem_plot8"),
+                            br(),
+                            plotOutput("fin_dem_plot10"))
                       )),
              
              tabPanel("Economy"),
              tabPanel("Housing"),
              tabPanel("Diversity"),
              tabPanel("Health & Education")
-             )
-  ))
+             ),
+  tabPanel("Search Platform and Database",
+           box(title = "Search Platform and Database Results",
+               p("To address the question from Census, “What are state data needs?” 
+                   the following search platforms were queried and databases searched."),
+               p("Search Platform",
+                 tags$a(href = "https://elicit.org", "elicit.org - a relatively new search platform that uses natural language prompts.",
+                        style = "display: inline")),
+               p("In our project, we used GENSIM and BERT to examine topics within State Constitutions.")),
+           
+           box(title = "BERT",
+               p("We applied BERT to the top 5 State Constitutions with the most amendments."),
+               p("1. California"),
+               p("2. Hawaii"),
+               p("3. Maryland"),
+               p("4. Oregon"),
+               p("5. Texas")),
+           
+           box(title = "BERT Example: California Data",
+               tags$img(height = 450, width = 450, src = "CABert.png"))
+  
+)))
 
 
 
@@ -608,23 +705,18 @@ server <- function(input, output) {
   output$fin_dem_plot1 <- renderPlot({dem_category_plot(selected_state = input$dropdownD)})
   output$fin_dem_plot2 <- renderPlot({dem_sub_cat_and_tool(selected_state = input$dropdownD)})
   output$fin_dem_plot3 <- renderPlot({dem_geography_plot(selected_state = input$dropdownD)})
-  #output$fin_dem_plot4 <- renderPlot({TO_BE_INSERTED(selected_state = input$dropdownD)})
+  output$fin_dem_plot4 <- renderPlot({dem_age_of_data_plot (state = input$dropdownD, data_source = dem_data)})
   output$fin_dem_text5 <- renderText({{paste("Word cloud on tool names for: ", input$dropdownD)}})
   output$fin_dem_plot5 <- renderPlot({tool_cloud(state=input$dropdownD, data_source = dem_data)})
   output$fin_dem_text6 <- renderText({{paste("Word cloud on variables for: ", input$dropdownD)}})
   output$fin_dem_plot6 <- renderPlot({variable_cloud(state=input$dropdownD, data_source = dem_data)})
   output$fin_dem_plot7 <- renderPlot({dem_census_source(selected_state = input$dropdownD)})
-  output$fin_dem_text8 <- renderText({{paste("Demographic Data Source (Census) Distribution in", input$dropdownD)}})
-  output$fin_dem_plot8 <- renderDataTable({dem_non_census_source(selected_state = input$dropdownD)})
-  #output$fin_dem_plot9 <- renderPlot({TO_BE_INSERTED(selected_state = input$dropdownD)})
-  #output$fin_dem_plot10 <- renderPlot({TO_BE_INSERTED(selected_state = input$dropdownD)})
+  output$fin_dem_text8 <- renderText({{paste("Demographic Data Source (Non Census) \n Distribution in", input$dropdownD)}})
+  output$fin_dem_plot8 <- renderDataTable({data <- dem_non_census_source(selected_state = input$dropdownD)
+  datatable(data, options = list(pageLength = 5))})
+  output$fin_dem_plot9 <- renderPlot({dem_direct_census_link(selected_state = input$dropdownD)})
+  output$fin_dem_plot10 <- renderPlot({dem_historical_data(selected_state = input$dropdownD)})
 
-  
-  
-  output$text2 <- renderText({
-    {paste("Word cloud on", input$dropdown2)}
-  })
-  
 
 }
 

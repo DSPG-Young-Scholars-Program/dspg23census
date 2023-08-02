@@ -56,10 +56,10 @@ econ_data <- read.csv("Finding_Economy/economy_compilation.csv")
 econ_data$Sub.categories = tolower(econ_data$Sub.categories)
 
 #Housing data
-housing_data <- read.csv('Finding_Housing/housing_cleaned.csv')
+housing_data <- read.csv('Finding_Housing/Housing_data.csv')
 
 #Health and education data
-HE_data <- read.csv('Finding_Health_and_Education/HE_cleaned.csv')
+HE_data <- read.csv('Finding_Health_and_Education/HE_data.csv')
 
 #Mission statement data
 mission_statements <- read.csv('Mission_Statements/mission_statements.csv')
