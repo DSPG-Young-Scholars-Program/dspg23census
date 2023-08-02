@@ -16,7 +16,16 @@ cbPalette <- c("#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2",
 ```
 
 ```{r}
-data$Name.of.tool
+data$Tool
+```
+
+```{r}
+div_data <- read.csv("../Finding_Diversity/div_compilation.csv")
+```
+
+```{r}
+
+div_data$Data.Sources.Non.Census
 ```
 
 ```{r}

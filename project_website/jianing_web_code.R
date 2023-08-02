@@ -58,6 +58,9 @@ econ_data$Sub.categories = tolower(econ_data$Sub.categories)
 #Housing data
 housing_data <- read.csv('Finding_Housing/housing_cleaned.csv')
 
+#Diversity data
+div_data <- read.csv('Finding_Diversity/div_compilation.csv')
+
 #Health and education data
 HE_data <- read.csv('Finding_Health_and_Education/HE_cleaned.csv')
 
@@ -70,28 +73,37 @@ fscpe <- read.csv('FSCPE Response.csv')
 
 #Maps
 
-#Map of host types for lead agencies
 lead_types_map <- function() {
   custom_colors <- brewer.pal(4, "Set1")
   hosts <- data.frame(state = mission_statements$State, type = mission_statements$Host_Type)
-  host_map <- plot_usmap(data = hosts, values = "type") + labs(title="Type of Lead Agency by State") + scale_fill_manual(values=custom_colors)
+  host_map <- plot_usmap(data = hosts, values = "type") + 
+    labs(title = "Type of Lead Agency by State") + scale_fill_manual(values = cbPalette) +
+    theme(plot.title = element_text(hjust = 0.5, face = "bold"))
+  
   host_map
 }
+
 
 #Map of number of coordinating agencies
 coord_num_map <- function() {
   coord <- data.frame(state = mission_statements$State, number = mission_statements$Coordinating)
-  coord_map <- plot_usmap(data=coord, values="number") + labs(title="Number of Coordinating Agencies by State")
+  coord_map <- plot_usmap(data = coord, values = "number") +
+    labs(title = "Number of Coordinating Agencies by State") +
+    theme(plot.title = element_text(hjust = 0.5, face = "bold")) 
   coord_map
 }
 
-#Map of states that we have/haven't examined
+
 examined_states <- function() {
   custom_colors <- brewer.pal(2, "Set1")
   examined_SDC <- data.frame(state = mission_statements$State, value = mission_statements$Examined)
-  examined_map <- plot_usmap(data = examined_SDC, values="value") + labs(title = "States That We Have Examined") + scale_fill_manual(values=custom_colors)
+  examined_map <- plot_usmap(data = examined_SDC, values = "value") + 
+    labs(title = "States That We Have Examined") + scale_fill_manual(values = cbPalette) +
+    theme(plot.title = element_text(hjust = 0.5, face = "bold"))
+  
   examined_map
 }
+
 
 
 #Makes wordclouds using input of 'combo'
@@ -625,10 +637,7 @@ dem_sub_cat_and_tool <- function(selected_state){
   # Set the plot margin to center the title
   bar1 + theme_minimal() +
     theme(plot.title.position = "plot", plot.margin = margin(30, 0, 30, 0))
-  
-  
 }
-
 
 # Plot 3
 dem_census_source <- function(selected_state){
@@ -674,7 +683,6 @@ dem_census_source <- function(selected_state){
   print(source_types)
   pie(source_types$count , labels = source_types$source, border="white", col=cbPalette, cex=0.5)
 }
-
 
 # Plot 4
 dem_non_census_source <- function(selected_state){
@@ -777,6 +785,149 @@ econ_tool_name_cloud <- function(selected_state) {
   cloud(combo)
 }
 
+#Word cloud for subcat
+div_sub_cat_cloud <- function(selected_state) {
+  if (selected_state == "All Sample States") {
+    data_to_use <- div_data
+  } else {
+    data_to_use <- div_data[div_data$State..Country == selected_state, ]
+  }
+  combo <- ""
+  for (i in 1:nrow(data_to_use)) {
+    combo <- paste(combo, data_to_use$Sub.categories[i], sep="")
+  }
+  cloud(combo)
+}
+
+#Word cloud for variable names
+div_variable_cloud <- function(selected_state) {
+  if (selected_state == "All Sample States") {
+    data_to_use <- econ_data
+  } else {
+    data_to_use <- econ_data[econ_data$State..Country == selected_state, ]
+  }
+  combo <- ""
+  for (i in 1:nrow(data_to_use)) {
+    combo <- paste(combo, data_to_use$Variables.Used..list.all.that.apply.[i], sep="")
+  }
+  cloud(combo)
+}
+
+#Diversity tool type bar graph
+div_tool_type_plot <- function(selected_state) {
+  # Initialize variables to store the counts
+  if (selected_state == "All Sample States"){
+    data_to_use = div_data$Tool
+  }
+  else{
+    data_to_use = div_data$Tool[div_data$State..Country == selected_state]
+  }
+  map <- 0
+  table <- 0
+  download <- 0
+  infographic <- 0
+  visualization <- 0
+  report <- 0
+  for (i in data_to_use) {
+    if (any(grepl("Map", i))) {
+      map <- map + 1
+    }
+    else if (any(grepl("Table Download", i))) {
+       download <- download + 1
+    }
+    else if (any(grepl("Table", i))) {
+      table <- table + 1
+    }
+    if (any(grepl("Infographic", i))) {
+      infographic <- infographic + 1
+    }
+    if (any(grepl("Visual", i))) {
+      visualization <- visualization + 1
+    }
+    if (any(grepl("Report", i))) {
+      report <- report + 1
+    }
+  }
+  # Create data frame for plotting
+  tool_name <- c("Map", "Table Download", "Table", "Infographic", "Visualization", "Report")
+  counts <- c(map, download, table, infographic, visualization, report)
+  total_df <- data.frame(tool_name, counts)
+  # Barplot
+  ggplot(total_df, aes(x = tool_name, y = counts)) +
+    geom_bar(stat = "identity", position = "dodge", width = 0.7, col = "#999999", fill = "steelblue") +
+    geom_text(aes(label = counts), position = position_stack(vjust = 0.5), vjust = -0.5, cex = 0.8, col = "black") +
+    labs(title = paste("Types of Tools:", selected_state),
+         x = "Type of Tools: Diversity", y = "Counts") +
+    theme_minimal() +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1),
+          legend.position = "none")
+}
+#Div census source pie
+div_pie_graph_census<- function(selected_state, data_table) {
+  if (selected_state == "All Sample States") {
+    data_to_use = data_table
+  } else {
+    data_to_use = data_table[data_table$State..Country == selected_state, ]
+  }
+  
+  count_result <- data_to_use %>% group_by(Data.Sources.Census) %>% summarize(count = n())
+  colnames(count_result) <- c("data source", "count")
+  count_result <- count_result[count_result$`data source` != "", ]
+  # Assuming countinue$`data source` contains the labels you want to modify
+  #count_result$`data source` <- gsub("Small Area Income and Poverty Estimates", "Small Area Income \n and Poverty Estimates", count_result$`data source`)
+  sorted_df <- count_result[order(- count_result$count), ]
+  # Adding a title to the pie graph
+  title <- paste("Diveristy Data Census Source (Census) \n Distribution in", selected_state)
+  par(mfrow = c(1, 1), mar = c(4, 4, 2, 2))
+  pie(sorted_df$count, labels = sorted_df$`data source`, border = "white", col = cbPalette, cex = 1, main = title)
+}
+
+div_direct_census_link <- function(selected_state, data_table) {
+  if (selected_state == "All Sample States") {
+    data_to_use <- data_table
+  } else {
+    data_to_use <- data_table[data_table$State..Country == selected_state, ]
+  }
+  
+  count_result <- data_to_use %>% group_by(Direct.links.to.Census) %>% summarize(count = n())
+  colnames(count_result) <- c("direct link", "count")
+  count_result <- count_result[count_result$`direct link` != "", ]
+  count_result <- na.omit(count_result)
+  sorted_df <- count_result[order(-count_result$count), ]
+  # Replace "N" with "No" and "Y" with "Yes"
+  #sorted_df$`direct link` <- ifelse(sorted_df$`direct link` == "N", "No", "Yes")
+  
+  # Adding a title to the pie graph
+  title <- paste("Diversity Data Census Link \n Distribution in", selected_state)
+  
+  par(mfrow = c(1, 1), mar = c(4, 4, 2, 2))
+  pie(sorted_df$count, labels = sorted_df$`direct link`, border = "white", col = cbPalette, cex = 1, main = title)
+}
+
+div_historical_data <- function(selected_state, data_table) {
+  if (selected_state == "All Sample States") {
+    data_to_use <- data_table
+  } else {
+    data_to_use <- data_table[data_table$State..Country == selected_state, ]
+  }
+  
+  count_result <- data_to_use %>% group_by(Historical.data) %>% summarize(count = n())
+  colnames(count_result) <- c("historical data", "count")
+  count_result <- count_result[count_result$`historical data` != "", ]
+  count_result <- na.omit(count_result)
+  sorted_df <- count_result[order(-count_result$count), ]
+  
+  # Replace "N" with "No" and "Y" with "Yes"
+  #sorted_df$`historical data` <- ifelse(sorted_df$`historical data` == "N", "No", "Yes")
+  
+  # Adding a title to the pie graph
+  title <- paste("Diversity Historical Data \n Distribution in", selected_state)
+  
+  par(mfrow = c(1, 1), mar = c(4, 4, 2, 2))
+  pie(sorted_df$count, labels = sorted_df$`historical data`, border = "white", col = cbPalette, cex = 1, main = title)
+}
+
+
 
 #------------------------------------------------------------------------------------
 # Define UI
@@ -789,6 +940,7 @@ ui <-  fluidPage(
       justify-content: center;
       align-items: center;
       height: 100%;
+      font-weight: bold;
     }
   ")),
   tags$style(HTML("
@@ -859,40 +1011,79 @@ ui <-  fluidPage(
                                tags$a(href = "mailto:gcm8gw@virgnia.edu", "gcm8gw@virgnia.edu"))
                         )),
              tabPanel("Topic Modeling",
-                      box(title = "Topic Modeling",
-                          p("In statistics and natural language processing, a topic model is a type of statistical model for discovering the abstract 'topics' that occur in a collection of documents."),
-                          p("Some commonly used packages for topic modeling include GENSIM, BERT, and NLTK."),
-                          p("In our project, we used GENSIM and BERT to examine topics within State Constitutions.")),
-                      box(title="BERT",
-                          p("We applied BERT to the top 5 State Constitutions with the most amendments."),
-                          p("1.California"),
-                          p("2.Hawaii"),
-                          p("3.Maryland"),
-                          p("4.Oregon"),
-                          p("5.Texas")),
-                      box(title="BERT Example: California Data",
-                          tags$img(height=450, width=450, src="CABert.png"))),
+                      h3("Topic Modeling", style = "color: #1B3766;"),
+                      br(),
+                      h4("What is Topic Modeling?", style = "color: #E57200;"),
+                      p("In statistics and natural language processing, a topic model is a type of statistical model for discovering the abstract 'topics' that occur in a collection of documents."),
+                      p("Some commonly used packages for topic modeling include GENSIM, BERT, and NLTK."),
+                      p("In our project, we used GENSIM and BERT to examine topics within State Constitutions."),
+                      br(),
+                      fluidRow(
+                        column(width = 6, 
+                               h4("BERT",style = "color: #E57200;"),
+                               p("We applied BERT to the top 5 State Constitutions with the most amendments."),
+                               p("1.California"),
+                               p("2.Hawaii"),
+                               p("3.Maryland"),
+                               p("4.Oregon"),
+                               p("5.Texas")),
+                        column(width = 6, 
+                               h4("BERT Example: California Data",style = "color: #E57200;"),
+                               tags$img(height=450, width=450, src="CABert.png")))),
              tabPanel("Mission Statements",
                       br(),
-                      box(title="Examining Mission Statements of State Data Centers",
-                          p("Out of the 56 State Data Centers that we examined, 42 had mission statements that related to the work of the SDC."),
-                          br(),
-                          sidebarLayout(sidebarPanel(
-                            selectInput("dropdownM", "Which state's mission statement are you interested in?", mission_states)),
-                            mainPanel(textOutput("mission_text1"),
-                                      plotOutput("mission_plot1"))),
-                          p("States that did not have an SDC mission statement included: Colorado, Georgia, Idaho, Illinois, Louisiana, 
-                      Nebraska, New Mexico, Virginia, Washington, West Virginia, Wyoming, Puerto Rico, Guam, U.S. Virgin Islands, American Samoa"))),
+                      h3("Examining Mission Statements of State Data Centers", style = "color: #1B3766;"),
+                      p("Out of the 56 State Data Centers that we examined, 42 had mission statements that related to the work of the SDC."),
+                      br(),
+                      sidebarLayout(sidebarPanel(
+                        selectInput("dropdownM", "Which state's mission statement are you interested in?", mission_states)),
+                        mainPanel(p("States that did not have an SDC mission statement included: Colorado, Georgia, Idaho, Illinois, 
+                      Louisiana, Nebraska, New Mexico, Virginia, Washington, West Virginia, Wyoming, Puerto Rico, Guam,
+                      U.S. Virgin Islands, American Samoa"))),
+                      br(),
+                      div(class="center-content",
+                          textOutput("mission_text1")),
+                      plotOutput("mission_plot1")
+                     ),
              tabPanel("FSCPE Response",
-                      box(title = "FSCPE Emails and Responses",
-                          p("We emailed 56 FSCPE contacts, asking about the top six data sources that they use."),
-                          p("Of the 56 contacts, we received responses from 10.")),
-                      mainPanel(dataTableOutput("fscpe_table"))),
+                      h3("FSCPE Emails and Responses", style = "color: #1B3766;"),
+                      br(),
+                      h4("What is FSCPE?", style = "color: #E57200;"),
+                      p("FSCPE stands for The Federal-State Cooperative for Population Estimates, it is an informal cooperation between the 
+                        Federal Government and the states in the area of local population estimates existed as early as 1953. State FSCPE 
+                        agencies, designated by their respective governors, work in cooperation with the Census Bureau's Program Branches 
+                        to produce population estimates."),
+                      br(),
+                      h4("Emails and Responses", style = "color: #E57200;"),
+                      p("We emailed 56 FSCPE contacts, asking about the top six data sources that they use."),
+                      p("Of the 56 contacts, we received responses from 17. See their responses from the table below."),
+                      br(),
+                      div(dataTableOutput("fscpe_table"))
+                      ),
              navbarMenu("State Data Center Findings",
                         tabPanel("Intro",
-                                 mainPanel(plotlyOutput("intro_plot1"),
-                                           plotlyOutput("intro_plot2"),
-                                           plotlyOutput("intro_plot3"))),
+                                 h3("Survey Finding on State Data Centers", style = "color: #1B3766;"),
+                                 br(),
+                                 h4("What is State Data Center?", style = "color: #E57200;"),
+                                 p("The State Data Center (SDC) Program is one of the Census Bureau's longest and most successful partnerships. 
+                                   This partnership between the 50 states, the District of Columbia, Puerto Rico, the island areas and the Census 
+                                   Bureau was created in 1978 to make data available locally to the public through a network of state agencies, 
+                                   universities, libraries, and regional and local governments."),
+                                 p("State Data Center empowers data users with understandable, accurate and timely information through the mutually
+                                   beneficial partnership between the State Data Centers and the Census Bureau."),
+                                 h4("Type of Lead SDC Agency", style = "color: #E57200;"),
+                                 p("For each state, they have one lead SDC agency and one or more coordinating agency. And those agencies are from 
+                                   numerous types of organizations: Universities, Libraries, Research Centers, etc. Here we built an visualization 
+                                   on what type of lead agency it is for each state."),
+                                 plotlyOutput("intro_plot1"),
+                                 h4("Number of Coordinating SDC Agency", style = "color: #E57200;"),
+                                 p("As mentioned above, there could be multiple coordinating agencies for one state. Here we built an visualization 
+                                   on how many coordinating agencies there are for each state."),
+                                 plotlyOutput("intro_plot2"),
+                                 h4("States that We Have Examined", style = "color: #E57200;"),
+                                 p("Our project is still an on-going project. For now we have covered 28 states and U.S. territories in alphabetical
+                                   order. Here is a map showing which states and U.S. territories we have examined so far."),
+                                 plotlyOutput("intro_plot3")),
                         tabPanel("Demographics",
                                  h3(style ="color: #1B3766;","Demographics Findings"),
                                  br(),
@@ -907,7 +1098,7 @@ ui <-  fluidPage(
                                            plotOutput("fin_dem_4")
                                            ))),
                         tabPanel("Economy",
-                                 h3("Economy Findings"),
+                                 h3("Economy Findings", style ="color: #1B3766;"),
                                  br(),
                                  sidebarLayout(
                                    sidebarPanel(
@@ -922,23 +1113,25 @@ ui <-  fluidPage(
                                  br(),
                                  fluidRow(
                                    column(width = 6, 
-                                          textOutput("fin_econ_text7"), 
+                                          div(class="center-content",
+                                              textOutput("fin_econ_text7")),
                                           plotOutput("fin_econ_plot7"), 
                                           plotOutput("fin_econ_plot3"), 
                                           plotOutput("fin_econ_plot5")),
                                    column(width = 6, 
-                                          textOutput("fin_econ_text8"), 
+                                          div(class="center-content",
+                                              textOutput("fin_econ_text8")),
                                           plotOutput("fin_econ_plot8"), 
                                           plotOutput("fin_econ_plot4"), 
                                           plotOutput("fin_econ_plot6"))
                                  )),
                         
                         tabPanel("Housing",
-                                 h3("Housing Findings"),
+                                 h3("Housing Findings",style ="color: #1B3766;"),
                                  br(),
                                  sidebarLayout(sidebarPanel(
                                    selectInput("dropdownH", "Which state are you interested in?",
-                                    all_states),
+                                               all_states),
                                    downloadButton("download_housing_data", "Download Housing Data")
                                    ),
                                    mainPanel(textOutput("fin_hous_text1"), 
@@ -950,16 +1143,33 @@ ui <-  fluidPage(
                                              ))),
                         
                         tabPanel("Diversity",
-                                 h3("Diversity Findings"),
+                                 h3("Diversity Findings",style ="color: #1B3766;"),
                                  br(),
                                  sidebarLayout(sidebarPanel(
-                                   selectInput("dropdownH", "Which state are you interested in?",
-                                               all_states)),
-                                   mainPanel(p("testing"))
+                                   selectInput("dropdownDiv", "Which state are you interested in?",
+                                               all_states),
+                                   downloadButton("download_diversity_data", "Download Diversity Data")
+                                 ),
+                                   mainPanel(plotOutput("fin_div_plot1"))
+                                 ),
+                                 br(),
+                                 fluidRow(
+                                   column(width = 6, 
+                                          div(class="center-content",
+                                              textOutput("fin_div_sub_cat_text")),
+                                          plotOutput("fin_div_sub_cat_plot"),
+                                          plotOutput("fin_div_census_plot"),
+                                          plotOutput("fin_div_link_plot")), 
+                                   column(width = 6, 
+                                          div(class="center-content",
+                                              textOutput("fin_div_varname_text")),
+                                          plotOutput("fin_div_varname_plot"),
+                                          p("place-holder for diversity non census table"),
+                                          plotOutput("fin_div_historical_plot"))
                                  )),
                         
                         tabPanel("Health & Education",
-                                 h3("Health and Education Findings"),
+                                 h3("Health and Education Findings",style ="color: #1B3766;"),
                                  br(),
                                  sidebarLayout(sidebarPanel(
                                    selectInput("dropdownHE", "Which state are you interested in?",
@@ -1043,6 +1253,19 @@ server <- function(input, output) {
   output$fin_econ_text8 <- renderText({{paste("Econ Variable Cloud in", input$dropdown3)}})
   output$fin_econ_plot8 <- renderPlot({econ_variable_cloud(selected_state = input$dropdown3)})
   
+  #Diversity Findings
+  output$download_diversity_data <- downloadHandler(
+    filename = function() {paste("diversity_data_", Sys.Date(), ".csv", sep = "")},
+    content = function(file) {write.csv(div_data, file)}
+  )
+  output$fin_div_plot1 <- renderPlot({div_tool_type_plot(selected_state = input$dropdownDiv)})
+  output$fin_div_census_plot <- renderPlot({div_pie_graph_census(selected_state = input$dropdownDiv, data_table = div_data)})
+  output$fin_div_sub_cat_text <- renderText({{paste("Diversity Sub-category Cloud in", input$dropdownDiv)}})
+  output$fin_div_sub_cat_plot <- renderPlot({div_sub_cat_cloud(selected_state = input$dropdownDiv)})
+  output$fin_div_varname_text <- renderText({{paste("Diversity Variable Cloud in", input$dropdownDiv)}})
+  output$fin_div_varname_plot <- renderPlot({div_variable_cloud(selected_state = input$dropdownDiv)})
+  output$fin_div_link_plot <- renderPlot({div_direct_census_link(selected_state = input$dropdownDiv, data_table = div_data)})
+  output$fin_div_historical_plot <- renderPlot({div_historical_data(selected_state = input$dropdownDiv, data_table = div_data)})
 }
 
 
