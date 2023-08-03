@@ -1994,7 +1994,7 @@ ui <-  fluidPage(
              tabPanel("Overview",
                       div(class="even-content",
                           tags$a(href = "https://biocomplexity.virginia.edu/",
-                                 img(src = "biilogo.png", width = "170px")),
+                                 img(src = "biilogo.png", width = "160px")),
                           p(style = "font-size: 30px; font-weight: bold; color: #1B3766;text-align: center;","Survey on State Data Use"),
                           tags$a(href = "https://www.census.gov/",
                                  img(src = "census.png", width = "90px")),
