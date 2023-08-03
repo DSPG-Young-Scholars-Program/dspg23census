@@ -614,7 +614,7 @@ dem_direct_census_link <- function(selected_state, data_table) {
   # Adding a title to the pie graph
   title <- paste("Demographics Data Census Link \n Distribution in", selected_state)
   
-  par(mfrow = c(1, 1), mar = c(4, 4, 2, 2))
+  #par(mfrow = c(1, 1), mar = c(4, 4, 2, 2))
   pie(sorted_df$count, labels = sorted_df$`direct link`, border = "white", col = cbPalette, cex = 1, main = title, cex.main = 1.4)
 }
 
@@ -639,7 +639,7 @@ dem_historical_data <- function(selected_state, data_table) {
   # Adding a title to the pie graph
   title <- paste("Demographics Historical Data \n Distribution in", selected_state)
   
-  par(mfrow = c(1, 1), mar = c(4, 4, 2, 2))
+  #par(mfrow = c(1, 1), mar = c(4, 4, 2, 2))
   pie(sorted_df$count, labels = sorted_df$`historical data`, border = "white", col = cbPalette, cex = 1, main = title, cex.main = 1.4)
 }
 
@@ -757,7 +757,7 @@ econ_direct_census_link <- function(selected_state, data_table) {
   # Adding a title to the pie graph
   title <- paste("Economy Data Census Link \n Distribution in", selected_state)
   
-  par(mfrow = c(1, 1), mar = c(4, 4, 2, 2))
+  #par(mfrow = c(1, 1), mar = c(4, 4, 2, 2))
   pie(sorted_df$count, labels = sorted_df$`direct link`, border = "white", col = cbPalette, cex = 1, main = title, cex.main=1.4)
 }
 
@@ -782,7 +782,7 @@ econ_historical_data <- function(selected_state, data_table) {
   # Adding a title to the pie graph
   title <- paste("Economy Historical Data \n Distribution in", selected_state)
   
-  par(mfrow = c(1, 1), mar = c(4, 4, 2, 2))
+  #par(mfrow = c(1, 1), mar = c(4, 4, 2, 2))
   pie(sorted_df$count, labels = sorted_df$`historical data`, border = "white", col = cbPalette, cex = 1, main = title, cex.main=1.4)
 }
 
@@ -1085,7 +1085,7 @@ econ_pie_graph_census<- function(selected_state, data_table) {
   # Adding a title to the pie graph
   title <- paste("Economy Data Census Source (Census) \n Distribution in", selected_state)
   
-  par(mfrow = c(1, 1), mar = c(4, 4, 2, 2))
+  #par(mfrow = c(1, 1), mar = c(4, 4, 2, 2))
   pie(sorted_df$count, labels = sorted_df$`data source`, border = "white", col = cbPalette, cex = 1, main = title)
 }
 
@@ -1105,7 +1105,7 @@ econ_pie_graph_noncensus <- function(selected_state, data_table) {
   # Adding a title to the pie graph
   title <- paste("Economy Data Source (Non Census) \n Distribution in", selected_state)
   
-  par(mfrow = c(1, 1), mar = c(4, 4, 2, 2))
+  #par(mfrow = c(1, 1), mar = c(4, 4, 2, 2))
   #pie(sorted_df$count, labels = sorted_df$`data source`, border = "white", col = cbPalette, cex = 1, main = title)
   pie(countinue$count, labels = countinue$`data source`, border = "white", col = cbPalette, cex = 0.8, main = title)
 }
@@ -2524,7 +2524,7 @@ h_edu_pie_graph_census <- function(state, data_source) {
   # Adding a title to the pie graph
   title <- paste("Data Source (Census) \n Distribution in", state)
   
-  par(mfrow = c(1, 1), mar = c(4, 4, 2, 2))
+  #par(mfrow = c(1, 1), mar = c(4, 4, 2, 2))
   #pie(sorted_df$count, labels = sorted_df$`data source`, border = "white", col = cbPalette, cex = 1, main = title)
   pie(countinue$count, labels = countinue$`data source`, border = "white", col = cbPalette, cex = 1, main = title, cex.main=1.4)
 }
@@ -2545,7 +2545,7 @@ h_edu_pie_graph_noncensus <- function(state, data_source) {
   # Adding a title to the pie graph
   title <- paste("Data Source (Non Census) \n Distribution in", state)
   
-  par(mfrow = c(1, 1), mar = c(4, 4, 2, 2))
+  #par(mfrow = c(1, 1), mar = c(4, 4, 2, 2))
   pie(countinue$count, labels = countinue$`data source`, border = "white", col = cbPalette, cex = 1, main = title, cex.main=1.4)
 }
 
@@ -2569,7 +2569,7 @@ hous_direct_census_link <- function(selected_state, data_table) {
   # Adding a title to the pie graph
   title <- paste("Data Census Link Distribution \n in", selected_state)
   
-  par(mfrow = c(1, 1), mar = c(4, 4, 2, 2))
+  #par(mfrow = c(1, 1), mar = c(4, 4, 2, 2))
   pie(sorted_df$count, labels = sorted_df$`direct link`, border = "white", col = cbPalette, cex = 1, main = title, cex.main=1.4)
 }
 
@@ -2594,7 +2594,7 @@ hous_historical_data <- function(selected_state, data_table) {
   # Adding a title to the pie graph
   title <- paste("Historical Data Distribution \n in", selected_state)
   
-  par(mfrow = c(1, 1), mar = c(4, 4, 2, 2))
+  #par(mfrow = c(1, 1), mar = c(4, 4, 2, 2))
   pie(sorted_df$count, labels = sorted_df$`historical data`, border = "white", col = cbPalette, cex = 1, main = title,cex.main=1.4)
 }
 #------------------------Finding Diversity ---------------------------------
@@ -2907,7 +2907,7 @@ div_pie_graph_census<- function(selected_state, data_table) {
   sorted_df <- count_result[order(- count_result$count), ]
   # Adding a title to the pie graph
   title <- paste("Diveristy Data Census Source (Census) \n Distribution in", selected_state)
-  par(mfrow = c(1, 1), mar = c(4, 4, 2, 2))
+  #par(mfrow = c(1, 1), mar = c(4, 4, 2, 2))
   pie(sorted_df$count, labels = sorted_df$`data source`, border = "white", col = cbPalette, cex = 1, main = title, cex.main=1.4)
 }
 
@@ -2930,7 +2930,7 @@ div_direct_census_link <- function(selected_state, data_table) {
   # Adding a title to the pie graph
   title <- paste("Diversity Data Census Link \n Distribution in", selected_state)
   
-  par(mfrow = c(1, 1), mar = c(4, 4, 2, 2))
+  #par(mfrow = c(1, 1), mar = c(4, 4, 2, 2))
   pie(sorted_df$count, labels = sorted_df$`direct link`, border = "white", col = cbPalette, cex = 1, main = title, cex.main=1.4)
 }
 
@@ -2953,7 +2953,7 @@ div_historical_data <- function(selected_state, data_table) {
   # Adding a title to the pie graph
   title <- paste("Diversity Historical Data \n Distribution in", selected_state)
   
-  par(mfrow = c(1, 1), mar = c(4, 4, 2, 2))
+  #par(mfrow = c(1, 1), mar = c(4, 4, 2, 2))
   pie(sorted_df$count, labels = sorted_df$`historical data`, border = "white", col = cbPalette, cex = 1, main = title, cex.main=1.4)
 }
 
@@ -3031,7 +3031,7 @@ ui <-  fluidPage(
                             p("2. Text analysis of state data center mission statements."),
                             p("3. Email survey sent to all the 56 Federal-State Cooperative for Population Estimates (FSCPE) contacts."),
                             p("4. Evaluation of state, U.S. territories, and District of Columbia data centers."),
-                            p("5. Search of web platforms and databases")
+                            p("5. Exploration of search platforms and databases")
                       ),
                       panel(h3("Who We Are", style = "color: #1B3766;"),
                             h4("University of Virginia, Biocomplexity Institute, Social and Decision Analytics Division", style = "color: #E57200;"),
@@ -3128,7 +3128,7 @@ ui <-  fluidPage(
                                  plotlyOutput("intro_plot2"),
                                  h4("States that We Have Examined", style = "color: #E57200;"),
                                  p("Our project is still on-going. For now we have covered 26 states (in alphabetical order) and 2 U.S. territories (Guam and Puerto Rico) 
-                                 . Here is a map showing the states and U.S. territories we have examined so far."),
+                                 . Here is a map showing the states we have examined so far."),
                                  plotlyOutput("intro_plot3")),
                         tabPanel("Demographics",
                                  h3(style ="color: #1B3766;","Demographics Findings"),
@@ -3271,11 +3271,11 @@ ui <-  fluidPage(
                                           ))
                         
                         ),
-             tabPanel("Search Platform and Database",
-                      h3("Search Platform and Database Results", style = "color: #1B3766;"),
+             tabPanel("Search Platforms and Databases",
+                      h3("Search Platforms and Databases", style = "color: #1B3766;"),
                       p("To address the question from Census, “What are state data needs?” 
                    the following search platforms were queried and databases searched."),
-                      h4("Search Platform", style = "color: #E57200;"),
+                      h4("Search Platforms", style = "color: #E57200;"),
                       p(tags$a(href = "https://elicit.org", "elicit.org - a relatively new search platform that uses natural language prompts.",
                                style = "display: inline")),
                       p("- What are the data needs of U.S. state and local governments?"),
@@ -3309,7 +3309,7 @@ ui <-  fluidPage(
                                     style = "display: inline")),
                       p("- ",tags$a(href = "https://www.ncsl.org/", "National Conference of State Legislatures",
                                     style = "display: inline")),
-                      h4("Mapping Platform", style = "color: #E57200;"),
+                      h4("Mapping Platforms", style = "color: #E57200;"),
                       p("- ",tags$a(href = "https://www.policymap.com/resources/customer-stories", "Customer Stories",
                                     style = "display: inline")),
                       p("- ",tags$a(href = "https://www.policymap.com/resources/customer-stories/city-of-philadelphia", "City of Philadelphia – “The City began using PolicyMap for grant applications, but that was just the start. The Philadelphia Division of Housing and Community Development worked with PolicyMap to create a custom report that supplies up-to-date information needed for quarterly reports to HUD to meet the requirements for the Choice Neighborhood grant, which provides funding to revitalize neighborhoods with distressed public or HUD-assisted housing.",
@@ -3362,7 +3362,7 @@ server <- function(input, output) {
   output$fin_dem_plot7 <- renderPlot({dem_census_source(selected_state = input$dropdownD)})
   output$fin_dem_text8 <- renderText({{paste("Demographic Data Source (Non Census) \n Distribution in", input$dropdownD)}})
   output$fin_dem_plot8 <- renderDataTable({data <- dem_non_census_source(selected_state = input$dropdownD)
-  datatable(data, options = list(pageLength = 7))})
+  datatable(data, options = list(pageLength = 5))})
   output$fin_dem_plot9 <- renderPlot({dem_direct_census_link(selected_state = input$dropdownD)})
   output$fin_dem_plot10 <- renderPlot({dem_historical_data(selected_state = input$dropdownD)})
 
