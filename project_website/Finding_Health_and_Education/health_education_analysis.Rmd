@@ -9,7 +9,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r}
-health_edu <- read.csv('HE_data.csv')
+HE_data <- read.csv('HE_data.csv')
 ```
 
 ```{r}
@@ -19,11 +19,11 @@ cbPalette <- c("#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2",
 
 ```{r}
 #Creates list of columns in df
-HE_columns = colnames(health_edu)
+#HE_data = colnames(health_edu)
 
 #Drops 'X' column from df
-HE_columns = HE_columns[-1]
-health_edu = subset(health_edu, select = HE_columns)
+#HE_columns = HE_columns[-1]
+#health_edu = subset(health_edu, select = HE_columns)
 ```
 
 ```{r}
@@ -233,7 +233,7 @@ h_edu_pie_graph_census("All Sample States", health_edu)
 ```
 
 ```{r}
-h_edu_subcat_tools <- function(state, data_source) {
+h_edu_subcat_tools <- function(selected_state, data_source) {
     if(state=="All Sample States and Territories") {
     sub_cats <- ggplot(data_source, aes(x=Sub.categories)) + geom_bar(col = "#999999", fill="steelblue") + labs(x="Category", y="Counts") + theme_minimal() + theme(axis.text.x = element_text(angle = 45, hjust=1))
     sub_cats #+ coord_flip()
@@ -285,198 +285,748 @@ age_of_data_plot("California", health_edu)
 
 ```{r}
 #sub-cats and tools
-econ_sub_cat_and_tool <- function(state, data_source){
+
+HE_sub_cat_and_tool <- function(selected_state){
   df_stack2 <- data.frame(
     Tools = character(),
     sub = character(),
-    count = numeric()
-  )
+    count = numeric())
+  
   col_name = c("Tools","sub","count")
   colnames(df_stack2) <- col_name
   
   if (selected_state == "All Sample States and Territories" ){
-    data_to_use = data_source
+    data_to_use = HE_data
   }
   else{
-    data_to_use = data_source[data_source$State..Country == state,]
+    data_to_use = HE_data[HE_data$State..Country== selected_state,]
   }
   
   for (i in 1:nrow(data_to_use)) {
-    #---------------------------employment----------------------------
-    if (any(grepl("employment", data_to_use[i,3]))) {
-      if(any(grepl("table download", data_to_use[i,4]))){
-        new_row <- c("Table Download", "Employment",54)
+    #---student poverty---
+    if (any(grepl("Student Poverty", data_to_use[i,3]))) {
+      if(any(grepl("Table", data_to_use[i,4]))){
+        new_row <- c("Table", "Student Poverty",54)
         df_stack2 <- rbind(df_stack2, new_row)
       }
-      if(any(grepl("table", data_to_use[i,4]))){
-        new_row <- c("Table", "Employment",54)
+      if(any(grepl("Table Download", data_to_use[i,4]))){
+        new_row <- c("Table Download", "Student Poverty",54)
         df_stack2 <- rbind(df_stack2, new_row)
       }
-      if(any(grepl("report", data_to_use[i,4]))){
-        new_row <- c("Report", "Employment",54)
+      if(any(grepl("Report", data_to_use[i,4]))){
+        new_row <- c("Report", "Student Poverty",54)
         df_stack2 <- rbind(df_stack2, new_row)
       }
-      if(any(grepl("map", data_to_use[i,4]))){
-        new_row <- c("Map", "Employment",54)
+      if(any(grepl("Map", data_to_use[i,4]))){
+        new_row <- c("Map", "Student Poverty",54)
         df_stack2 <- rbind(df_stack2, new_row)
       }
-      if(any(grepl("visualization", data_to_use[i,4]))){
-        new_row <- c("Data Visualization", "Employment",54)
+      if(any(grepl("Data Visualization", data_to_use[i,4]))){
+        new_row <- c("Data Visualization", "Student Poverty",54)
         df_stack2 <- rbind(df_stack2, new_row)
       }
-    }
-    #--------------------------income----------------------------
-    if (any(grepl("income", data_to_use[i,3]))) {
-      if(any(grepl("table download", data_to_use[i,4]))){
-        new_row <- c("Table Download", "Income",46)
-        df_stack2 <- rbind(df_stack2, new_row)
-      }
-      if(any(grepl("table", data_to_use[i,4]))){
-        new_row <- c("Table", "Income",46)
-        df_stack2 <- rbind(df_stack2, new_row)
-      }
-      if(any(grepl("report", data_to_use[i,4]))){
-        new_row <- c("Report", "Income",46)
-        df_stack2 <- rbind(df_stack2, new_row)
-      }
-      if(any(grepl("map", data_to_use[i,4]))){
-        new_row <- c("Map", "Income",46)
-        df_stack2 <- rbind(df_stack2, new_row)
-      }
-      if(any(grepl("visualization", data_to_use[i,4]))){
-        new_row <- c("Data Visualization", "Income",46)
+      if(any(grepl("Infographic", data_to_use[i,4]))){
+        new_row <- c("Infographic", "Student Poverty",54)
         df_stack2 <- rbind(df_stack2, new_row)
       }
     }
-    #---------------------------tax----------------------------
-    if (any(grepl("tax", data_to_use[i,3]))) {
-      if(any(grepl("table download", data_to_use[i,4]))){
-        new_row <- c("Table Download", "Tax",9)
+    #---student performance---
+    if (any(grepl("Student Performance", data_to_use[i,3]))) {
+      if(any(grepl("Table", data_to_use[i,4]))){
+        new_row <- c("Table", "Student Performance",54)
         df_stack2 <- rbind(df_stack2, new_row)
       }
-      if(any(grepl("table", data_to_use[i,4]))){
-        new_row <- c("Table", "Tax",9)
+      if(any(grepl("Table Download", data_to_use[i,4]))){
+        new_row <- c("Table Download", "Student Performance",54)
         df_stack2 <- rbind(df_stack2, new_row)
       }
-      if(any(grepl("report", data_to_use[i,4]))){
-        new_row <- c("Report", "Tax",9)
+      if(any(grepl("Report", data_to_use[i,4]))){
+        new_row <- c("Report", "Student Performance",54)
         df_stack2 <- rbind(df_stack2, new_row)
       }
-      if(any(grepl("map", data_to_use[i,4]))){
-        new_row <- c("Map", "Tax",9)
+      if(any(grepl("Map", data_to_use[i,4]))){
+        new_row <- c("Map", "Student Performance",54)
         df_stack2 <- rbind(df_stack2, new_row)
       }
-      if(any(grepl("visualization", data_to_use[i,4]))){
-        new_row <- c("Data Visualization", "Tax",9)
+      if(any(grepl("Data Visualization", data_to_use[i,4]))){
+        new_row <- c("Data Visualization", "Student Performance",54)
         df_stack2 <- rbind(df_stack2, new_row)
       }
-    }
-    #---------------------------labor force----------------------------
-    if (any(grepl("labor force", data_to_use[i,3]))) {
-      if(any(grepl("table download", data_to_use[i,4]))){
-        new_row <- c("Table Download", "Labor Force",18)
-        df_stack2 <- rbind(df_stack2, new_row)
-      }
-      if(any(grepl("table", data_to_use[i,4]))){
-        new_row <- c("Table", "Labor Force",18)
-        df_stack2 <- rbind(df_stack2, new_row)
-      }
-      if(any(grepl("report", data_to_use[i,4]))){
-        new_row <- c("Report", "Labor Force",18)
-        df_stack2 <- rbind(df_stack2, new_row)
-      }
-      if(any(grepl("map", data_to_use[i,4]))){
-        new_row <- c("Map", "Labor Force",18)
-        df_stack2 <- rbind(df_stack2, new_row)
-      }
-      if(any(grepl("visualization", data_to_use[i,4]))){
-        new_row <- c("Data Visualization", "Labor Force",18)
+      if(any(grepl("Infographic", data_to_use[i,4]))){
+        new_row <- c("Infographic", "Student Performance",54)
         df_stack2 <- rbind(df_stack2, new_row)
       }
     }
-    #---------------------------wage----------------------------
-    if (any(grepl("wage", data_to_use[i,3]))) {
-      if(any(grepl("table download", data_to_use[i,4]))){
-        new_row <- c("Table Download", "Wage",22)
+#---SNAP---
+    if (any(grepl("SNAP", data_to_use[i,3]))) {
+      if(any(grepl("Table", data_to_use[i,4]))){
+        new_row <- c("Table", "SNAP",54)
         df_stack2 <- rbind(df_stack2, new_row)
       }
-      if(any(grepl("table", data_to_use[i,4]))){
-        new_row <- c("Table", "Wage",22)
+      if(any(grepl("Table Download", data_to_use[i,4]))){
+        new_row <- c("Table Download", "SNAP",54)
         df_stack2 <- rbind(df_stack2, new_row)
       }
-      if(any(grepl("report", data_to_use[i,4]))){
-        new_row <- c("Report", "Wage",22)
+      if(any(grepl("Report", data_to_use[i,4]))){
+        new_row <- c("Report", "SNAP",54)
         df_stack2 <- rbind(df_stack2, new_row)
       }
-      if(any(grepl("map", data_to_use[i,4]))){
-        new_row <- c("Map", "Wage",22)
+      if(any(grepl("Map", data_to_use[i,4]))){
+        new_row <- c("Map", "SNAP",54)
         df_stack2 <- rbind(df_stack2, new_row)
       }
-      if(any(grepl("visualization", data_to_use[i,4]))){
-        new_row <- c("Data Visualization", "Wage",22)
+      if(any(grepl("Data Visualization", data_to_use[i,4]))){
+        new_row <- c("Data Visualization", "SNAP",54)
         df_stack2 <- rbind(df_stack2, new_row)
       }
-    }
-    #---------------------------job----------------------------
-    if (any(grepl("job", data_to_use[i,3]))) {
-      if(any(grepl("table download", data_to_use[i,4]))){
-        new_row <- c("Table Download", "Job",9)
-        df_stack2 <- rbind(df_stack2, new_row)
-      }
-      if(any(grepl("table", data_to_use[i,4]))){
-        new_row <- c("Table", "Job",9)
-        df_stack2 <- rbind(df_stack2, new_row)
-      }
-      if(any(grepl("report", data_to_use[i,4]))){
-        new_row <- c("Report", "Job",9)
-        df_stack2 <- rbind(df_stack2, new_row)
-      }
-      if(any(grepl("map", data_to_use[i,4]))){
-        new_row <- c("Map", "Job",9)
-        df_stack2 <- rbind(df_stack2, new_row)
-      }
-      if(any(grepl("visualization", data_to_use[i,4]))){
-        new_row <- c("Data Visualization", "Job",9)
+      if(any(grepl("Infographic", data_to_use[i,4]))){
+        new_row <- c("Infographic", "SNAP",54)
         df_stack2 <- rbind(df_stack2, new_row)
       }
     }
-    #---------------------------economy----------------------------
-    if (any(grepl("economy", data_to_use[i,3]))) {
-      if(any(grepl("table download", data_to_use[i,4]))){
-        new_row <- c("Table Download", "Economy",38)
+#---School Enrollment---
+    if (any(grepl("School Enrollment", data_to_use[i,3]))) {
+      if(any(grepl("Table", data_to_use[i,4]))){
+        new_row <- c("Table", "School Enrollment",54)
         df_stack2 <- rbind(df_stack2, new_row)
       }
-      if(any(grepl("table", data_to_use[i,4]))){
-        new_row <- c("Table", "Economy",38)
+      if(any(grepl("Table Download", data_to_use[i,4]))){
+        new_row <- c("Table Download", "School Enrollment",54)
         df_stack2 <- rbind(df_stack2, new_row)
       }
-      if(any(grepl("report", data_to_use[i,4]))){
-        new_row <- c("Report", "Economy",38)
+      if(any(grepl("Report", data_to_use[i,4]))){
+        new_row <- c("Report", "School Enrollment",54)
         df_stack2 <- rbind(df_stack2, new_row)
       }
-      if(any(grepl("map", data_to_use[i,4]))){
-        new_row <- c("Map", "Economy",38)
+      if(any(grepl("Map", data_to_use[i,4]))){
+        new_row <- c("Map", "School Enrollment",54)
         df_stack2 <- rbind(df_stack2, new_row)
       }
-      if(any(grepl("visualization", data_to_use[i,4]))){
-        new_row <- c("Data Visualization", "Economy",38)
+      if(any(grepl("Data Visualization", data_to_use[i,4]))){
+        new_row <- c("Data Visualization", "School Enrollment",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Infographic", data_to_use[i,4]))){
+        new_row <- c("Infographic", "School Enrollment",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+    }
+#---School Districts---
+    if (any(grepl("School Districts", data_to_use[i,3]))) {
+      if(any(grepl("Table", data_to_use[i,4]))){
+        new_row <- c("Table", "School Districts",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Table Download", data_to_use[i,4]))){
+        new_row <- c("Table Download", "School Districts",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Report", data_to_use[i,4]))){
+        new_row <- c("Report", "School Districts",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Map", data_to_use[i,4]))){
+        new_row <- c("Map", "School Districts",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Data Visualization", data_to_use[i,4]))){
+        new_row <- c("Data Visualization", "School Districts",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Infographic", data_to_use[i,4]))){
+        new_row <- c("Infographic", "School Districts",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+    } 
+#---School Attendence---
+    if (any(grepl("School Attendence", data_to_use[i,3]))) {
+      if(any(grepl("Table", data_to_use[i,4]))){
+        new_row <- c("Table", "School Attendence",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Table Download", data_to_use[i,4]))){
+        new_row <- c("Table Download", "School Attendence",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Report", data_to_use[i,4]))){
+        new_row <- c("Report", "School Attendence",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Map", data_to_use[i,4]))){
+        new_row <- c("Map", "School Attendence",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Data Visualization", data_to_use[i,4]))){
+        new_row <- c("Data Visualization", "School Attendence",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Infographic", data_to_use[i,4]))){
+        new_row <- c("Infographic", "School Attendence",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+    }
+#---Public Schools---
+    if (any(grepl("Public Schools", data_to_use[i,3]))) {
+      if(any(grepl("Table", data_to_use[i,4]))){
+        new_row <- c("Table", "Public Schools",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Table Download", data_to_use[i,4]))){
+        new_row <- c("Table Download", "Public Schools",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Report", data_to_use[i,4]))){
+        new_row <- c("Report", "Public Schools",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Map", data_to_use[i,4]))){
+        new_row <- c("Map", "Public Schools",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Data Visualization", data_to_use[i,4]))){
+        new_row <- c("Data Visualization", "Public Schools",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Infographic", data_to_use[i,4]))){
+        new_row <- c("Infographic", "Public Schools",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+    }
+#---Post-Secondary---
+    if (any(grepl("Post-Secondary", data_to_use[i,3]))) {
+      if(any(grepl("Table", data_to_use[i,4]))){
+        new_row <- c("Table", "Post-Secondary",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Table Download", data_to_use[i,4]))){
+        new_row <- c("Table Download", "Post-Secondary",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Report", data_to_use[i,4]))){
+        new_row <- c("Report", "Post-Secondary",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Map", data_to_use[i,4]))){
+        new_row <- c("Map", "Post-Secondary",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Data Visualization", data_to_use[i,4]))){
+        new_row <- c("Data Visualization", "Post-Secondary",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Infographic", data_to_use[i,4]))){
+        new_row <- c("Infographic", "Post-Secondary",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+    }
+#---Physicians---
+    if (any(grepl("Physicians", data_to_use[i,3]))) {
+      if(any(grepl("Table", data_to_use[i,4]))){
+        new_row <- c("Table", "Physicians",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Table Download", data_to_use[i,4]))){
+        new_row <- c("Table Download", "Physicians",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Report", data_to_use[i,4]))){
+        new_row <- c("Report", "Physicians",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Map", data_to_use[i,4]))){
+        new_row <- c("Map", "Physicians",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Data Visualization", data_to_use[i,4]))){
+        new_row <- c("Data Visualization", "Physicians",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Infographic", data_to_use[i,4]))){
+        new_row <- c("Infographic", "Physicians",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+    }
+#---Mental Health---
+    if (any(grepl("Mental Health", data_to_use[i,3]))) {
+      if(any(grepl("Table", data_to_use[i,4]))){
+        new_row <- c("Table", "Mental Health",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Table Download", data_to_use[i,4]))){
+        new_row <- c("Table Download", "Mental Health",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Report", data_to_use[i,4]))){
+        new_row <- c("Report", "Mental Health",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Map", data_to_use[i,4]))){
+        new_row <- c("Map", "Mental Health",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Data Visualization", data_to_use[i,4]))){
+        new_row <- c("Data Visualization", "Mental Health",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Infographic", data_to_use[i,4]))){
+        new_row <- c("Infographic", "Mental Health",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+    }
+#---Medicaid---
+    if (any(grepl("Medicaid", data_to_use[i,3]))) {
+      if(any(grepl("Table", data_to_use[i,4]))){
+        new_row <- c("Table", "Medicaid",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Table Download", data_to_use[i,4]))){
+        new_row <- c("Table Download", "Medicaid",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Report", data_to_use[i,4]))){
+        new_row <- c("Report", "Medicaid",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Map", data_to_use[i,4]))){
+        new_row <- c("Map", "Medicaid",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Data Visualization", data_to_use[i,4]))){
+        new_row <- c("Data Visualization", "Medicaid",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Infographic", data_to_use[i,4]))){
+        new_row <- c("Infographic", "Medicaid",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+    }
+#---Insurance---
+    if (any(grepl("Insurance", data_to_use[i,3]))) {
+      if(any(grepl("Table", data_to_use[i,4]))){
+        new_row <- c("Table", "Insurance",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Table Download", data_to_use[i,4]))){
+        new_row <- c("Table Download", "Insurance",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Report", data_to_use[i,4]))){
+        new_row <- c("Report", "Insurance",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Map", data_to_use[i,4]))){
+        new_row <- c("Map", "Insurance",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Data Visualization", data_to_use[i,4]))){
+        new_row <- c("Data Visualization", "Insurance",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Infographic", data_to_use[i,4]))){
+        new_row <- c("Infographic", "Insurance",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+    }
+#---Incidence Rates---
+    if (any(grepl("Incidence Rates", data_to_use[i,3]))) {
+      if(any(grepl("Table", data_to_use[i,4]))){
+        new_row <- c("Table", "Incidence Rates",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Table Download", data_to_use[i,4]))){
+        new_row <- c("Table Download", "Incidence Rates",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Report", data_to_use[i,4]))){
+        new_row <- c("Report", "Incidence Rates",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Map", data_to_use[i,4]))){
+        new_row <- c("Map", "Incidence Rates",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Data Visualization", data_to_use[i,4]))){
+        new_row <- c("Data Visualization", "Incidence Rates",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Infographic", data_to_use[i,4]))){
+        new_row <- c("Infographic", "Incidence Rates",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+    }
+#---Health Estimates---
+    if (any(grepl("Health Estimates", data_to_use[i,3]))) {
+      if(any(grepl("Table", data_to_use[i,4]))){
+        new_row <- c("Table", "Health Estimates",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Table Download", data_to_use[i,4]))){
+        new_row <- c("Table Download", "Health Estimates",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Report", data_to_use[i,4]))){
+        new_row <- c("Report", "Health Estimates",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Map", data_to_use[i,4]))){
+        new_row <- c("Map", "Health Estimates",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Data Visualization", data_to_use[i,4]))){
+        new_row <- c("Data Visualization", "Health Estimates",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Infographic", data_to_use[i,4]))){
+        new_row <- c("Infographic", "Health Estimates",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+    }
+#---Health Counts---
+    if (any(grepl("Health Counts", data_to_use[i,3]))) {
+      if(any(grepl("Table", data_to_use[i,4]))){
+        new_row <- c("Table", "Health Counts",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Table Download", data_to_use[i,4]))){
+        new_row <- c("Table Download", "Health Counts",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Report", data_to_use[i,4]))){
+        new_row <- c("Report", "Health Counts",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Map", data_to_use[i,4]))){
+        new_row <- c("Map", "Health Counts",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Data Visualization", data_to_use[i,4]))){
+        new_row <- c("Data Visualization", "Health Counts",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Infographic", data_to_use[i,4]))){
+        new_row <- c("Infographic", "Health Counts",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+    }
+#---Health Characteristics---
+    if (any(grepl("Health Characteristics", data_to_use[i,3]))) {
+      if(any(grepl("Table", data_to_use[i,4]))){
+        new_row <- c("Table", "Health Characteristics",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Table Download", data_to_use[i,4]))){
+        new_row <- c("Table Download", "Health Characteristics",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Report", data_to_use[i,4]))){
+        new_row <- c("Report", "Health Characteristics",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Map", data_to_use[i,4]))){
+        new_row <- c("Map", "Health Characteristics",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Data Visualization", data_to_use[i,4]))){
+        new_row <- c("Data Visualization", "Health Characteristics",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Infographic", data_to_use[i,4]))){
+        new_row <- c("Infographic", "Health Characteristics",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+    }
+#---Health Care---
+    if (any(grepl("Health Care", data_to_use[i,3]))) {
+      if(any(grepl("Table", data_to_use[i,4]))){
+        new_row <- c("Table", "Health Care",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Table Download", data_to_use[i,4]))){
+        new_row <- c("Table Download", "Health Care",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Report", data_to_use[i,4]))){
+        new_row <- c("Report", "Health Care",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Map", data_to_use[i,4]))){
+        new_row <- c("Map", "Health Care",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Data Visualization", data_to_use[i,4]))){
+        new_row <- c("Data Visualization", "Health Care",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Infographic", data_to_use[i,4]))){
+        new_row <- c("Infographic", "Health Care",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+    }
+#---Graduation Rates---
+    if (any(grepl("Graduation Rates", data_to_use[i,3]))) {
+      if(any(grepl("Table", data_to_use[i,4]))){
+        new_row <- c("Table", "Graduation Rates",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Table Download", data_to_use[i,4]))){
+        new_row <- c("Table Download", "Graduation Rates",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Report", data_to_use[i,4]))){
+        new_row <- c("Report", "Graduation Rates",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Map", data_to_use[i,4]))){
+        new_row <- c("Map", "Graduation Rates",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Data Visualization", data_to_use[i,4]))){
+        new_row <- c("Data Visualization", "Graduation Rates",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Infographic", data_to_use[i,4]))){
+        new_row <- c("Infographic", "Graduation Rates",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+    }
+#---Educational Attainment---
+    if (any(grepl("Educational Attainment", data_to_use[i,3]))) {
+      if(any(grepl("Table", data_to_use[i,4]))){
+        new_row <- c("Table", "Educational Attainment",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Table Download", data_to_use[i,4]))){
+        new_row <- c("Table Download", "Educational Attainment",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Report", data_to_use[i,4]))){
+        new_row <- c("Report", "Educational Attainment",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Map", data_to_use[i,4]))){
+        new_row <- c("Map", "Educational Attainment",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Data Visualization", data_to_use[i,4]))){
+        new_row <- c("Data Visualization", "Educational Attainment",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Infographic", data_to_use[i,4]))){
+        new_row <- c("Infographic", "Educational Attainment",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+    }
+#---Education Services---
+    if (any(grepl("Education Services", data_to_use[i,3]))) {
+      if(any(grepl("Table", data_to_use[i,4]))){
+        new_row <- c("Table", "Education Services",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Table Download", data_to_use[i,4]))){
+        new_row <- c("Table Download", "Education Services",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Report", data_to_use[i,4]))){
+        new_row <- c("Report", "Education Services",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Map", data_to_use[i,4]))){
+        new_row <- c("Map", "Education Services",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Data Visualization", data_to_use[i,4]))){
+        new_row <- c("Data Visualization", "Education Services",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Infographic", data_to_use[i,4]))){
+        new_row <- c("Infographic", "Education Services",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+    }
+#---Education Estimates---
+    if (any(grepl("Education Estimates", data_to_use[i,3]))) {
+      if(any(grepl("Table", data_to_use[i,4]))){
+        new_row <- c("Table", "Education Estimates",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Table Download", data_to_use[i,4]))){
+        new_row <- c("Table Download", "Education Estimates",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Report", data_to_use[i,4]))){
+        new_row <- c("Report", "Education Estimates",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Map", data_to_use[i,4]))){
+        new_row <- c("Map", "Education Estimates",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Data Visualization", data_to_use[i,4]))){
+        new_row <- c("Data Visualization", "Education Estimates",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Infographic", data_to_use[i,4]))){
+        new_row <- c("Infographic", "Education Estimates",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+    }
+#---Education Counts---
+    if (any(grepl("Education Counts", data_to_use[i,3]))) {
+      if(any(grepl("Table", data_to_use[i,4]))){
+        new_row <- c("Table", "Education Counts",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Table Download", data_to_use[i,4]))){
+        new_row <- c("Table Download", "Education Counts",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Report", data_to_use[i,4]))){
+        new_row <- c("Report", "Education Counts",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Map", data_to_use[i,4]))){
+        new_row <- c("Map", "Education Counts",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Data Visualization", data_to_use[i,4]))){
+        new_row <- c("Data Visualization", "Education Counts",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Infographic", data_to_use[i,4]))){
+        new_row <- c("Infographic", "Education Counts",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+    }
+#---Education Characteristics---
+    if (any(grepl("Education Characteristics", data_to_use[i,3]))) {
+      if(any(grepl("Table", data_to_use[i,4]))){
+        new_row <- c("Table", "Education Characteristics",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Table Download", data_to_use[i,4]))){
+        new_row <- c("Table Download", "Education Characteristics",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Report", data_to_use[i,4]))){
+        new_row <- c("Report", "Education Characteristics",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Map", data_to_use[i,4]))){
+        new_row <- c("Map", "Education Characteristics",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Data Visualization", data_to_use[i,4]))){
+        new_row <- c("Data Visualization", "Education Characteristics",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Infographic", data_to_use[i,4]))){
+        new_row <- c("Infographic", "Education Characteristics",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+    }
+#---Disability---
+    if (any(grepl("Disability", data_to_use[i,3]))) {
+      if(any(grepl("Table", data_to_use[i,4]))){
+        new_row <- c("Table", "Disability",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Table Download", data_to_use[i,4]))){
+        new_row <- c("Table Download", "Disability",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Report", data_to_use[i,4]))){
+        new_row <- c("Report", "Disability",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Map", data_to_use[i,4]))){
+        new_row <- c("Map", "Disability",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Data Visualization", data_to_use[i,4]))){
+        new_row <- c("Data Visualization", "Disability",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Infographic", data_to_use[i,4]))){
+        new_row <- c("Infographic", "Disability",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+    }
+#---Births and Deaths---
+    if (any(grepl("Births and Deaths", data_to_use[i,3]))) {
+      if(any(grepl("Table", data_to_use[i,4]))){
+        new_row <- c("Table", "Births and Deaths",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Table Download", data_to_use[i,4]))){
+        new_row <- c("Table Download", "Births and Deaths",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Report", data_to_use[i,4]))){
+        new_row <- c("Report", "Births and Deaths",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Map", data_to_use[i,4]))){
+        new_row <- c("Map", "Births and Deaths",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Data Visualization", data_to_use[i,4]))){
+        new_row <- c("Data Visualization", "Births and Deaths",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Infographic", data_to_use[i,4]))){
+        new_row <- c("Infographic", "Births and Deaths",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+    }
+#---Adult Education---
+    if (any(grepl("Adult Education", data_to_use[i,3]))) {
+      if(any(grepl("Table", data_to_use[i,4]))){
+        new_row <- c("Table", "Adult Education",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Table Download", data_to_use[i,4]))){
+        new_row <- c("Table Download", "Adult Education",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Report", data_to_use[i,4]))){
+        new_row <- c("Report", "Adult Education",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Map", data_to_use[i,4]))){
+        new_row <- c("Map", "Adult Education",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Data Visualization", data_to_use[i,4]))){
+        new_row <- c("Data Visualization", "Adult Education",54)
+        df_stack2 <- rbind(df_stack2, new_row)
+      }
+      if(any(grepl("Infographic", data_to_use[i,4]))){
+        new_row <- c("Infographic", "Adult Education",54)
         df_stack2 <- rbind(df_stack2, new_row)
       }
     }
   }
+  
   colnames(df_stack2) <- col_name
   
   bar1 <- ggplot(df_stack2, aes(x = sub, y = 1, fill = Tools)) +
     geom_col() +
     scale_fill_manual(values = cbPalette) +
-    xlab("Sub-categories: Economy")+
-    ylab("Counts")+
+    xlab("Sub-categories: Health & Education") +
+    ylab("Counts") +
     theme(axis.text.x = element_text(angle = 45, hjust = 1),
-          plot.title = element_text(hjust = 0.5, face = "bold"))+
-    ggtitle("Different type of tools inside each sub-category of Economy")
+          plot.title = element_text(size = 20, face = "bold", hjust = 0.5)) +
+    ggtitle("Different type of tools inside each sub-category of Health & Education")
   
-  bar1 + theme_minimal()
+  # Set the plot margin to center the title
+  bar1 + theme_minimal() +
+    theme(plot.title.position = "plot", plot.margin = margin(30, 0, 30, 0)) + coord_flip()
 }
+
+```
+
+```{r}
+HE_sub_cat_and_tool(selected_state = "All Sample States and Territories")
 ```
 
 
