@@ -28,7 +28,7 @@ cbPalette <- c("#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2",
 
 
 all_states <- c("All Sample States and Territories", "Alabama", "Alaska","Arizona", "Arkansas", "California",
-                "Colorado", "Connecticut", "Delaware", "District of Colombia", 
+                "Colorado", "Connecticut", "Delaware", "District of Columbia", 
                 "Florida", "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana",
                 "Iowa", "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", 
                 "Massachusetts", "Michigan", "Minnesota", "Mississippi", "Missouri",
@@ -36,7 +36,7 @@ all_states <- c("All Sample States and Territories", "Alabama", "Alaska","Arizon
 
 
 mission_states <- c("All Sample States and Territories", "Alabama", "Alaska", "Arizona", "Arkansas", "California",
-                    "Connecticut", "Delaware", "District of Colombia", "Florida", "Hawaii", "Indiana",
+                    "Connecticut", "Delaware", "District of Columbia", "Florida", "Hawaii", "Indiana",
                     "Iowa", "Kansas", "Kentucky", "Maine", "Maryland", "Massachusetts", "Michigan", "Minnesota", 
                     "Mississippi", "Missouri", "Montana", "Nevada", "New Hampshire", "New Jersey", "New York", 
                     "North Carolina", "North Dakota", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", 
@@ -132,6 +132,7 @@ coord_num_map <- function() {
 examined_states <- function() {
   custom_colors <- brewer.pal(2, "Set1")
   examined_SDC <- data.frame(state = mission_statements$State, value = mission_statements$Examined)
+  print(examined_SDC)
   examined_map <- plot_usmap(data = examined_SDC, values = "value") + 
     labs(title = "States That We Have Examined") + scale_fill_manual(values = cbPalette) +
     theme(plot.title = element_text(hjust = 0.5, face = "bold"))
@@ -1119,7 +1120,7 @@ sub_cat_counts <- function(state, data_source) {
       labs(x="Category", y="Counts", title = paste("Types of Sub-category: ", state) ) +
       theme_minimal() + theme(axis.text.x = element_text(hjust=1,size=14),
                               plot.title = element_text(hjust = 0.4, face = "bold", size=16),
-                              axis.text.y = element_text(size = 14) )
+                              axis.text.y = element_text(size = 14))
     sub_cats + coord_flip()
   }
   else {
@@ -3017,7 +3018,7 @@ ui <-  fluidPage(
                               a tool that will combine data from multiple Census sources, to create a cohesive data lake that can be used as 
                               a tool by State governments."),
                             p("To accomplish this, we’ve focused on identifying how state governments use data and identifying what those data
-                              sources are, such as Census, State government, or private sources. We’ve started doing this through our data 
+                              sources are, such as Census, state government, or private sources. We did this through our data 
                               discovery process in which we collected data from state constitutions, state data centers, and the Federal-State 
                               Cooperative for Population Estimates contacts."),
                             p("The overall objective of this project is to gain insight into how entities harness the power of data and report 
@@ -3028,9 +3029,9 @@ ui <-  fluidPage(
                       panel(h3("Our Ideas", style = "color: #1B3766;"),
                             p("1. Text analysis of state constitutions and amendments."),
                             p("2. Text analysis of state data center mission statements."),
-                            p("3. Email survey sent to all 56 The Federal-State Cooperative for Population Estimates (FSCPE) contacts."),
+                            p("3. Email survey sent to all the 56 Federal-State Cooperative for Population Estimates (FSCPE) contacts."),
                             p("4. Evaluation of state, U.S. territories, and District of Columbia data centers."),
-                            p("5. Search of UVA library databases: Policy Commons Database (Policy File Index Database, State and Local Government Databases. Policy Map Customer Stories)")
+                            p("5. Search of web platforms and databases")
                       ),
                       panel(h3("Who We Are", style = "color: #1B3766;"),
                             h4("University of Virginia, Biocomplexity Institute, Social and Decision Analytics Division", style = "color: #E57200;"),
@@ -3056,7 +3057,7 @@ ui <-  fluidPage(
                       h4("What is Topic Modeling?", style = "color: #E57200;"),
                       p("In statistics and natural language processing, a topic model is a type of statistical model for discovering the abstract 'topics' that occur in a collection of documents."),
                       p("Some commonly used packages for topic modeling include GENSIM, BERT, and NLTK."),
-                      p("In our project, we used GENSIM and BERT to examine topics within State Constitutions."),
+                      p("In our project, we used BERT to examine topics within State Constitutions."),
                       br(),
                       h4("BERT",style = "color: #E57200;"),
                       p("We applied BERT to the top 5 State Constitutions with the most amendments."),
@@ -3075,7 +3076,7 @@ ui <-  fluidPage(
                                h4("BERT Example: California Data",style = "color: #E57200;"),
                                tags$img(height=450, width=450, src="CABert.png")))),
              tabPanel("Mission Statements",
-                      h3("Examining Mission Statements of State Data Centers", style = "color: #1B3766;"),
+                      h3("Examining Mission Statements of State Data Centers (SDC)", style = "color: #1B3766;"),
                       p("Out of the 56 State Data Centers that we examined, 42 had mission statements that related to the work of the SDC."),
                       br(),
                       sidebarLayout(sidebarPanel(
@@ -3106,7 +3107,7 @@ ui <-  fluidPage(
                       ),
              navbarMenu("State Data Center Findings",
                         tabPanel("Intro",
-                                 h3("Survey Finding on State Data Centers", style = "color: #1B3766;"),
+                                 h3("Survey Findings on State Data Centers", style = "color: #1B3766;"),
                                  br(),
                                  h4("What is State Data Center?", style = "color: #E57200;"),
                                  p(tags$a(href = "https://www.census.gov/about/partners/sdc.html", "The State Data Center (SDC) Program", style = "display: inline"),
@@ -3118,16 +3119,16 @@ ui <-  fluidPage(
                                    beneficial partnership between the State Data Centers and the Census Bureau."),
                                  h4("Type of Lead SDC Agency", style = "color: #E57200;"),
                                  p("For each state, they have one lead SDC agency and one or more coordinating agency. And those agencies are from 
-                                   numerous types of organizations: Universities, Libraries, Research Centers, etc. Here we built an visualization 
-                                   on what type of lead agency it is for each state."),
+                                   numerous types of organizations: Universities, Libraries, Research Centers, etc. Here we built a visualization 
+                                   on the type of lead agency for each state."),
                                  plotlyOutput("intro_plot1"),
                                  h4("Number of Coordinating SDC Agency", style = "color: #E57200;"),
-                                 p("As mentioned above, there could be multiple coordinating agencies for one state. Here we built an visualization 
-                                   on how many coordinating agencies there are for each state."),
+                                 p("As mentioned above, there could be multiple coordinating agencies for one state. Here we built a visualization 
+                                   on the number of coordinating agencies for each state."),
                                  plotlyOutput("intro_plot2"),
                                  h4("States that We Have Examined", style = "color: #E57200;"),
-                                 p("Our project is still an on-going project. For now we have covered 28 states and U.S. territories in alphabetical
-                                   order. Here is a map showing which states and U.S. territories we have examined so far."),
+                                 p("Our project is still on-going. For now we have covered 26 states (in alphabetical order) and 2 U.S. territories (Guam and Puerto Rico) 
+                                 . Here is a map showing the states and U.S. territories we have examined so far."),
                                  plotlyOutput("intro_plot3")),
                         tabPanel("Demographics",
                                  h3(style ="color: #1B3766;","Demographics Findings"),
@@ -3334,7 +3335,7 @@ server <- function(input, output) {
   #Topic Modeling-BERT
   
   #Mission Statements
-  output$mission_text1 <- renderText({{paste("Word cloud on", input$dropdownM, "mission statement.")}})
+  output$mission_text1 <- renderText({{paste("Word cloud on Mission Statement:", input$dropdownM)}})
   output$mission_plot1 <- renderPlot({mission_cloud(state=input$dropdownM)})
   
   #FSCPE

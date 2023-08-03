@@ -54,7 +54,7 @@ May 2023","Alaska unemployment rate, US unemployment rate","State, Metropolitan 
 ,Connecticut,Economy,Map,Determine the Best Location for Your Business,geographic level,"state, county",Census Business Builder’s Small Business Edition,Census Business Builder (CBB),,,Y,https://cbb.census.gov/cbb/#view=map&industries=00&clusterName=Custom+Industries&geoType=state&dataVariable=179&dashboardVars=15-17-33-64&centerX=-10802692&centerY=4568679&level=4&theme=default&dynHeader=Custom+Region,N/A,N/A,N/A,N,N,,
 ,Connecticut,Economy,Map,Explore All Sectors of Economy of Custom Regions,geographic level,"state, county",Census Business Builder’s Regional Analyst Edition,Census Business Builder (CBB),,,Y,https://cbb.census.gov/rae/#,N/A,N/A,N/A,N,N,,
 0,Delaware,,,,,,,,,,,,,,,,,I didn't find any economy related data/tools,
-0,District of Colombia,,,,,,,,,,,,,,,,,"they only have ACS survey links from 2014-2017 as their economy related data, but the links are no longer available",
+0,District of Columbia,,,,,,,,,,,,,,,,,"they only have ACS survey links from 2014-2017 as their economy related data, but the links are no longer available",
 8,Florida,Economy,"table download, table",State Gross Domestic Product,"Year, different industry",state,,,"Bureau of Economic Analysis, US Department of Commerce",Bureau of Economic Analysis,N,N,As released,2020,Y,N,N,,
 ,Florida,Income,"table download, table",Wage,"Year, different industry",state,,,"U.S. Department of Labor, Bureau of Labor Statistics",Bureau of Labor Statistics,N,N,As released,2021,Y,N,N,,
 ,Florida,income,Data visualization,Personal Income for Florida and by County,,"state, county",,,Bureau of Economic Analysis,Bureau of Economic Analysis,N,N,,,,N,N,,
