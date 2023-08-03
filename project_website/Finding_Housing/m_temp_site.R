@@ -45,24 +45,24 @@ mission_statement_states <- c("All Sample States and Territories", "Alabama", "A
 
 #---------------Data Imports------------------------
 #Demo data
-dem_data <- read.csv("/Users/marijkevandergeer/Documents/GitHub/dspg23census/project_website/Finding_Demographics/SDC_Demographics.csv")
+dem_data <- read.csv("../Finding_Demographics/SDC_Demographics.csv")
 dem_data$Sub.categories = tolower(dem_data$Sub.categories)
 
 #Econ data
-econ_data <- read.csv("/Users/marijkevandergeer/Documents/GitHub/dspg23census/project_website/Finding_Economy/economy_compilation.csv")
+econ_data <- read.csv("../Finding_Economy/economy_compilation.csv")
 econ_data$Sub.categories = tolower(econ_data$Sub.categories)
 
 #Housing data
-housing_data <- read.csv('/Users/marijkevandergeer/Documents/GitHub/dspg23census/project_website/Finding_Housing/Housing_data.csv')
+housing_data <- read.csv('../Finding_Housing/Housing_data.csv')
 
 #Health and education data
-HE_data <- read.csv('/Users/marijkevandergeer/Documents/GitHub/dspg23census/project_website/Finding_Health_and_Education/HE_data.csv')
+HE_data <- read.csv('../Finding_Health_and_Education/HE_data.csv')
 
 #Mission statement data
-mission_statements <- read.csv('/Users/marijkevandergeer/Documents/GitHub/dspg23census/project_website/Mission_Statements/mission_statements.csv')
+mission_statements <- read.csv('../Mission_Statements/mission_statements.csv')
 
 #FSCPE Response data
-fscpe <- read.csv('/Users/marijkevandergeer/Documents/GitHub/dspg23census/project_website/FSCPE Response.csv')
+fscpe <- read.csv('../FSCPE Response.csv')
 
 #-------------------------------Maps-----------------------
 #Map of host types for lead agency SDCs
