@@ -80,7 +80,7 @@ cloud <- function(combo) {
   
   #Creates wordcloud
   set.seed(33)
-  wordcloud(words = df$word, freq = df$freq, min.freq = 1, max.words = 100, random.order = FALSE, rot.per = 0, colors = brewer.pal(4, "Set1"))
+  wordcloud(words = df$word, freq = df$freq, min.freq = 1, max.words = 70, random.order = FALSE, rot.per = 0, colors = brewer.pal(4, "Set1"))
 }
 #Wordcloud of mission statements
 mission_cloud <- function(state) {
@@ -3022,7 +3022,7 @@ ui <-  fluidPage(
                               Cooperative for Population Estimates contacts."),
                             p("The overall objective of this project is to gain insight into how entities harness the power of data and report 
                               findings on how states leverage their data, the tools they use, and the deliverables they produce, so that the 
-                              Census Bureau can use out fidnings to better address state government data needs and to create a tool that facilitates
+                              Census Bureau can use our findings to better address state government data needs and to create a tool that facilitates
                               user data access."),        
                       ),
                       panel(h3("Our Ideas", style = "color: #1B3766;"),
@@ -3086,7 +3086,7 @@ ui <-  fluidPage(
                       br(),
                       div(class="center-content",
                           textOutput("mission_text1")),
-                      plotOutput("mission_plot1")
+                      plotOutput("mission_plot1",  width = "100%", height = "600px")
                      ),
              tabPanel("FSCPE Response",
                       h3("FSCPE Emails and Responses", style = "color: #1B3766;"),
@@ -3094,7 +3094,7 @@ ui <-  fluidPage(
                       h4("What is FSCPE?", style = "color: #E57200;"),
                       p("FSCPE stands for", 
                         tags$a(href = "https://www.census.gov/programs-surveys/popest/about/fscpe.html", "The Federal-State Cooperative for Population Estimates", style = "display: inline"),
-                        ". it is an informal cooperation between the Federal Government and the states in the area of local population estimates
+                        ". It is an informal cooperation between the Federal Government and the states in the area of local population estimates
                         existed as early as 1953. State FSCPE agencies, designated by their respective governors, work in cooperation with the
                         Census Bureau's Program Branches to produce population estimates."),
                       br(),
