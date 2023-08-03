@@ -35,7 +35,7 @@ housing_data <- read.csv('/Users/marijkevandergeer/Documents/GitHub/dspg23census
 #Creates a bar graph of sub-category types
 sub_cat_counts <- function(state) {
   if(state=="All Sample States") {
-    sub_cats <- ggplot(data=subset(housing_data, !is.na(Sub.categories)), aes(x=Sub.categories)) + geom_bar(fill="blue") + labs(x="Sub-Category", y="Counts", title="Types of Sub-Categories") + theme(axis.text.x = element_text(angle = 25))
+    sub_cats <- ggplot(data=subset(housing_data, !is.na(Sub.categories)), aes(x=Sub.categories)) + geom_bar(fill="blue") + labs(x="Sub-Category", y="Counts", title="Types of Sub-Categories") + theme(axis.text.x = element_text(angle = 25)) + scale_x_discrete(drop = TRUE)
     ggplotly(sub_cats)
   }
   else { #fix
@@ -43,8 +43,8 @@ sub_cat_counts <- function(state) {
     state_input <- housing_data[housing_data[, "State"]==state, ]
     state_df <- data.frame()
     state_df <- rbind(state_df, state_input)
-    sub_cats <- ggplot(state_df, aes(x=Sub.categories)) + geom_bar(fill="blue") + labs(x="Sub-Category", y="Counts", title="Types of Sub-Categories") + theme(axis.text.x = element_text(angle = 25))
-    ggplotly(sub_cats)
+    sub_cats <- ggplot(state_df, aes(x=Sub.categories)) + geom_bar(fill="blue") + labs(x="Sub-Category", y="Counts", title="Types of Sub-Categories") + theme(axis.text.x = element_text(angle = 25)) + scale_x_discrete(drop = TRUE)
+    ggplotly(sub_cats) 
   }
 }
 
