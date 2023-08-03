@@ -175,8 +175,9 @@ dem_category_plot <- function(selected_state) {
       x = "Category: Demographics",
       y = "Counts"
     ) +
-    theme_minimal() + theme(axis.text.x = element_text(angle = 45, hjust = 1), 
-                            plot.title = element_text(hjust = 0.4, face = "bold"))
+    theme_minimal() + theme(plot.title = element_text(hjust = 0.4, face = "bold", size = 16),
+                            axis.text.x = element_text(size = 14),  # Adjust the font size for x-axis labels here
+                            axis.text.y = element_text(size = 14)  )
   # + coord_cartesian(ylim = c(0, 250))
 }
 
@@ -201,7 +202,7 @@ dem_sub_cat_and_tool <- function(selected_state){
   }
   
   for (i in 1:nrow(data_to_use)) {
-    #---------------------------estimates----------------------------
+    #---------------------------estimates
     if (any(grepl("estimates", data_to_use[i,3]))) {
       if(any(grepl("viewer", data_to_use[i,4]))){
         new_row <- c("Table", "Estimates",54)
@@ -232,7 +233,7 @@ dem_sub_cat_and_tool <- function(selected_state){
         df_stack2 <- rbind(df_stack2, new_row)
       }
     }
-    #---------------------------projections----------------------------
+    #---------------------------projections
     if (any(grepl("projections", data_to_use[i,3]))) {
       if(any(grepl("viewer", data_to_use[i,4]))){
         new_row <- c("Table", "Projections",54)
@@ -269,11 +270,14 @@ dem_sub_cat_and_tool <- function(selected_state){
   ggplot(df_stack2, aes(x = sub, y = 1, fill = tool)) +
     geom_col() +
     scale_fill_manual(values = cbPalette) +
-    xlab("Sub-categories: Demographics")+
-    ylab("Counts")+
-    theme_minimal() + theme(axis.text.x = element_text(angle = 45, hjust = 1), 
-                            plot.title = element_text(hjust = 0.4, face = "bold"))+
-    ggtitle("Different type of tools inside each sub-category of Demographics")
+    labs(
+      title = paste("Different type of tools inside each sub-category of Demographics"),
+      x = "Categories: Demographics",
+      y = "Counts"
+    ) +
+    theme_minimal() + theme(plot.title = element_text(hjust = 0.4, face = "bold", size=16),
+                            axis.text.x = element_text(size = 14),  # Adjust the font size for x-axis labels here
+                            axis.text.y = element_text(size = 14)  )
   
 }
 
@@ -432,40 +436,43 @@ dem_geography_plot <- function(selected_state) {
   
   
   ggplot(geography_types, aes(x = Geography, y = count)) +
-    geom_col(width=.8) +
-    scale_fill_manual(values = cbPalette) +
-    labs(x="Geography: Demographics", y="Counts") + 
-    theme_minimal() + theme(axis.text.x = element_text(angle = 45, hjust = 1),
-                            plot.title = element_text(hjust = 0.4, face = "bold")) +coord_flip()+
-    ggtitle("Types of Geographic Levels") 
-  
-  
+    geom_col(width=.8,fill = "#0072B2") +
+    scale_fill_manual(values = "#0072B2") +
+    labs(x="Geography: Demographics", y="Counts", title="Types of Geographic Levels") + 
+    theme_minimal() + theme(plot.title = element_text(hjust = 0.4, face = "bold", size=16),
+                            axis.text.x = element_text(size = 14),  # Adjust the font size for x-axis labels here
+                            axis.text.y = element_text(size = 10)  ) +
+    coord_flip()
 }
 
 
 # Plot 4 - Age of data 
-# to be inserted
 
-# Needed to make word clouds using input of 'combo'
-cloud <- function(combo) {
-  # Turns string into corpus of words
-  docs <- Corpus(VectorSource(combo))
-  
-  # Cleaning of corpus
-  docs <- docs %>% tm_map(removeNumbers) %>% tm_map(removePunctuation) %>% tm_map(stripWhitespace)
-  docs <- tm_map(docs, content_transformer(tolower))
-  docs <- tm_map(docs, removeWords, stopwords("english"))
-  
-  # Turns corpus into term-document-matrix
-  dtm <- TermDocumentMatrix(docs)
-  mtx <- as.matrix(dtm)
-  words <- sort(rowSums(mtx), decreasing = TRUE)
-  df <- data.frame(word = names(words), freq=words)
-  
-  # Creates word cloud
-  set.seed(33)
-  wordcloud(words = df$word, freq = df$freq, min.freq = 1, max.words = 100, random.order = FALSE, rot.per = 0, colors = brewer.pal(4, "Set1"))
+dem_age_of_data_plot <- function(state, data_source) {
+  data_source$Age.of.data2 <- as.integer(data_source$Age.of.data2)
+  if(state=="All Sample States and Territories") {
+    ggplot(data_source, aes(x=Age.of.data2)) + geom_bar(width=0.7, col = "#999999", fill="#0072B2") + 
+      labs(x="Year of Latest Vintage", y="Counts", title=paste("Age of Demographic Data in", state)) + theme_minimal() +
+      theme(plot.title = element_text(hjust = 0.4, face = "bold", size=16),
+            axis.text.x = element_text(size = 14),  # Adjust the font size for x-axis labels here
+            axis.text.y = element_text(size = 14) )
+    
+  }
+  else {
+    State <- str_to_title(state)
+    state_input <- data_source[data_source[, "State..Country"]==state, ]
+    state_df <- data.frame()
+    state_df <- rbind(state_df, state_input)
+    state_df$Age.of.data2 <- as.integer(state_df$Age.of.data2)
+    ggplot(state_df, aes(x=Age.of.data2)) + geom_bar(width = 0.7, col = "#999999", fill="#0072B2") + 
+      labs(x="Year of Latest Vintage", y="Counts", title=paste("Age of Demographic Data in", state)) + theme_minimal() +
+      theme(plot.title = element_text(hjust = 0.4, face = "bold", size=16),
+            axis.text.x = element_text(size = 14),  # Adjust the font size for x-axis labels here
+            axis.text.y = element_text(size = 14) ) 
+    
+  }
 }
+
 
 
 # Plot 5 - Word cloud for tool names
@@ -553,7 +560,7 @@ dem_census_source <- function(selected_state){
     summarise(count = n())
   # Adding a title to the pie graph
   title <- paste("Demographic Data Source (Census) \n Distribution in", selected_state)
-  pie(source_types$count , labels = source_types$source, border="white", col=cbPalette, cex=0.5, main=title)
+  pie(source_types$count , labels = source_types$source, border="white", col=cbPalette, cex=1, main = title, cex.main = 1.4)
 }
 
 
@@ -587,10 +594,54 @@ dem_non_census_source <- function(selected_state){
 
 
 # Plot 9 - Link to census data
-# to be inserted
+dem_direct_census_link <- function(selected_state, data_table) {
+  if (selected_state == "All Sample States and Territories") {
+    data_to_use <- dem_data
+  } else {
+    data_to_use <- dem_data[dem_data$State..Country == selected_state, ]
+  }
+  
+  count_result <- data_to_use %>% group_by(Direct.links.to.Census) %>% summarize(count = n())
+  colnames(count_result) <- c("direct link", "count")
+  count_result <- count_result[count_result$`direct link` != "", ]
+  
+  sorted_df <- count_result[order(-count_result$count), ]
+  
+  # Replace "N" with "No" and "Y" with "Yes"
+  sorted_df$`direct link` <- ifelse(sorted_df$`direct link` ==  "N", "No", "Yes")
+  
+  # Adding a title to the pie graph
+  title <- paste("Demographics Data Census Link \n Distribution in", selected_state)
+  
+  par(mfrow = c(1, 1), mar = c(4, 4, 2, 2))
+  pie(sorted_df$count, labels = sorted_df$`direct link`, border = "white", col = cbPalette, cex = 1, main = title, cex.main = 1.4)
+}
 
 # Plot 10 - Historical data
-# to be inserted
+dem_historical_data <- function(selected_state, data_table) {
+  if (selected_state == "All Sample States and Territories") {
+    data_to_use <- dem_data
+  } else {
+    data_to_use <- dem_data[dem_data$State..Country == selected_state, ]
+  }
+  
+  count_result <- data_to_use %>% group_by(Historical.data) %>% summarize(count = n())
+  colnames(count_result) <- c("historical data", "count")
+  count_result <- count_result[count_result$`historical data` != "", ]
+  count_result <- count_result[count_result$`historical data` != "N/A", ]
+  
+  sorted_df <- count_result[order(-count_result$count), ]
+  
+  # Replace "N" with "No" and "Y" with "Yes"
+  sorted_df$`historical data` <- ifelse(sorted_df$`historical data` == "N ", "No", "Yes")
+  
+  # Adding a title to the pie graph
+  title <- paste("Demographics Historical Data \n Distribution in", selected_state)
+  
+  par(mfrow = c(1, 1), mar = c(4, 4, 2, 2))
+  pie(sorted_df$count, labels = sorted_df$`historical data`, border = "white", col = cbPalette, cex = 1, main = title, cex.main = 1.4)
+}
+
 #----------------------Finding Economy Page------------------------
 #econ geo level
 econ_data$Geographic.Levels = tolower(econ_data$Geographic.Levels)
@@ -636,16 +687,15 @@ econ_geography_plot <- function(selected_state) {
   ggplot(geography_types, aes(x = Geography, y = count)) +
     geom_col(width = 0.8, fill = "#0072B2") +
     scale_fill_manual(values = "#0072B2") +
-    labs(x = "Geography: Economy", y = "Counts") +  # Adjust the font size here
+    labs(x = "Geography: Economy", y = "Counts", title = paste("Types of Geographic Levels", selected_state)) +  # Adjust the font size here
     theme_minimal() +
     theme(
-      plot.title = element_text(hjust = 0.4, face = "bold"),
+      plot.title = element_text(hjust = 0.4, face = "bold",size=16),
       axis.text.x = element_text(size = 14),  # Adjust the font size for x-axis labels here
       axis.text.y = element_text(size = 14),  # Adjust the font size for y-axis labels here
       axis.title.x = element_text(size = 14),  # Adjust the font size for x-axis label (x-axis title) here
       axis.title.y = element_text(size = 14)   # Adjust the font size for y-axis label (y-axis title) here
-    ) +
-    ggtitle(paste("Types of Geographic Levels", selected_state))
+    )
   
 }
 
@@ -655,16 +705,15 @@ econ_age_of_data <- function(state, data_source) {
   if(state=="All Sample States and Territories") {
     ggplot(data_source, aes(x=Age.of.data)) +
       geom_bar(width=0.7, col = "#999999", fill="#0072B2") +
-      labs(x="Year of Latest Vintage", y="Counts") +
+      labs(x="Year of Latest Vintage", y="Counts", title=paste("Age of Economy Data in", state)) +
       theme_minimal()+
       theme(
         axis.text.x = element_text(angle = 45, hjust = 1,size = 14),
-        plot.title = element_text(hjust = 0.4, face = "bold"),
-        axis.text.y = element_text(size = 14),  # Adjust the font size for y-axis labels here
+        plot.title = element_text(hjust = 0.4, face = "bold",size=16),
+        axis.text.y = element_text(size = 14), # Adjust the font size for y-axis labels here
         axis.title.x = element_text(size = 14),  # Adjust the font size for x-axis label (x-axis title) here
         axis.title.y = element_text(size = 14) 
-      ) +
-      ggtitle(paste("Age of Economy Data in", state))
+      )
   }
   else {
     State <- str_to_title(state)
@@ -686,6 +735,8 @@ econ_age_of_data <- function(state, data_source) {
       ggtitle(paste("Age of Economy Data in", state))
   }
 }
+
+#direct census link
 econ_direct_census_link <- function(selected_state, data_table) {
   if (selected_state == "All Sample States and Territories") {
     data_to_use <- data_table
@@ -706,9 +757,10 @@ econ_direct_census_link <- function(selected_state, data_table) {
   title <- paste("Economy Data Census Link \n Distribution in", selected_state)
   
   par(mfrow = c(1, 1), mar = c(4, 4, 2, 2))
-  pie(sorted_df$count, labels = sorted_df$`direct link`, border = "white", col = cbPalette, cex = 1, main = title)
+  pie(sorted_df$count, labels = sorted_df$`direct link`, border = "white", col = cbPalette, cex = 1, main = title, cex.main=1.4)
 }
 
+#econ historical data
 econ_historical_data <- function(selected_state, data_table) {
   if (selected_state == "All Sample States and Territories") {
     data_to_use <- data_table
@@ -730,7 +782,7 @@ econ_historical_data <- function(selected_state, data_table) {
   title <- paste("Economy Historical Data \n Distribution in", selected_state)
   
   par(mfrow = c(1, 1), mar = c(4, 4, 2, 2))
-  pie(sorted_df$count, labels = sorted_df$`historical data`, border = "white", col = cbPalette, cex = 1, main = title)
+  pie(sorted_df$count, labels = sorted_df$`historical data`, border = "white", col = cbPalette, cex = 1, main = title, cex.main=1.4)
 }
 
 #Word cloud for variable names
@@ -760,6 +812,7 @@ econ_tool_name_cloud <- function(selected_state) {
   }
   cloud(combo)
 }
+
 #Plot for economic data
 econ_category_plot <- function(selected_state) {
   # Initialize variables to store the counts
@@ -810,12 +863,14 @@ econ_category_plot <- function(selected_state) {
     labs(title = paste("Types of Sub-category:", selected_state),
          x = "Category: Economy", y = "Counts") +
     theme_minimal() +
-    theme(axis.text.x = element_text(angle = 45, hjust = 1),
+    theme(plot.title = element_text(hjust = 0.4, face = "bold",size=16),
+          axis.text.x = element_text(size=14),  # Adjust the font size for x-axis labels here
+          axis.text.y = element_text(size = 14),
           legend.position = "none")
-  
   
 }
 
+#sub category and tool
 econ_sub_cat_and_tool <- function(selected_state){
   df_stack2 <- data.frame(
     Tools = character(),
@@ -997,16 +1052,17 @@ econ_sub_cat_and_tool <- function(selected_state){
   }
   colnames(df_stack2) <- col_name
   
-  bar1 <- ggplot(df_stack2, aes(x = sub, y = 1, fill = Tools)) +
+ggplot(df_stack2, aes(x = sub, y = 1, fill = Tools)) +
     geom_col() +
     scale_fill_manual(values = cbPalette) +
-    xlab("Sub-categories: Economy")+
-    ylab("Counts")+
-    theme(axis.text.x = element_text(angle = 45, hjust = 1),
-          plot.title = element_text(hjust = 0.5, face = "bold"))+
-    ggtitle("Different type of tools inside each sub-category of Economy")
-  
-  bar1 + theme_minimal()
+    labs(x="Sub-categories: Economy",
+         y="Counts",
+         title = "Different type of tools inside each sub-category of Economy")+
+    theme_minimal()+
+    theme(plot.title = element_text(hjust = 0.4, face = "bold",size= 16),
+          axis.text.x = element_text(size = 14),  # Adjust the font size for x-axis labels here
+          axis.text.y = element_text(size = 14))
+
 }
 
 econ_pie_graph_census<- function(selected_state, data_table) {
@@ -1050,7 +1106,7 @@ econ_pie_graph_noncensus <- function(selected_state, data_table) {
   
   par(mfrow = c(1, 1), mar = c(4, 4, 2, 2))
   #pie(sorted_df$count, labels = sorted_df$`data source`, border = "white", col = cbPalette, cex = 1, main = title)
-  pie(countinue$count, labels = countinue$`data source`, border = "white", col = cbPalette, cex = 1, main = title)
+  pie(countinue$count, labels = countinue$`data source`, border = "white", col = cbPalette, cex = 0.8, main = title)
 }
 #----------------------Finding Housing/HE Page-----------------
 #Housing/Health/Education
@@ -1482,23 +1538,7 @@ variable_cloud <- function(state, data_source) {
 
 
 #Wordcloud for tool names
-tool_cloud <- function(state, data_source) {
-  if(state=="All Sample States and Territories"){
-    combo <- ""
-    for (i in 1:nrow(data_source)) {
-      combo <- paste(combo, data_source$Tool.Name[i], sep="")
-    }
-  }
-  else{
-    combo <- ""
-    for (i in 1:nrow(data_source)) {
-      if(data_source$State[i]==state) {
-        combo <- paste(combo, data_source$Tool.Name[i], sep="")
-      }
-    }
-  }
-  cloud(combo)
-}
+#the function has been included in the Demographics part
 #Housing/Health/Education
 ##Census sources - pie chart
 h_edu_pie_graph_census <- function(state, data_source) {
@@ -1708,17 +1748,15 @@ div_geography_plot <- function(selected_state) {
   ggplot(geography_types, aes(x = Geography, y = count)) +
     geom_col(width = 0.8, fill = "#0072B2") +
     scale_fill_manual(values = "#0072B2") +
-    labs(x = "Geography: Diversity", y = "Counts") +  # Adjust the font size here
+    labs(x = "Geography: Diversity", y = "Counts", title=paste("Types of Geographic Levels", selected_state)) +  # Adjust the font size here
     theme_minimal() +
     theme(
-      plot.title = element_text(hjust = 0.4, face = "bold"),
+      plot.title = element_text(hjust = 0.4, face = "bold",size=16),
       axis.text.x = element_text(size = 14),  # Adjust the font size for x-axis labels here
       axis.text.y = element_text(size = 14),  # Adjust the font size for y-axis labels here
       axis.title.x = element_text(size = 14),  # Adjust the font size for x-axis label (x-axis title) here
       axis.title.y = element_text(size = 14)   # Adjust the font size for y-axis label (y-axis title) here
-    ) +coord_flip()+
-    ggtitle(paste("Types of Geographic Levels", selected_state))
-  
+    ) +coord_flip()
 }
 
 #div age of data
@@ -1730,10 +1768,10 @@ div_age_of_data <- function(state, data_source) {
       labs(x="Year of Latest Vintage", y="Counts") +
       theme_minimal()+
       theme(
-        axis.text.x = element_text(angle = 45, hjust = 1,size = 14),
-        plot.title = element_text(hjust = 0.4, face = "bold"),
+        axis.text.x = element_text(size = 14),
+        plot.title = element_text(hjust = 0.4, face = "bold",size = 16),
         axis.text.y = element_text(size = 14),  # Adjust the font size for y-axis labels here
-        axis.title.x = element_text(size = 14),  # Adjust the font size for x-axis label (x-axis title) here
+        #axis.title.x = element_text(size = 14),  # Adjust the font size for x-axis label (x-axis title) here
         axis.title.y = element_text(size = 14) 
       ) +
       ggtitle(paste("Age of Diversity Data in", state))
@@ -1749,10 +1787,10 @@ div_age_of_data <- function(state, data_source) {
       labs(x="Year of Latest Vintage", y="Counts") + 
       theme_minimal()+
       theme(
-        axis.text.x = element_text(angle = 45, hjust = 1,size = 14),
-        plot.title = element_text(hjust = 0.4, face = "bold"),
+        axis.text.x = element_text(size = 14),
+        plot.title = element_text(hjust = 0.4, face = "bold",size = 16),
         axis.text.y = element_text(size = 14),  # Adjust the font size for y-axis labels here
-        axis.title.x = element_text(size = 14),  # Adjust the font size for x-axis label (x-axis title) here
+        #axis.title.x = element_text(size = 14),  # Adjust the font size for x-axis label (x-axis title) here
         axis.title.y = element_text(size = 14)   # Adjust the font size for y-axis label (y-axis title) here
       ) +
       ggtitle(paste("Age of Diversity Data in", state))
@@ -1833,9 +1871,12 @@ div_tool_type_plot <- function(selected_state) {
     labs(title = paste("Types of Tools:", selected_state),
          x = "Type of Tools: Diversity", y = "Counts") +
     theme_minimal() +
-    theme(axis.text.x = element_text(angle = 45, hjust = 1),
+    theme(plot.title = element_text(hjust = 0.4, face = "bold", size=16),
+          axis.text.x = element_text(size = 14),  # Adjust the font size for x-axis labels here
+          axis.text.y = element_text(size = 14),
           legend.position = "none")
 }
+
 #Div census source pie
 div_pie_graph_census<- function(selected_state, data_table) {
   if (selected_state == "All Sample States and Territories") {
@@ -1853,9 +1894,10 @@ div_pie_graph_census<- function(selected_state, data_table) {
   # Adding a title to the pie graph
   title <- paste("Diveristy Data Census Source (Census) \n Distribution in", selected_state)
   par(mfrow = c(1, 1), mar = c(4, 4, 2, 2))
-  pie(sorted_df$count, labels = sorted_df$`data source`, border = "white", col = cbPalette, cex = 1, main = title)
+  pie(sorted_df$count, labels = sorted_df$`data source`, border = "white", col = cbPalette, cex = 1, main = title, cex.main=1.4)
 }
 
+#direct census link pie
 div_direct_census_link <- function(selected_state, data_table) {
   if (selected_state == "All Sample States and Territories") {
     data_to_use <- data_table
@@ -1875,7 +1917,7 @@ div_direct_census_link <- function(selected_state, data_table) {
   title <- paste("Diversity Data Census Link \n Distribution in", selected_state)
   
   par(mfrow = c(1, 1), mar = c(4, 4, 2, 2))
-  pie(sorted_df$count, labels = sorted_df$`direct link`, border = "white", col = cbPalette, cex = 1, main = title)
+  pie(sorted_df$count, labels = sorted_df$`direct link`, border = "white", col = cbPalette, cex = 1, main = title, cex.main=1.4)
 }
 
 div_historical_data <- function(selected_state, data_table) {
@@ -1898,7 +1940,7 @@ div_historical_data <- function(selected_state, data_table) {
   title <- paste("Diversity Historical Data \n Distribution in", selected_state)
   
   par(mfrow = c(1, 1), mar = c(4, 4, 2, 2))
-  pie(sorted_df$count, labels = sorted_df$`historical data`, border = "white", col = cbPalette, cex = 1, main = title)
+  pie(sorted_df$count, labels = sorted_df$`historical data`, border = "white", col = cbPalette, cex = 1, main = title, cex.main=1.4)
 }
 
 
@@ -1918,6 +1960,7 @@ ui <-  fluidPage(
       align-items: center;
       height: 100%;
       font-weight: bold;
+      font-size: 16px
     }
   ")),
   tags$style(HTML("
@@ -1951,7 +1994,7 @@ ui <-  fluidPage(
              tabPanel("Overview",
                       div(class="even-content",
                           tags$a(href = "https://biocomplexity.virginia.edu/",
-                                 img(src = "biilogo.png", width = "170px")),
+                                 img(src = "biilogo.png", width = "160px")),
                           p(style = "font-size: 30px; font-weight: bold; color: #1B3766;text-align: center;","Survey on State Data Use"),
                           tags$a(href = "https://www.census.gov/",
                                  img(src = "census.png", width = "90px")),
@@ -2019,7 +2062,6 @@ ui <-  fluidPage(
                                h4("BERT Example: California Data",style = "color: #E57200;"),
                                tags$img(height=450, width=450, src="CABert.png")))),
              tabPanel("Mission Statements",
-                      br(),
                       h3("Examining Mission Statements of State Data Centers", style = "color: #1B3766;"),
                       p("Out of the 56 State Data Centers that we examined, 42 had mission statements that related to the work of the SDC."),
                       br(),
@@ -2082,11 +2124,35 @@ ui <-  fluidPage(
                                                all_states),
                                    downloadButton("download_demo_data", "Download Demographics Data")
                                  ),
-                                 mainPanel(plotOutput("fin_dem_1"),
-                                           plotOutput("fin_dem_2"),
-                                           plotOutput("fin_dem_3"),
-                                           plotOutput("fin_dem_4")
-                                           ))),
+                                 mainPanel(plotOutput("fin_dem_plot1"),
+                                           br(),
+                                           plotOutput("fin_dem_plot2"),
+                                           br(),
+                                           plotOutput("fin_dem_plot3"),
+                                           br(),
+                                           plotOutput("fin_dem_plot4"),
+                                           )),
+                                 br(),
+                                 fluidRow(
+                                   column(width = 6,
+                                          div(class="center-content",
+                                              textOutput("fin_dem_text5")),
+                                          plotOutput("fin_dem_plot5"),
+                                          plotOutput("fin_dem_plot7"),
+                                          br(),
+                                          br(),
+                                          plotOutput("fin_dem_plot9")),
+                                   column(width = 6,
+                                          div(class="center-content",
+                                              textOutput("fin_dem_text6")),
+                                          plotOutput("fin_dem_plot6"),
+                                          div(class="center-content",
+                                              textOutput("fin_dem_text8")),
+                                          br(),
+                                          dataTableOutput("fin_dem_plot8"),
+                                          br(),
+                                          plotOutput("fin_dem_plot10"))
+                                 )),
                         tabPanel("Economy",
                                  h3("Economy Findings", style ="color: #1B3766;"),
                                  br(),
@@ -2174,15 +2240,70 @@ ui <-  fluidPage(
                                              plotOutput("fin_HE_plot2"), 
                                              textOutput("fin_HE_text3"), 
                                              plotOutput("fin_HE_plot3")
-                                             )))
-                        )))
+                                             ))),
+                        
+                        ),
+             tabPanel("Search Platform and Database",
+                      h3("Search Platform and Database Results", style = "color: #1B3766;"),
+                      p("To address the question from Census, “What are state data needs?” 
+                   the following search platforms were queried and databases searched."),
+                      h4("Search Platform", style = "color: #E57200;"),
+                      p(tags$a(href = "https://elicit.org", "elicit.org - a relatively new search platform that uses natural language prompts.",
+                               style = "display: inline")),
+                      p("- What are the data needs of U.S. state and local governments?"),
+                      p(tags$a(href = "https://www.choicesmagazine.org/UserFiles/file/cmsarticle_323.pdf", "Why We Need Federal Statistical Data for States and Counties",
+                               style = "display: inline")),
+                      
+                      p("- What can Census do to help U.S. State Data Centers?"),
+                      p("- What data do U.S. local governments want?"),
+                      p(tags$a(href = "https://www.igi-global.com/viewtitle.aspx?TitleId=261846&isxn=9781799807841", "A Survey of Municipal Open Data Repositories in the U.S.",
+                               style = "display: inline")),
+                      p("- How the U.S. CENSUS can help State Data Centers?"),
+                      p(tags$a(href = "https://elicit.org/search?q=How+the+U.S.+CENSUS+can+help+State+Data+Centers%3F&token=01H6VF95XHYNCG9T1EEY4T41EM&paper=a417ceac8a01d856d3e4fdd7cf09f0ad24064062&column=title", "The Use of Blended Data to Improve Public Assistance Programs: Results from a Partnership between the U.S. Census Bureau, USDA, and State Program Agencies",
+                               style = "display: inline")),
+                      p("- What are United States local government data needs?"),
+                      p(tags$a(href = "https://journals.sagepub.com/doi/pdf/10.1177/0002716210374414?casa_token=8q6dlQ8dKloAAAAA:hc_HuZrqkD8un65O2822htXjRgvNOSJsz-MrQt7YTmwKZ3V7ztBK742_m9f0pjsagUW7Lx5Xh1tP", "The Federal Statistical System: The Local Government Perspective",
+                               style = "display: inline")),
+                      p(tags$a(href = "https://www.sciencedirect.com/science/article/pii/S0736585320301854?via%3Dihub", "Beyond the supply side: Use and impact of municipal open data in the U.S.",
+                               style = "display: inline")),
+                      h4("Databases", style = "color: #E57200;"),
+                      p("Various iterations of the above questions were used to search the following data bases with no success."),
+                      p("- Policy Commons (accessed through the UVA library)"),
+                      p("- Policy Index File (accessed through the UVA library)"),
+                      h4("Nonprofits and Associations", style = "color: #E57200;"),
+                      p("- ", tags$a(href = "https://www.urban.org/", "Urban Institute",
+                                     style = "display: inline")),
+                      p("- ",tags$a(href = "https://www.apdu.org/", "Association of Public Data Users",
+                                    style = "display: inline")),
+                      p("- ",tags$a(href = "https://guides.lib.virginia.edu/datascience/gov-docs#s-lg-box-wrapper-28547820", "tate and Local Government Documents",
+                                    style = "display: inline")),
+                      p("- ",tags$a(href = "https://www.naco.org/", "National Association of Counties",
+                                    style = "display: inline")),
+                      p("- ",tags$a(href = "https://www.ncsl.org/", "National Conference of State Legislatures",
+                                    style = "display: inline")),
+                      h4("Mapping Platform", style = "color: #E57200;"),
+                      p("- ",tags$a(href = "https://www.policymap.com/resources/customer-stories", "Customer Stories",
+                                    style = "display: inline")),
+                      p("- ",tags$a(href = "https://www.policymap.com/resources/customer-stories/city-of-philadelphia", "City of Philadelphia – “The City began using PolicyMap for grant applications, but that was just the start. The Philadelphia Division of Housing and Community Development worked with PolicyMap to create a custom report that supplies up-to-date information needed for quarterly reports to HUD to meet the requirements for the Choice Neighborhood grant, which provides funding to revitalize neighborhoods with distressed public or HUD-assisted housing.",
+                                    style = "display: inline")),
+                      p("- ",tags$a(href = "https://www.policymap.com/resources/customer-stories/usda-rural-housing-service", "USDA Rural Housing Service – “RHS needed a better way to track progress of projects to stay organized and show positive impact. In 2015, the Rural Housing Service was reaching unprecedented levels of success in helping build small-town health clinics and offering successful loans to families as a result of a huge budget increase. However, with the flurry of activity within the department, the RHS needed a better way to track the progress of these projects to stay organized and show off their positive impact.",
+                                    style = "display: inline")),
+                      p("- ",tags$a(href = "https://www.policymap.com/resources/customer-stories/city-of-dallas", "City of Dallas – “The City of Dallas’s Department of Planning and Urban Design found they were frequently reacting to repetitive requests for data and maps, and they needed a proactive solution, both across city government departments and to better serve public requests for information.",
+                                    style = "display: inline")),
+                      p("- ",tags$a(href = "https://www.policymap.com/resources/customer-stories/hawaii-data-collaborative", "Hawaii Data Collaborative – “Finding meaningful, cohesive data about trends in Hawaii’s communities and a shared understanding of the state of Hawaii residents was challenging due to siloed information and lack of data.",
+                                    style = "display: inline")),
+                      p("- ",tags$a(href = "https://www.policymap.com/resources/customer-stories/north-carolina-housing-finance-agency", "North Carolina Housing Finance Agency – “To better inform decision-making around affordable housing strategies, NCHFA needed a platform to easily share housing data with the public. When spreadsheets of data proved too inaccessible, and a self-maintained GIS platform proved too cumbersome, NCHFA turned to an interactive, embedded, automatically updated map from PolicyMap.",
+                                    style = "display: inline")),
+                      p("- ",tags$a(href = "https://www.policymap.com/resources/customer-stories/connecticut-housing-finance-authority-chfa", "Connecticut Housing Finance Authority -  CHFA works to alleviate the shortage of housing for low- to moderate-income families and persons in Connecticut. To communicate the impact of their investments, staff relied on analysts and complex GIS software. As requests for data pulls, quick maps, and reports grew, CHFA needed a solution for making community housing information more accessible to anyone in the organization. Staff needed the ability to explore specific geographies, perform their own impact analysis, and geocode information based on legislative districts for meetings with state legislators, community partners, and municipal planners.",
+                                    style = "display: inline"))
+                      
+             )))
   
  
 
 #------------------------Server function-------------------------
 # Define server logic required to draw a histogram
 server <- function(input, output) {
-  
   #Topic Modeling-BERT
   
   #Mission Statements
@@ -2202,10 +2323,20 @@ server <- function(input, output) {
     filename = function() {paste("demo_data_", Sys.Date(), ".csv", sep = "")},
     content = function(file) {write.csv(dem_data, file)}
   )
-  output$fin_dem_1 <- renderPlot({dem_category_plot(selected_state = input$dropdownD)})
-  output$fin_dem_2 <- renderPlot({dem_sub_cat_and_tool(selected_state = input$dropdownD)})
-  output$fin_dem_3 <- renderPlot({dem_census_source(selected_state = input$dropdownD)})
-  output$fin_dem_4 <- renderPlot({dem_non_census_source(selected_state = input$dropdownD)})
+  output$fin_dem_plot1 <- renderPlot({dem_category_plot(selected_state = input$dropdownD)})
+  output$fin_dem_plot2 <- renderPlot({dem_sub_cat_and_tool(selected_state = input$dropdownD)})
+  output$fin_dem_plot3 <- renderPlot({dem_geography_plot(selected_state = input$dropdownD)})
+  output$fin_dem_plot4 <- renderPlot({dem_age_of_data_plot (state = input$dropdownD, data_source = dem_data)})
+  output$fin_dem_text5 <- renderText({{paste("Word cloud on tool names for: ", input$dropdownD)}})
+  output$fin_dem_plot5 <- renderPlot({tool_cloud(state=input$dropdownD, data_source = dem_data)})
+  output$fin_dem_text6 <- renderText({{paste("Word cloud on variables for: ", input$dropdownD)}})
+  output$fin_dem_plot6 <- renderPlot({variable_cloud(state=input$dropdownD, data_source = dem_data)})
+  output$fin_dem_plot7 <- renderPlot({dem_census_source(selected_state = input$dropdownD)})
+  output$fin_dem_text8 <- renderText({{paste("Demographic Data Source (Non Census) \n Distribution in", input$dropdownD)}})
+  output$fin_dem_plot8 <- renderDataTable({data <- dem_non_census_source(selected_state = input$dropdownD)
+  datatable(data, options = list(pageLength = 7))})
+  output$fin_dem_plot9 <- renderPlot({dem_direct_census_link(selected_state = input$dropdownD)})
+  output$fin_dem_plot10 <- renderPlot({dem_historical_data(selected_state = input$dropdownD)})
 
   #Housing Findings
   output$download_housing_data <- downloadHandler(
