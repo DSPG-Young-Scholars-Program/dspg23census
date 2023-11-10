@@ -670,25 +670,64 @@ ui <-  fluidPage(
              tabPanel("Health & Education")
              ),
   tabPanel("Search Platform and Database",
-           box(title = "Search Platform and Database Results",
-               p("To address the question from Census, “What are state data needs?” 
+           h3("Search Platform and Database Search Results"),
+           p("To address the question from Census, “What are state data needs?” 
                    the following search platforms were queried and databases searched."),
-               p("Search Platform",
-                 tags$a(href = "https://elicit.org", "elicit.org - a relatively new search platform that uses natural language prompts.",
+           h4("Search Platform"),
+           p(tags$a(href = "https://elicit.org", "elicit.org - a relatively new search platform that uses natural language prompts.",
+                    style = "display: inline")),
+           p("- What are the data needs of U.S. state and local governments?"),
+           p(tags$a(href = "https://www.choicesmagazine.org/UserFiles/file/cmsarticle_323.pdf", "Why We Need Federal Statistical Data for States and Counties",
+                    style = "display: inline")),
+           
+           p("- What can Census do to help U.S. State Data Centers?"),
+           p("- What data do U.S. local governments want?"),
+           p(tags$a(href = "https://www.igi-global.com/viewtitle.aspx?TitleId=261846&isxn=9781799807841", "A Survey of Municipal Open Data Repositories in the U.S.",
+                    style = "display: inline")),
+           p("- How the U.S. CENSUS can help State Data Centers?"),
+           p(tags$a(href = "https://elicit.org/search?q=How+the+U.S.+CENSUS+can+help+State+Data+Centers%3F&token=01H6VF95XHYNCG9T1EEY4T41EM&paper=a417ceac8a01d856d3e4fdd7cf09f0ad24064062&column=title", "The Use of Blended Data to Improve Public Assistance Programs: Results from a Partnership between the U.S. Census Bureau, USDA, and State Program Agencies",
+                    style = "display: inline")),
+           p("- What are United States local government data needs?"),
+           p(tags$a(href = "https://journals.sagepub.com/doi/pdf/10.1177/0002716210374414?casa_token=8q6dlQ8dKloAAAAA:hc_HuZrqkD8un65O2822htXjRgvNOSJsz-MrQt7YTmwKZ3V7ztBK742_m9f0pjsagUW7Lx5Xh1tP", "The Federal Statistical System: The Local Government Perspective",
+                    style = "display: inline")),
+           p(tags$a(href = "https://www.sciencedirect.com/science/article/pii/S0736585320301854?via%3Dihub", "Beyond the supply side: Use and impact of municipal open data in the U.S.",
+                    style = "display: inline")),
+           h4("Databases"),
+           p("Various iterations of the above questions were used to search the following data bases with no success."),
+           p("- Policy Commons (accessed through the UVA library)"),
+           p("- Policy Index File (accessed through the UVA library)"),
+           h4("Nonprofits and Associations"),
+           p("- ", tags$a(href = "https://www.urban.org/", "Urban Institute",
+                         style = "display: inline")),
+           p("- ",tags$a(href = "https://www.apdu.org/", "Association of Public Data Users",
                         style = "display: inline")),
-               p("In our project, we used GENSIM and BERT to examine topics within State Constitutions.")),
+           p("- ",tags$a(href = "https://guides.lib.virginia.edu/datascience/gov-docs#s-lg-box-wrapper-28547820", "tate and Local Government Documents",
+                        style = "display: inline")),
+           p("- ",tags$a(href = "https://www.naco.org/", "National Association of Counties",
+                        style = "display: inline")),
+           p("- ",tags$a(href = "https://www.ncsl.org/", "National Conference of State Legislatures",
+                        style = "display: inline")),
+           h4("Mapping Platform"),
+           p("- ",tags$a(href = "https://www.policymap.com/resources/customer-stories", "Customer Stories",
+                        style = "display: inline")),
+           p("- ",tags$a(href = "https://www.policymap.com/resources/customer-stories/city-of-philadelphia", "City of Philadelphia – “The City began using PolicyMap for grant applications, but that was just the start. The Philadelphia Division of Housing and Community Development worked with PolicyMap to create a custom report that supplies up-to-date information needed for quarterly reports to HUD to meet the requirements for the Choice Neighborhood grant, which provides funding to revitalize neighborhoods with distressed public or HUD-assisted housing.",
+                        style = "display: inline")),
+           p("- ",tags$a(href = "https://www.policymap.com/resources/customer-stories/usda-rural-housing-service", "USDA Rural Housing Service – “RHS needed a better way to track progress of projects to stay organized and show positive impact. In 2015, the Rural Housing Service was reaching unprecedented levels of success in helping build small-town health clinics and offering successful loans to families as a result of a huge budget increase. However, with the flurry of activity within the department, the RHS needed a better way to track the progress of these projects to stay organized and show off their positive impact.",
+                        style = "display: inline")),
+           p("- ",tags$a(href = "https://www.policymap.com/resources/customer-stories/city-of-dallas", "City of Dallas – “The City of Dallas’s Department of Planning and Urban Design found they were frequently reacting to repetitive requests for data and maps, and they needed a proactive solution, both across city government departments and to better serve public requests for information.",
+                        style = "display: inline")),
+           p("- ",tags$a(href = "https://www.policymap.com/resources/customer-stories/hawaii-data-collaborative", "Hawaii Data Collaborative – “Finding meaningful, cohesive data about trends in Hawaii’s communities and a shared understanding of the state of Hawaii residents was challenging due to siloed information and lack of data.",
+                        style = "display: inline")),
+           p("- ",tags$a(href = "https://www.policymap.com/resources/customer-stories/north-carolina-housing-finance-agency", "North Carolina Housing Finance Agency – “To better inform decision-making around affordable housing strategies, NCHFA needed a platform to easily share housing data with the public. When spreadsheets of data proved too inaccessible, and a self-maintained GIS platform proved too cumbersome, NCHFA turned to an interactive, embedded, automatically updated map from PolicyMap.",
+                        style = "display: inline")),
+           p("- ",tags$a(href = "https://www.policymap.com/resources/customer-stories/connecticut-housing-finance-authority-chfa", "Connecticut Housing Finance Authority -  CHFA works to alleviate the shortage of housing for low- to moderate-income families and persons in Connecticut. To communicate the impact of their investments, staff relied on analysts and complex GIS software. As requests for data pulls, quick maps, and reports grew, CHFA needed a solution for making community housing information more accessible to anyone in the organization. Staff needed the ability to explore specific geographies, perform their own impact analysis, and geocode information based on legislative districts for meetings with state legislators, community partners, and municipal planners.",
+                        style = "display: inline"))
+           #p(tags$a(href = "", "",
+           #style = "display: inline"))
            
-           box(title = "BERT",
-               p("We applied BERT to the top 5 State Constitutions with the most amendments."),
-               p("1. California"),
-               p("2. Hawaii"),
-               p("3. Maryland"),
-               p("4. Oregon"),
-               p("5. Texas")),
-           
-           box(title = "BERT Example: California Data",
-               tags$img(height = 450, width = 450, src = "CABert.png"))
   
+           
+           
 )))
 
 

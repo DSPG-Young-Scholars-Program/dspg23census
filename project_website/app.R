@@ -425,7 +425,7 @@ dem_geography_plot <- function(selected_state) {
       new_row <- c("Ward")
       df_stack3 <- rbind(df_stack3, new_row)}
     if (any(grepl("zcta", data_to_use[i,9]))) {
-      new_row <- c("ZCTA")
+      new_row <- c("ZIP Code Tabulation Area")
       df_stack3 <- rbind(df_stack3, new_row)}
     if (any(grepl("zip", data_to_use[i,9]))) {
       new_row <- c("Zip Code")
@@ -436,15 +436,22 @@ dem_geography_plot <- function(selected_state) {
     summarise(count = n())
   
   
-  ggplot(geography_types, aes(x = Geography, y = count)) +
-    geom_col(width=.8,fill = "#0072B2") +
+  ggplot(geography_types, aes(x = reorder(Geography, -count),  y = count)) +
+    geom_bar(stat = "identity", position = position_dodge(width = 0.7))
+    #geom_col(width=.5,fill = "#0072B2") +
     scale_fill_manual(values = "#0072B2") +
     labs(x="Geography: Demographics", y="Counts", title="Types of Geographic Levels") + 
-    theme_minimal() + theme(plot.title = element_text(hjust = 0.4, face = "bold", size=16),
-                            axis.text.x = element_text(size = 14),  # Adjust the font size for x-axis labels here
-                            axis.text.y = element_text(size = 10)  ) +
+    theme_minimal() + theme(
+      plot.title = element_text(hjust = 0.4, face = "bold",size=16),
+      axis.text.x = element_text(size = 12),  # Adjust the font size for x-axis labels here
+      axis.text.y = element_text(size = 12),  # Adjust the font size for y-axis labels here
+      axis.title.x = element_text(size = 14),  # Adjust the font size for x-axis label (x-axis title) here
+      axis.title.y = element_text(size = 14),   # Adjust the font size for y-axis label (y-axis title) here
+    ) +
     coord_flip()
 }
+#theme(aspect.ratio = 2/1)
+
 
 
 # Plot 4 - Age of data 
@@ -536,7 +543,7 @@ dem_census_source <- function(selected_state){
   for (i in 1:nrow(data_to_use)) {
     #---------------------------Census Sources----------------------------
     if(any(grepl("Bureau", data_to_use[i,12]))){
-      new_row <- c("Census Bureau")
+      new_row <- c("Unlisted Census Bureau Product")
       df_stack3 <- rbind(df_stack3, new_row)
     }
     if(any(grepl("Decennial", data_to_use[i,12]))){
@@ -559,9 +566,19 @@ dem_census_source <- function(selected_state){
   colnames(df_stack3) <- col_name 
   source_types <- df_stack3 %>% group_by(source)%>%
     summarise(count = n())
-  # Adding a title to the pie graph
-  title <- paste("Demographic Data Source (Census) \n Distribution in", selected_state)
-  pie(source_types$count , labels = source_types$source, border="white", col=cbPalette, cex=1, main = title, cex.main = 1.4)
+  print(source_types)
+  
+  # Create the bar graph
+  ggplot(source_types, aes(x = source, y = count)) +
+    geom_col(width=.8) +
+    scale_fill_manual(values = cbPalette) +
+    labs(x="Census Sources: Demographics", y="Counts", face = "bold") + 
+    theme_minimal() + theme(axis.text.x = element_text(angle = 45, hjust = 1, face = "bold"),
+                            axis.text.y = element_text(hjust = 1, face = "bold"),
+                            axis.title.x = element_text(face = "bold"),
+                            axis.title.y = element_text(face = "bold"),
+                            plot.title = element_text(hjust = 0.4, face = "bold", size = 15)) +coord_flip()+
+    ggtitle(paste("Demographics Data Source (Census) Distribution in \n", selected_state))
 }
 
 
@@ -611,11 +628,23 @@ dem_direct_census_link <- function(selected_state, data_table) {
   # Replace "N" with "No" and "Y" with "Yes"
   sorted_df$`direct link` <- ifelse(sorted_df$`direct link` ==  "N", "No", "Yes")
   
-  # Adding a title to the pie graph
-  title <- paste("Demographics Data Census Link \n Distribution in", selected_state)
+  # Calculate the count percentages
+  total_count <- sum(sorted_df$count)
+  sorted_df$percentage <- (sorted_df$count / total_count) * 100
+  print(sorted_df)
   
-  #par(mfrow = c(1, 1), mar = c(4, 4, 2, 2))
-  pie(sorted_df$count, labels = sorted_df$`direct link`, border = "white", col = cbPalette, cex = 1, main = title, cex.main = 1.4)
+  # Create a pie chart with custom colors
+  ggplot(sorted_df, aes(x = "", y = count,  fill = `direct link`)) +
+    geom_bar(stat = "identity", width = 1) +
+    coord_polar(theta = "y") +
+    scale_fill_manual(values = c("Yes" = "#009E73", "No" = "#56B4E9")) +
+    labs(fill = "Direct Links to Census website") +
+    theme_void() +
+    #geom_text(aes(label = paste0(count)), position = position_stack(vjust = 0.5), color = "white") +
+    geom_text(aes(label = paste0(round(percentage), "%")), 
+              position = position_stack(vjust = 0.5), color = "white") +
+    ggtitle(paste("Demographics Data with Direct Links to \n Census.gov site in \n", selected_state))+
+    theme(plot.title = element_text(hjust = 0.5, vjust = 0.5, face = "bold", size = 15))
 }
 
 # Plot 10 - Historical data
@@ -636,12 +665,25 @@ dem_historical_data <- function(selected_state, data_table) {
   # Replace "N" with "No" and "Y" with "Yes"
   sorted_df$`historical data` <- ifelse(sorted_df$`historical data` == "N ", "No", "Yes")
   
-  # Adding a title to the pie graph
-  title <- paste("Demographics Historical Data \n Distribution in", selected_state)
+  # Calculate the count percentages
+  total_count <- sum(sorted_df$count)
+  sorted_df$percentage <- (sorted_df$count / total_count) * 100
+  print(sorted_df)
   
-  #par(mfrow = c(1, 1), mar = c(4, 4, 2, 2))
-  pie(sorted_df$count, labels = sorted_df$`historical data`, border = "white", col = cbPalette, cex = 1, main = title, cex.main = 1.4)
-}
+  # Create a pie chart with custom colors
+  ggplot(sorted_df, aes(x = "", y = count,  fill = `historical data`)) +
+    geom_bar(stat = "identity", width = 1) +
+    coord_polar(theta = "y") +
+    scale_fill_manual(values = c("Yes" = "#009E73", "No" = "#56B4E9")) +
+    labs(fill = "Available") +
+    theme_void() +
+    #geom_text(aes(label = paste0(count)), position = position_stack(vjust = 0.5), color = "white") +
+    geom_text(aes(label = paste0(round(percentage), "%")), 
+              position = position_stack(vjust = 0.5), color = "white") +
+    ggtitle(paste("Demographics Historical Data Available in \n", selected_state))+
+    theme(plot.title = element_text(hjust = 0.5, vjust = 0.5, face = "bold", size = 15))
+
+  }
 
 #----------------------Finding Economy Page------------------------
 #econ geo level
@@ -685,7 +727,7 @@ econ_geography_plot <- function(selected_state) {
   geography_types <- df_stack3 %>% group_by(Geography)%>%
     summarise(count = n())
   
-  ggplot(geography_types, aes(x = Geography, y = count)) +
+  ggplot(geography_types, aes(x = reorder(Geography, -count),  y = count)) +
     geom_col(width = 0.8, fill = "#0072B2") +
     scale_fill_manual(values = "#0072B2") +
     labs(x = "Geography: Economy", y = "Counts", title = paste("Types of Geographic Levels", selected_state)) +  # Adjust the font size here
@@ -696,7 +738,7 @@ econ_geography_plot <- function(selected_state) {
       axis.text.y = element_text(size = 14),  # Adjust the font size for y-axis labels here
       axis.title.x = element_text(size = 14),  # Adjust the font size for x-axis label (x-axis title) here
       axis.title.y = element_text(size = 14)   # Adjust the font size for y-axis label (y-axis title) here
-    )
+    ) + coord_flip()
   
 }
 
@@ -754,11 +796,24 @@ econ_direct_census_link <- function(selected_state, data_table) {
   # Replace "N" with "No" and "Y" with "Yes"
   sorted_df$`direct link` <- ifelse(sorted_df$`direct link` == "N", "No", "Yes")
   
-  # Adding a title to the pie graph
-  title <- paste("Economy Data Census Link \n Distribution in", selected_state)
+  # Calculate the count percentages
+  total_count <- sum(sorted_df$count)
+  sorted_df$percentage <- (sorted_df$count / total_count) * 100
+  print(sorted_df)
   
-  #par(mfrow = c(1, 1), mar = c(4, 4, 2, 2))
-  pie(sorted_df$count, labels = sorted_df$`direct link`, border = "white", col = cbPalette, cex = 1, main = title, cex.main=1.4)
+  # Create a pie chart with custom colors
+  ggplot(sorted_df, aes(x = "", y = count,  fill = `direct link`)) +
+    geom_bar(stat = "identity", width = 1) +
+    coord_polar(theta = "y") +
+    scale_fill_manual(values = c("Yes" = "#009E73", "No" = "#56B4E9")) +
+    labs(fill = "Direct Links to Census website") +
+    theme_void() +
+    #geom_text(aes(label = paste0(count)), position = position_stack(vjust = 0.5), color = "white") +
+    geom_text(aes(label = paste0(round(percentage), "%")), 
+              position = position_stack(vjust = 0.5), color = "white") +
+    ggtitle(paste("Economy Data with Direct Links to \n Census.gov site in", selected_state))+
+    theme(plot.title = element_text(hjust = 0.5, vjust = 0.5, face = "bold"))
+  
 }
 
 #econ historical data
@@ -779,12 +834,25 @@ econ_historical_data <- function(selected_state, data_table) {
   # Replace "N" with "No" and "Y" with "Yes"
   sorted_df$`historical data` <- ifelse(sorted_df$`historical data` == "N", "No", "Yes")
   
-  # Adding a title to the pie graph
-  title <- paste("Economy Historical Data \n Distribution in", selected_state)
+  # Calculate the count percentages
+  total_count <- sum(sorted_df$count)
+  sorted_df$percentage <- (sorted_df$count / total_count) * 100
+  print(sorted_df)
   
-  #par(mfrow = c(1, 1), mar = c(4, 4, 2, 2))
-  pie(sorted_df$count, labels = sorted_df$`historical data`, border = "white", col = cbPalette, cex = 1, main = title, cex.main=1.4)
-}
+  # Create a pie chart with custom colors
+  ggplot(sorted_df, aes(x = "", y = count,  fill = `historical data`)) +
+    geom_bar(stat = "identity", width = 1) +
+    coord_polar(theta = "y") +
+    scale_fill_manual(values = c("Yes" = "#009E73", "No" = "#56B4E9")) +
+    labs(fill = "Available") +
+    theme_void() +
+    #geom_text(aes(label = paste0(count)), position = position_stack(vjust = 0.5), color = "white") +
+    geom_text(aes(label = paste0(round(percentage), "%")), 
+              position = position_stack(vjust = 0.5), color = "white") +
+    ggtitle(paste("Economy Historical Data Available in", selected_state))+
+    theme(plot.title = element_text(hjust = 0.5, vjust = 0.5, face = "bold"))
+
+  }
 
 #Word cloud for variable names
 econ_variable_cloud <- function(selected_state) {
@@ -1077,16 +1145,25 @@ econ_pie_graph_census<- function(selected_state, data_table) {
   colnames(count_result) <- c("data source", "count")
   count_result <- count_result[count_result$`data source` != "", ]
   # Assuming countinue$`data source` contains the labels you want to modify
-  count_result$`data source` <- gsub("Small Area Income and Poverty Estimates", "Small Area Income \n and Poverty Estimates", count_result$`data source`)
-  
+  # count_result$`data source` <- gsub("Small Area Income and Poverty Estimates", "Small Area Income \n and Poverty Estimates", count_result$`data source`)
   
   sorted_df <- count_result[order(- count_result$count), ]
+  sorted_df[1, "data source"] <- "American Community Survey"
+  sorted_df[2, "data source"] <- "Unlisted Census Bureau Product"
+  print(sorted_df)
   
-  # Adding a title to the pie graph
-  title <- paste("Economy Data Census Source (Census) \n Distribution in", selected_state)
+  # Create the bar graph
+  ggplot(sorted_df, aes(x = `data source`, y = count)) +
+    geom_col(width=.8) +
+    scale_fill_manual(values = cbPalette) +
+    labs(x="Census Sources: Economy", y="Counts") + 
+    theme_minimal() + theme(axis.text.x = element_text(angle = 45, hjust = 1, face = "bold"),
+                            axis.text.y = element_text(hjust = 1, face = "bold"),
+                            axis.title.x = element_text(face = "bold"),
+                            axis.title.y = element_text(face = "bold"),
+                            plot.title = element_text(hjust = 0.4, face = "bold")) +coord_flip()+
+    ggtitle(paste("Economy Data Source (Census) \n Distribution in", selected_state))
   
-  #par(mfrow = c(1, 1), mar = c(4, 4, 2, 2))
-  pie(sorted_df$count, labels = sorted_df$`data source`, border = "white", col = cbPalette, cex = 1, main = title)
 }
 
 econ_pie_graph_noncensus <- function(selected_state, data_table) {
@@ -1099,15 +1176,24 @@ econ_pie_graph_noncensus <- function(selected_state, data_table) {
   countinue <- data_to_use %>% group_by(Data.Source.Non.Census..Standardized.) %>% summarize(count = n())
   colnames(countinue) <- c("data source", "count")
   countinue <- countinue[countinue$`data source` != "", ]
+  countinue[2, "data source"] <- "U.S. Bureau of Economic Analysis"
+  countinue[3, "data source"] <- "U.S. Bureau of Labor Statistics"
+  countinue[4, "data source"] <- "U.S. Department of Housing and Urban Development"
+  countinue[6, "data source"] <- "Local Government/Institute"
+  print(countinue)
   
-  #sorted_df <- countinue[order(- countinue$count), ]
-  
-  # Adding a title to the pie graph
-  title <- paste("Economy Data Source (Non Census) \n Distribution in", selected_state)
-  
-  #par(mfrow = c(1, 1), mar = c(4, 4, 2, 2))
-  #pie(sorted_df$count, labels = sorted_df$`data source`, border = "white", col = cbPalette, cex = 1, main = title)
-  pie(countinue$count, labels = countinue$`data source`, border = "white", col = cbPalette, cex = 0.8, main = title)
+  # Create the bar graph
+  ggplot(countinue, aes(x = `data source`, y = count)) +
+    geom_col(width=.8) +
+    scale_fill_manual(values = cbPalette) +
+    labs(x="Non Census Sources: Economy", y="Counts") + 
+    theme_minimal() + theme(axis.text.x = element_text(angle = 45, hjust = 1, face = "bold"),
+                            axis.text.y = element_text(hjust = 1, face = "bold"),
+                            axis.title.x = element_text(face = "bold"),
+                            axis.title.y = element_text(face = "bold"),
+                            plot.title = element_text(hjust = 0.4, face = "bold")) +coord_flip()+
+    ggtitle(paste("Economy Data Source (Non Census) \n Distribution in", selected_state))
+
 }
 #----------------------Finding Housing/HE Page-----------------
 
@@ -2408,7 +2494,7 @@ hous_geography_plot <- function(selected_state, data_source) {
       new_row <- c("Ward")
       df_stack3 <- rbind(df_stack3, new_row)}
     if (any(grepl("zcta", data_to_use[i,7]))) {
-      new_row <- c("ZCTA")
+      new_row <- c("ZIP Code Tabulation Area")
       df_stack3 <- rbind(df_stack3, new_row)}
     if (any(grepl("zip", data_to_use[i,7]))) {
       new_row <- c("Zip Code")
@@ -2418,7 +2504,7 @@ hous_geography_plot <- function(selected_state, data_source) {
   geography_types <- df_stack3 %>% group_by(Geography)%>%
     summarise(count = n())
   
-  ggplot(geography_types, aes(x = Geography, y = count)) +
+  ggplot(geography_types, aes(x = reorder(Geography, -count),  y = count)) +
     geom_col(width=0.7, col = "#999999", fill="#0072B2") +
     scale_fill_manual(values = cbPalette) +
     labs(x="Geography", y="Counts", title="Types of Geographic Levels") + 
@@ -2507,8 +2593,8 @@ mission_cloud <- function(state) {
   cloud(combo)
 }
 
-##Census Sources Pie
-h_edu_pie_graph_census <- function(state, data_source) {
+##Census Sources Pie - Housing
+hous_pie_graph_census <- function(state, data_source) {
   if (state == "All Sample States and Territories") {
     data_to_use = data_source
   } else {
@@ -2518,19 +2604,27 @@ h_edu_pie_graph_census <- function(state, data_source) {
   countinue <- data_to_use %>% group_by(Data.Sources.Census) %>% summarize(count = n())
   colnames(countinue) <- c("data source", "count")
   countinue <- countinue[countinue$`data source` != "", ]
+  countinue[1, "data source"] <- "American Community Survey"
+  countinue[2, "data source"] <- "Current Population Survey"
+  countinue[3, "data source"] <- "Unlisted Census Bureau Product"
+  print(countinue)
   
-  #sorted_df <- countinue[order(- countinue$count), ]
+  # Create the bar graph
+  ggplot(countinue, aes(x = `data source`, y = count)) +
+    geom_col(width=.8) +
+    scale_fill_manual(values = cbPalette) +
+    labs(x="Census Sources: Housing", y="Counts", face = "bold") + 
+    theme_minimal() + theme(axis.text.x = element_text(angle = 45, hjust = 1, face = "bold"),
+                            axis.text.y = element_text(hjust = 1, face = "bold"),
+                            axis.title.x = element_text(face = "bold"),
+                            axis.title.y = element_text(face = "bold"),
+                            plot.title = element_text(hjust = 0.4, face = "bold")) +coord_flip()+
+    ggtitle(paste("Housing Data Source (Census) \n Distribution in", state))
   
-  # Adding a title to the pie graph
-  title <- paste("Data Source (Census) \n Distribution in", state)
-  
-  #par(mfrow = c(1, 1), mar = c(4, 4, 2, 2))
-  #pie(sorted_df$count, labels = sorted_df$`data source`, border = "white", col = cbPalette, cex = 1, main = title)
-  pie(countinue$count, labels = countinue$`data source`, border = "white", col = cbPalette, cex = 1, main = title, cex.main=1.4)
 }
 
-#Non-Census Sources Pie
-h_edu_pie_graph_noncensus <- function(state, data_source) {
+#Non-Census Sources Pie - Housing
+hous_pie_graph_noncensus <- function(state, data_source) {
   if (state == "All Sample States and Territories") {
     data_to_use = data_source
   } 
@@ -2541,15 +2635,23 @@ h_edu_pie_graph_noncensus <- function(state, data_source) {
   countinue <- data_to_use %>% group_by(Data.Sources.Non.Census) %>% summarize(count = n())
   colnames(countinue) <- c("data source", "count")
   countinue <- countinue[countinue$`data source` != "", ]
+  print(countinue)
   
-  # Adding a title to the pie graph
-  title <- paste("Data Source (Non Census) \n Distribution in", state)
-  
-  #par(mfrow = c(1, 1), mar = c(4, 4, 2, 2))
-  pie(countinue$count, labels = countinue$`data source`, border = "white", col = cbPalette, cex = 1, main = title, cex.main=1.4)
+  # Create the bar graph
+  ggplot(countinue, aes(x = `data source`, y = count)) +
+    geom_col(width=.8) +
+    scale_fill_manual(values = cbPalette) +
+    labs(x="Non Census Sources: Housing", y="Counts", face = "bold") + 
+    theme_minimal() + theme(axis.text.x = element_text(angle = 45, hjust = 1, face = "bold"),
+                            axis.text.y = element_text(hjust = 1, face = "bold"),
+                            axis.title.x = element_text(face = "bold"),
+                            axis.title.y = element_text(face = "bold"),
+                            plot.title = element_text(hjust = 0.4, face = "bold")) +coord_flip()+
+    ggtitle(paste("Housing Data Source (Non Census) \n Distribution in", state))
+
 }
 
-#Direct Census Link Pie
+#Direct Census Link Pie - Housing
 hous_direct_census_link <- function(selected_state, data_table) {
   if (selected_state == "All Sample States and Territories") {
     data_to_use <- data_table
@@ -2566,14 +2668,27 @@ hous_direct_census_link <- function(selected_state, data_table) {
   # Replace "N" with "No" and "Y" with "Yes"
   sorted_df$`direct link` <- ifelse(sorted_df$`direct link` == "N", "No", "Yes")
   
-  # Adding a title to the pie graph
-  title <- paste("Data Census Link Distribution \n in", selected_state)
+  # Calculate the count percentages
+  total_count <- sum(sorted_df$count)
+  sorted_df$percentage <- (sorted_df$count / total_count) * 100
+  print(sorted_df)
   
-  #par(mfrow = c(1, 1), mar = c(4, 4, 2, 2))
-  pie(sorted_df$count, labels = sorted_df$`direct link`, border = "white", col = cbPalette, cex = 1, main = title, cex.main=1.4)
-}
+  # Create a pie chart with custom colors
+  ggplot(sorted_df, aes(x = "", y = count,  fill = `direct link`)) +
+    geom_bar(stat = "identity", width = 1) +
+    coord_polar(theta = "y") +
+    scale_fill_manual(values = c("Yes" = "#009E73", "No" = "#56B4E9")) +
+    labs(fill = "Direct Links to Census website") +
+    theme_void() +
+    #geom_text(aes(label = paste0(count)), position = position_stack(vjust = 0.5), color = "white") +
+    geom_text(aes(label = paste0(round(percentage), "%")), 
+              position = position_stack(vjust = 0.5), color = "white") +
+    ggtitle(paste("Housing Data with Direct Links to \n Census.gov site in", selected_state))+
+    theme(plot.title = element_text(hjust = 0.5, vjust = 0.5, face = "bold"))
 
-#Historical Data Pie
+  }
+
+#Historical Data Pie - Housing
 hous_historical_data <- function(selected_state, data_table) {
   if (selected_state == "All Sample States and Territories") {
     data_to_use <- data_table
@@ -2591,12 +2706,161 @@ hous_historical_data <- function(selected_state, data_table) {
   # Replace "N" with "No" and "Y" with "Yes"
   sorted_df$`historical data` <- ifelse(sorted_df$`historical data` == "N", "No", "Yes")
   
-  # Adding a title to the pie graph
-  title <- paste("Historical Data Distribution \n in", selected_state)
+  #Calculate the count percentages
+  total_count <- sum(sorted_df$count)
+  sorted_df$percentage <- (sorted_df$count / total_count) * 100
+  print(sorted_df)
   
-  #par(mfrow = c(1, 1), mar = c(4, 4, 2, 2))
-  pie(sorted_df$count, labels = sorted_df$`historical data`, border = "white", col = cbPalette, cex = 1, main = title,cex.main=1.4)
+  # Create a pie chart with custom colors
+  ggplot(sorted_df, aes(x = "", y = count,  fill = `historical data`)) +
+    geom_bar(stat = "identity", width = 1) +
+    coord_polar(theta = "y") +
+    scale_fill_manual(values = c("Yes" = "#009E73", "No" = "#56B4E9")) +
+    labs(fill = "Available") +
+    theme_void() +
+    #geom_text(aes(label = paste0(count)), position = position_stack(vjust = 0.5), color = "white") +
+    geom_text(aes(label = paste0(round(percentage), "%")), 
+              position = position_stack(vjust = 0.5), color = "white") +
+    ggtitle(paste("Housing Historical Data Available in", selected_state))+
+    theme(plot.title = element_text(hjust = 0.5, vjust = 0.5, face = "bold"))
+
+  }
+
+#Census Sources Pie - Health and Education
+
+h_edu_pie_graph_census <- function(state, data_source) {
+  if (state == "All Sample States and Territories") {
+    data_to_use = data_source
+  } else {
+    data_to_use = data_source[data_source$State..Country == state, ]
+  }
+  
+  countinue <- data_to_use %>% group_by(Data.Sources.Census) %>% summarize(count = n())
+  colnames(countinue) <- c("data source", "count")
+  countinue <- countinue[countinue$`data source` != "", ]
+  countinue[1, "data source"] <- "American Community Survey"
+  countinue[2, "data source"] <- "Current Population Survey"
+  countinue[3, "data source"] <- "Unlisted Census Bureau Product"
+  print(countinue)
+  
+  # Create the bar graph
+  ggplot(countinue, aes(x = `data source`, y = count)) +
+    geom_col(width=.8) +
+    scale_fill_manual(values = cbPalette) +
+    labs(x="Census Sources: Health and Education", y="Counts", face = "bold") + 
+    theme_minimal() + theme(axis.text.x = element_text(angle = 45, hjust = 1, face = "bold"),
+                            axis.text.y = element_text(hjust = 1, face = "bold"),
+                            axis.title.x = element_text(face = "bold"),
+                            axis.title.y = element_text(face = "bold"),
+                            plot.title = element_text(hjust = 0.4, face = "bold")) +coord_flip()+
+    ggtitle(paste("Health and Education Data Source (Census) \n Distribution in", state))
+  
 }
+
+#Non-Census Sources Pie - Health and Education
+h_edu_pie_graph_noncensus <- function(state, data_source) {
+  if (state == "All Sample States and Territories") {
+    data_to_use = data_source
+  } 
+  else {
+    data_to_use = data_source[data_source$State..Country == state, ]
+  }
+  
+  countinue <- data_to_use %>% group_by(Data.Sources.Non.Census) %>% summarize(count = n())
+  colnames(countinue) <- c("data source", "count")
+  countinue <- countinue[countinue$`data source` != "", ]
+  print(countinue)
+  
+  # Create the bar graph
+  ggplot(countinue, aes(x = `data source`, y = count)) +
+    geom_col(width=.8) +
+    scale_fill_manual(values = cbPalette) +
+    labs(x="Non Census Sources: Health and Education", y="Counts", face = "bold") + 
+    theme_minimal() + theme(axis.text.x = element_text(angle = 45, hjust = 1, face = "bold"),
+                            axis.text.y = element_text(hjust = 1, face = "bold"),
+                            axis.title.x = element_text(face = "bold"),
+                            axis.title.y = element_text(face = "bold"),
+                            plot.title = element_text(hjust = 0.4, face = "bold")) +coord_flip()+
+    ggtitle(paste("Health and Education Data Source (Non Census) \n Distribution in", state))
+  
+}
+
+
+#Direct Census Link Pie - Health and Education
+h_edu_direct_census_link <- function(selected_state, data_table) {
+  if (selected_state == "All Sample States and Territories") {
+    data_to_use <- data_table
+  } else {
+    data_to_use <- data_table[data_table$State..Country == selected_state, ]
+  }
+  
+  count_result <- data_to_use %>% group_by(Direct.links.to.Census) %>% summarize(count = n())
+  colnames(count_result) <- c("direct link", "count")
+  count_result <- count_result[count_result$`direct link` != "", ]
+  
+  sorted_df <- count_result[order(-count_result$count), ]
+  
+  # Replace "N" with "No" and "Y" with "Yes"
+  sorted_df$`direct link` <- ifelse(sorted_df$`direct link` == "N", "No", "Yes")
+  
+  # Calculate the count percentages
+  total_count <- sum(sorted_df$count)
+  sorted_df$percentage <- (sorted_df$count / total_count) * 100
+  print(sorted_df)
+  
+  # Create a pie chart with custom colors
+  ggplot(sorted_df, aes(x = "", y = count,  fill = `direct link`)) +
+    geom_bar(stat = "identity", width = 1) +
+    coord_polar(theta = "y") +
+    scale_fill_manual(values = c("Yes" = "#009E73", "No" = "#56B4E9")) +
+    labs(fill = "Direct Links to Census website") +
+    theme_void() +
+    #geom_text(aes(label = paste0(count)), position = position_stack(vjust = 0.5), color = "white") +
+    geom_text(aes(label = paste0(round(percentage), "%")), 
+              position = position_stack(vjust = 0.5), color = "white") +
+    ggtitle(paste("Health and Education Data with Direct Links to \n Census.gov site in", selected_state))+
+    theme(plot.title = element_text(hjust = 0.5, vjust = 0.5, face = "bold"))
+  
+}
+
+#Historical Data Pie - Health and Education
+h_edu_historical_data <- function(selected_state, data_table) {
+  if (selected_state == "All Sample States and Territories") {
+    data_to_use <- data_table
+  } else {
+    data_to_use <- data_table[data_table$State..Country == selected_state, ]
+  }
+  
+  count_result <- data_to_use %>% group_by(Historical.data) %>% summarize(count = n())
+  colnames(count_result) <- c("historical data", "count")
+  count_result <- count_result[count_result$`historical data` != "", ]
+  count_result <- count_result[count_result$`historical data` != "N/A", ]
+  
+  sorted_df <- count_result[order(-count_result$count), ]
+  
+  # Replace "N" with "No" and "Y" with "Yes"
+  sorted_df$`historical data` <- ifelse(sorted_df$`historical data` == "N", "No", "Yes")
+  
+  #Calculate the count percentages
+  total_count <- sum(sorted_df$count)
+  sorted_df$percentage <- (sorted_df$count / total_count) * 100
+  print(sorted_df)
+  
+  # Create a pie chart with custom colors
+  ggplot(sorted_df, aes(x = "", y = count,  fill = `historical data`)) +
+    geom_bar(stat = "identity", width = 1) +
+    coord_polar(theta = "y") +
+    scale_fill_manual(values = c("Yes" = "#009E73", "No" = "#56B4E9")) +
+    labs(fill = "Available") +
+    theme_void() +
+    #geom_text(aes(label = paste0(count)), position = position_stack(vjust = 0.5), color = "white") +
+    geom_text(aes(label = paste0(round(percentage), "%")), 
+              position = position_stack(vjust = 0.5), color = "white") +
+    ggtitle(paste("Health and Education Historical Data Available in", selected_state))+
+    theme(plot.title = element_text(hjust = 0.5, vjust = 0.5, face = "bold"))
+  
+}
+
 #------------------------Finding Diversity ---------------------------------
 #div geo level
 div_data$Geographic.Levels = tolower(div_data$Geographic.Levels)
@@ -2620,7 +2884,7 @@ div_geography_plot <- function(selected_state) {
       new_row <- c("Minor Civil Division")
       df_stack3 <- rbind(df_stack3, new_row)}
     if(any(grepl("CBSA", data_to_use[i,8]))){
-      new_row <- c("CBSA")
+      new_row <- c(" Core Based Statistical Area")
       df_stack3 <- rbind(df_stack3, new_row)}
     if(any(grepl("precinct", data_to_use[i,8]))){
       new_row <- c("Precinct")
@@ -2746,7 +3010,7 @@ div_geography_plot <- function(selected_state) {
       new_row <- c("Ward")
       df_stack3 <- rbind(df_stack3, new_row)}
     if (any(grepl("zcta", data_to_use[i,8]))) {
-      new_row <- c("ZCTA")
+      new_row <- c("ZIP Code Tabulation Area")
       df_stack3 <- rbind(df_stack3, new_row)}
     if (any(grepl("zip", data_to_use[i,8]))) {
       new_row <- c("Zip Code")
@@ -2759,7 +3023,7 @@ div_geography_plot <- function(selected_state) {
   geography_types <- df_stack3 %>% group_by(Geography)%>%
     summarise(count = n())
   
-  ggplot(geography_types, aes(x = Geography, y = count)) +
+  ggplot(geography_types, aes(x = reorder(Geography, -count),  y = count)) +
     geom_col(width = 0.8, fill = "#0072B2") +
     scale_fill_manual(values = "#0072B2") +
     labs(x = "Geography: Diversity", y = "Counts", title=paste("Types of Geographic Levels", selected_state)) +  # Adjust the font size here
@@ -2905,11 +3169,21 @@ div_pie_graph_census<- function(selected_state, data_table) {
   # Assuming countinue$`data source` contains the labels you want to modify
   #count_result$`data source` <- gsub("Small Area Income and Poverty Estimates", "Small Area Income \n and Poverty Estimates", count_result$`data source`)
   sorted_df <- count_result[order(- count_result$count), ]
-  # Adding a title to the pie graph
-  title <- paste("Diveristy Data Census Source (Census) \n Distribution in", selected_state)
-  #par(mfrow = c(1, 1), mar = c(4, 4, 2, 2))
-  pie(sorted_df$count, labels = sorted_df$`data source`, border = "white", col = cbPalette, cex = 1, main = title, cex.main=1.4)
-}
+  sorted_df[2, "data source"] <- "American Community Survey"
+  print(sorted_df)
+  # Create the bar graph
+  ggplot(sorted_df, aes(x = `data source`, y = count)) +
+    geom_col(width=.8) +
+    scale_fill_manual(values = cbPalette) +
+    labs(x="Census Sources: Diversity", y="Counts", face = "bold") + 
+    theme_minimal() + theme(axis.text.x = element_text(angle = 45, hjust = 1, face = "bold"),
+                            axis.text.y = element_text(hjust = 1, face = "bold"),
+                            axis.title.x = element_text(face = "bold"),
+                            axis.title.y = element_text(face = "bold"),
+                            plot.title = element_text(hjust = 0.4, face = "bold")) +coord_flip()+
+    ggtitle(paste("Diversity Data Source (Census) \n Distribution in", selected_state))
+
+  }
 
 #direct census link pie
 div_direct_census_link <- function(selected_state, data_table) {
@@ -2927,11 +3201,24 @@ div_direct_census_link <- function(selected_state, data_table) {
   # Replace "N" with "No" and "Y" with "Yes"
   #sorted_df$`direct link` <- ifelse(sorted_df$`direct link` == "N", "No", "Yes")
   
-  # Adding a title to the pie graph
-  title <- paste("Diversity Data Census Link \n Distribution in", selected_state)
+  # Calculate the count percentages
+  total_count <- sum(sorted_df$count)
+  sorted_df$percentage <- (sorted_df$count / total_count) * 100
+  print(sorted_df)
   
-  #par(mfrow = c(1, 1), mar = c(4, 4, 2, 2))
-  pie(sorted_df$count, labels = sorted_df$`direct link`, border = "white", col = cbPalette, cex = 1, main = title, cex.main=1.4)
+  # Create a pie chart with custom colors
+  ggplot(sorted_df, aes(x = "", y = count,  fill = `direct link`)) +
+    geom_bar(stat = "identity", width = 1) +
+    coord_polar(theta = "y") +
+    scale_fill_manual(values = c("Yes" = "#009E73", "No" = "#56B4E9")) +
+    labs(fill = "Direct Links to Census website") +
+    theme_void() +
+    #geom_text(aes(label = paste0(count)), position = position_stack(vjust = 0.5), color = "white") +
+    geom_text(aes(label = paste0(round(percentage), "%")), 
+              position = position_stack(vjust = 0.5), color = "white") +
+    ggtitle(paste("Diversity Data with Direct Links to \n Census.gov site in", selected_state))+
+    theme(plot.title = element_text(hjust = 0.5, vjust = 0.5, face = "bold"))
+  
 }
 
 div_historical_data <- function(selected_state, data_table) {
@@ -2950,12 +3237,25 @@ div_historical_data <- function(selected_state, data_table) {
   # Replace "N" with "No" and "Y" with "Yes"
   #sorted_df$`historical data` <- ifelse(sorted_df$`historical data` == "N", "No", "Yes")
   
-  # Adding a title to the pie graph
-  title <- paste("Diversity Historical Data \n Distribution in", selected_state)
+  # Calculate the count percentages
+  total_count <- sum(sorted_df$count)
+  sorted_df$percentage <- (sorted_df$count / total_count) * 100
+  print(sorted_df)
   
-  #par(mfrow = c(1, 1), mar = c(4, 4, 2, 2))
-  pie(sorted_df$count, labels = sorted_df$`historical data`, border = "white", col = cbPalette, cex = 1, main = title, cex.main=1.4)
-}
+  # Create a pie chart with custom colors
+  ggplot(sorted_df, aes(x = "", y = count,  fill = `historical data`)) +
+    geom_bar(stat = "identity", width = 1) +
+    coord_polar(theta = "y") +
+    scale_fill_manual(values = c("Yes" = "#009E73", "No" = "#56B4E9")) +
+    labs(fill = "Available") +
+    theme_void() +
+    #geom_text(aes(label = paste0(count)), position = position_stack(vjust = 0.5), color = "white") +
+    geom_text(aes(label = paste0(round(percentage), "%")), 
+              position = position_stack(vjust = 0.5), color = "white") +
+    ggtitle(paste("Diversity Historical Data Available in", selected_state))+
+    theme(plot.title = element_text(hjust = 0.5, vjust = 0.5, face = "bold"))
+
+  }
 
 
 
@@ -2973,6 +3273,7 @@ ui <-  fluidPage(
       justify-content: center;
       align-items: center;
       height: 100%;
+      text-align: center; /* Horizontal centering */
       font-weight: bold;
       font-size: 16px
     }
@@ -3014,13 +3315,12 @@ ui <-  fluidPage(
                                  img(src = "census.png", width = "90px")),
                       ),
                       panel(h3("Project Overview", style = "color: #1B3766;"),
-                            p("The goal of our project is to assist the U.S. Census Bureau in the creation of their Curated Data Enterprise, 
-                              a tool that will combine data from multiple Census sources, to create a cohesive data lake that can be used as 
-                              a tool by State governments."),
-                            p("To accomplish this, we’ve focused on identifying how state governments use data and identifying what those data
-                              sources are, such as Census, state government, or private sources. We did this through our data 
-                              discovery process in which we collected data from state constitutions, state data centers, and the Federal-State 
-                              Cooperative for Population Estimates contacts."),
+                            p("The goal of our project is to engage with Census partners to understand how they use data, to identify
+                               common practices, and find opportunities to produce new statistical products to help fill a data need."),
+                            p("To accomplish this, we’ve focused on identifying how state-level Census partners use data and identifying 
+                                what those data sources are, such as Census, state government, or private sources. We did this through 
+                                our data discovery process in which we collected data from state constitutions, State Data Centers, and 
+                              the Federal-State Cooperative for Population Estimates contacts."),
                             p("The overall objective of this project is to gain insight into how entities harness the power of data and report 
                               findings on how states leverage their data, the tools they use, and the deliverables they produce, so that the 
                               Census Bureau can use our findings to better address state government data needs and to create a tool that facilitates
@@ -3111,12 +3411,10 @@ ui <-  fluidPage(
                                  br(),
                                  h4("What is State Data Center?", style = "color: #E57200;"),
                                  p(tags$a(href = "https://www.census.gov/about/partners/sdc.html", "The State Data Center (SDC) Program", style = "display: inline"),
-                                   " is one of the Census Bureau's longest and most successful partnerships. 
-                                   This partnership between the 50 states, the District of Columbia, Puerto Rico, the island areas and the Census 
-                                   Bureau was created in 1978 to make data available locally to the public through a network of state agencies, 
-                                   universities, libraries, and regional and local governments."),
-                                 p("State Data Center empowers data users with understandable, accurate and timely information through the mutually
-                                   beneficial partnership between the State Data Centers and the Census Bureau."),
+                                   " empowers data users with understandable, accurate and timely information through the
+                                      mutually beneficial partnership between the State Data Centers and the Census Bureau. The SDC network 
+                                      is a key intermediary for Census as they help groups and individuals at the local level connect with 
+                                      Census statistical products."),
                                  h4("Type of Lead SDC Agency", style = "color: #E57200;"),
                                  p("For each state, they have one lead SDC agency and one or more coordinating agency. And those agencies are from 
                                    numerous types of organizations: Universities, Libraries, Research Centers, etc. Here we built a visualization 
@@ -3134,7 +3432,7 @@ ui <-  fluidPage(
                                  h3(style ="color: #1B3766;","Demographics Findings"),
                                  br(),
                                  sidebarLayout(sidebarPanel(
-                                   selectInput("dropdownD", "Which state are you interested in?",
+                                   selectInput("dropdownD", "Which state/territory are you interested in?",
                                                all_states),
                                    downloadButton("download_demo_data", "Download Demographics Data")
                                  ),
@@ -3172,7 +3470,7 @@ ui <-  fluidPage(
                                  br(),
                                  sidebarLayout(
                                    sidebarPanel(
-                                     selectInput("dropdown3", "Which state are you interested in?", all_states),
+                                     selectInput("dropdown3", "Which state/territory are you interested in?", all_states),
                                      downloadButton("download_econ_data", "Download Economy Data")
                                    ),
                                    mainPanel(
@@ -3202,7 +3500,7 @@ ui <-  fluidPage(
                                  h3("Housing Findings", style = "color: #1B3766;"),
                                  br(),
                                  sidebarLayout(sidebarPanel(
-                                   selectInput("dropdownH", "Which state are you interested in?", all_states),
+                                   selectInput("dropdownH", "Which state/territory are you interested in?", all_states),
                                    downloadButton("download_housing_data", "Download Housing Data")),
                                    mainPanel(plotOutput("fin_hous_plot1"),
                                              plotOutput("fin_hous_plot2"),
@@ -3224,7 +3522,7 @@ ui <-  fluidPage(
                                  h3("Diversity Findings",style ="color: #1B3766;"),
                                  br(),
                                  sidebarLayout(sidebarPanel(
-                                   selectInput("dropdownDiv", "Which state are you interested in?",
+                                   selectInput("dropdownDiv", "Which state/territory are you interested in?",
                                                all_states),
                                    downloadButton("download_diversity_data", "Download Diversity Data")
                                  ),
@@ -3251,7 +3549,7 @@ ui <-  fluidPage(
                                  h3("Health & Education Findings", style = "color: #1B3766;"),
                                  br(),
                                  sidebarLayout(sidebarPanel(
-                                   selectInput("dropdownHE", "Which state are you interested in?", all_states),
+                                   selectInput("dropdownHE", "Which state/territory are you interested in?", all_states),
                                    downloadButton("download_HE_data", "Download Health & Education Data")),
                                    mainPanel(plotOutput("fin_HE_plot1"),
                                              plotOutput("fin_HE_plot2"),
@@ -3365,7 +3663,7 @@ server <- function(input, output) {
   datatable(data, options = list(pageLength = 5))})
   output$fin_dem_plot9 <- renderPlot({dem_direct_census_link(selected_state = input$dropdownD)})
   output$fin_dem_plot10 <- renderPlot({dem_historical_data(selected_state = input$dropdownD)})
-
+# {paste("Demographic Data Source (Non Census) \n Distribution in", input$dropdownD)}
   #Housing Findings
   output$download_housing_data <- downloadHandler(
     filename = function() {paste("housing_data_", Sys.Date(), ".csv", sep = "")},
@@ -3378,8 +3676,8 @@ server <- function(input, output) {
   output$fin_hous_plot5 <- renderPlot({tool_cloud(state=input$dropdownH, data_source = housing_data)})
   output$fin_hous_text6 <- renderText({{paste("Word cloud on variable for: ", input$dropdownH)}})
   output$fin_hous_plot6 <- renderPlot({variable_cloud(state=input$dropdownH, data_source = housing_data)})
-  output$fin_hous_plot7 <- renderPlot({h_edu_pie_graph_census(state = input$dropdownH, data_source = housing_data)})
-  output$fin_hous_plot8 <- renderPlot({h_edu_pie_graph_noncensus(state = input$dropdownH, data_source = housing_data)})
+  output$fin_hous_plot7 <- renderPlot({hous_pie_graph_census(state = input$dropdownH, data_source = housing_data)})
+  output$fin_hous_plot8 <- renderPlot({hous_pie_graph_noncensus(state = input$dropdownH, data_source = housing_data)})
   output$fin_hous_plot9 <- renderPlot({hous_direct_census_link(selected_state = input$dropdownH, data_table = housing_data)})
   output$fin_hous_plot10 <- renderPlot(hous_historical_data(selected_state = input$dropdownH, data_table = housing_data))
   
@@ -3397,8 +3695,8 @@ server <- function(input, output) {
   output$fin_HE_plot6 <- renderPlot({variable_cloud(state=input$dropdownHE, data_source = HE_data)})
   output$fin_HE_plot7 <- renderPlot({h_edu_pie_graph_census(state = input$dropdownHE, data_source = HE_data)})
   output$fin_HE_plot8 <- renderPlot({h_edu_pie_graph_noncensus(state = input$dropdownHE, data_source = HE_data)})
-  output$fin_HE_plot9 <- renderPlot({hous_direct_census_link(selected_state = input$dropdownHE, data_table = HE_data)})
-  output$fin_HE_plot10 <- renderPlot({hous_historical_data(selected_state = input$dropdownHE, data_table = HE_data)})
+  output$fin_HE_plot9 <- renderPlot({h_edu_direct_census_link(selected_state = input$dropdownHE, data_table = HE_data)})
+  output$fin_HE_plot10 <- renderPlot({h_edu_historical_data(selected_state = input$dropdownHE, data_table = HE_data)})
   
   #Economy Findings
   output$download_econ_data <- downloadHandler(
