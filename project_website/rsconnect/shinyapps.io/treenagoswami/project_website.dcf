@@ -1,0 +1,12 @@
+name: project_website
+title:
+username: treenagoswami
+account: treenagoswami
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 9618513
+bundleId: 7730435
+url: https://treenagoswami.shinyapps.io/project_website/
+version: 1
+asMultiple: FALSE
+asStatic: FALSE
